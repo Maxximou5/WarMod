@@ -1,0 +1,7 @@
+zBlock 4.66 -> 4.67
+--------------------
+-Fixed compatibility issues following the 03/07/12 game update.
+-Added a barrel which wasn't being removed to zb_removals internal list.
+-Added "zbgamedata" file which will allow vmt offsets to be changed by server ops when game updates arrive (this is mainly so LANs aren't interrupted, automated system in a future release).
+-Locked "sv_restrict_aspect_ratio_fov 2" in warmode.
+-Added visibility of the "sv_clockcorrection_msecs" cvar value in the console welcome message.

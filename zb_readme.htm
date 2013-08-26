@@ -1,0 +1,461 @@
+<html><head>
+<meta content="en-gb" http-equiv="Content-Language">
+<meta content="text/html; charset=windows-1252" http-equiv="Content-Type">
+<title>zBlock Readme</title>
+</head>
+
+<body>
+
+<p align="left"><b><font face="Arial" size="7">
+<span style="text-decoration: none">
+<a href="http://zblock.mgamez.eu/" style="text-decoration: none;">
+<font color="#000080">zBlock</font></a></span></font><font face="Arial" size="4"> 
+Version 4.67</font></b></p>
+<p align="left"><font face="Arial" size="4">&nbsp;&nbsp;&nbsp;&nbsp; Source 
+Engine Server Plugin for the CSS Engine</font></p>
+<p align="left"><b><font face="Arial" size="5"><br>
+About zBlock</font></b></p>
+<p align="left"><font face="Arial">zBlock was first developed as an addition to 
+the "CSP" server plugin, at this time VALVe had accidentally let a convariable 
+slip that would allow players to "wallhack".</font></p>
+<p align="left"><font face="Arial">"CSP" (CAL Server Plugin) was a server plugin 
+that enforced certain cvars that could either be exploited or created an 
+unbalanced/unfair playing field.<br>
+<br>
+Another feature of zBlock was to make CSP more difficult to bypass, however not 
+too long after release, we determined that instead of making CSP more difficult 
+to bypass, we should instead take on board the functions CSP had due to the 
+significant ease at which is was bypassed.<br>
+<br>
+zBlock is now one of the most used CS Source server plugins all around the 
+world, enforced in the majority of competitive leagues around the world it's 
+become a plugin you can't imagine CS Source without any more.</font></p>
+<p align="left">&nbsp;</p>
+<p align="left"><b><font face="Arial" size="5">Installation</font></b></p>
+<ul type="square">
+	<li>
+	<p align="left"><font face="Arial">Remove any previous zBlock files from 
+	older versions (zblock*.dll/zblock*.so/zblock*.vdf).</font></p></li>
+	<li>
+	<p align="left"><font face="Arial">Copy the "addons" 
+	folder and its contents into your game-servers mod directory, i.e. "ROOT/css/cstrike/". 
+	This will create a new folder "addons" and copy the plugin files onto the 
+	server so that next time it restarts the plugin shall be loaded.</font></p></li>
+	<li>
+	<p align="left"><font face="Arial">Restart the server.<br>
+	<br><b><i>Notes:<br>
+	</i></b>-A Windows server requires only the "zblock.dll" and "zblock.vdf" in 
+	the addons directory, whereas the Linux server requires only the "zblock.so" 
+	and "zblock.vdf" files. <b><i>&nbsp;</i><br></b>-If you are unsure which operating system your server uses: consult your game-server-provider.
+	<br><br>-<b>Please make sure your server is up-to-date using the 
+'hldsupdatetool' (-verify_all)  	otherwise the plugin might not be able 
+to load for reasons of server security.<br><br>
+-Loading the zBlock Plugin via rcon plugin_load is not possible due to security reasons.</b></font></p></li>
+</ul>
+<p align="left">&nbsp;</p>
+<p align="left"><b><font face="Arial"><font size="5">Enabling or Disabling 
+zBlock</font></font></b></p>
+<ul type="square">
+	<li>
+	<p align="left"><font face="Arial"><b>Note:</b> It is recommended that any server config changes affecting zBlock are made in the "server.cfg" file on your 
+	server - and not the "autoexec.cfg".</font></p></li>
+</ul>
+<p align="left"><font face="Arial">To Enable/Disable zBlock the CVAR "zb_active" 
+is provided (accessible via rcon or by addition to the server.cfg file). </font>
+</p>
+<p align="left"><font face="Arial">Set this to '0' to disable the plugin, and 
+use '1' to re-active.</font></p>
+<p align="left"><font face="Arial"><br>
+<i>Example: From your client console type:</i></font></p>
+<table id="table1" bordercolordark="#000000" bordercolorlight="#C0C0C0" border="2" cellpadding="4" cellspacing="4">
+	<tbody><tr>
+		<td><font face="Arial">rcon_password <i>YOUR_RCON_PASSWORD</i><br>
+		rcon zb_active 0<br>
+		rcon zb_active 1</font></td>
+	</tr>
+</tbody></table>
+<p align="left"><font face="Arial">*It is highly recommended that zBlock be kept 
+running at all times (for most competitive and league games this will be a 
+must).<b><br>
+<br>
+<br>
+<br>
+<font size="5">zBlock commands and settings:</font><br>
+&nbsp;</b></font></p>
+<table id="table2" bordercolordark="#000000" bordercolorlight="#C0C0C0" border="2" cellpadding="4" cellspacing="4">
+	<tbody><tr>
+		<td>
+		<p align="right"><i><b><font face="Arial" size="5">Client Commands</font></b></i></p>
+		<p align="right"><b><font face="Arial"><i>Can be entered in your in-game console 
+		at any time</i></font></b></p>
+		<p><font face="Arial"><b>zb_status</b><i><br>
+		- Displays important server settings.<br>
+		</i><b><br>
+		zb_netinfo</b><i><br>
+		- Displays connected players net-settings (rates, interpolation, prediction, lag 
+		compensation).</i><b><br>
+		<br>
+		zb_version</b><i><br>
+		- Displays version of zBlock currently installed on the server.</i><b><br>
+		<br>
+		zb_readylist<br>
+		- Counter-Strike: Source Only </b></font>
+		<b><font face="Arial">&amp; Warmode Only</font></b><font face="Arial"><i><br>
+		- Displays ready and not-ready players when using the ready-up system.</i><b><br>
+		<br>
+		zb_players</b><i><br>
+		- Displays a list of players authenticated by a configured auth-host (<u>zb_authhost</u>).</i><b><br>
+		<br>
+		zb_warnings</b><i><br>
+		- Displays information regarding questionable server configuration.</i></font></p><p>
+		<b><font face="Arial">zb_teamcash</font></b><br>
+		<b><font face="Arial">- Counter-Strike: Source Only &amp; Warmode Only</font></b><br><i><font face="Arial">- 
+		Displays the team money situation (We recommend your caller binds this 
+		command to a key).</font></i><br><i><font face="Arial">- i.e. bind "F1" "zb_teamcash"</font></i><br>
+		<i><font face="Arial">- Note: Only usable during freeze-time and when 
+		"zb_allowcashcalling" is enabled.</font></i></p></td>
+	</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<table id="table3" bordercolordark="#000000" bordercolorlight="#C0C0C0" border="2" cellpadding="4" cellspacing="4">
+	<tbody><tr>
+		<td>
+		<p align="right"><i><b><font face="Arial" size="5">Client Settings</font></b></i></p>
+		<p align="right"><b><font face="Arial"><i>Can be placed in your userconfig.cfg or can be entered in your in-game console at any time</i></font></b></p>
+		<p><font face="Arial"><b>setinfo zb_wantcashcalling 1</b><i><br>
+		- Displays the team money situation automatically every round.<br>
+		</i></font></p>
+
+<p><font face="Arial"><b>setinfo zb_wantignorerad 1</b><i><br>
+		- zBlock automatically sets "ignorerad" for you (turns radio messages off) (only when "zb_warmode 0" is set)<br>
+		</i><b><br></b></font></p>
+
+
+
+
+</td>
+	</tr>
+
+</tbody></table>
+<p>&nbsp;</p>
+<table id="table3" bordercolordark="#000000" bordercolorlight="#C0C0C0" border="2" cellpadding="4" cellspacing="4">
+	<tbody><tr>
+		<td>
+		<p align="right"><i><b><font face="Arial" size="5">Server Commands</font></b></i></p>
+		<p align="right"><i><b><font face="Arial">Must be executed through RCON 
+		or directly at the server</font></b></i></p>
+		<p><font face="Arial"><b>zb_lo3</b></font><b><font face="Arial"><br>
+		- Counter-Strike: Source Only &amp; Warmode Only</font></b><font face="Arial"><br>
+		<i>- Executes config defined in "zb_matchconfig"<br>
+- Restarts the round 3 times<br>
+- Returning startmoney to value set in "zb_startmoney" (Default 800)</i><b><br>
+<br>
+		zb_ko3<br>
+		</b></font>
+		<b><font face="Arial">- Counter-Strike: Source Only &amp; Warmode Only</font></b><font face="Arial"><i><br>
+- Restarts the round 3 times, declaring a knife-round.</i></font></p><p>
+		<font face="Arial"><b>zb_kickt </b>&lt;REASON&gt;<b><br>
+		</b></font>
+		<b><font face="Arial">- Counter-Strike: Source Only</font></b><font face="Arial"><i><br>
+- Kicks all terrorist team players.</i></font></p><p><font face="Arial"><b>zb_kickct </b>
+		&lt;REASON&gt;<b><br>
+		</b></font>
+		<b><font face="Arial">- Counter-Strike: Source Only</font></b><font face="Arial"><i><br>
+- Kicks all counter-terrorist team players.</i></font></p><p><font face="Arial"><b>
+		zb_kickspec </b>&lt;REASON&gt;<b><br>
+		</b><i>- Kicks all spectating players.</i><b><br>
+<br>
+		zb_readyup<br>
+- Counter-Strike Source Only
+		</b></font>
+		<b><font face="Arial">&amp; Warmode Only</font></b><font face="Arial"><b><br>
+		</b><i>- Use zb_readyup to start, or stop the readyup sequence<br>
+- Accepts "1" or "0" as parameter, "1" enabling readyup, "0" disabling readyup<br>
+- Allows all players to set themselves as ready<br>
+- When all players are ready, zb_lo3 is triggered</i><b><br>
+<br>
+		zb_players<br>
+		</b><i>- Displays a list of players authenticated by a configured auth-host (<u>zb_authhost</u>).</i><b><br>
+<br>
+		zb_update<br>
+		</b><i>- Manually checks for an update to the plugin.<br>
+		<br>
+		</i><b>zb_record/zb_stoprecord</b><i><br>
+		- Records a SourceTV demo with name "MAPNAME_YYMMDD_HHMM".<br>
+		- When using "zb_record" zBlock will look for a directory named "zb_demos" 
+		or "demos" in the game-server's root <br>
+		directory, if it exists demos will be saved to that location.</i></font></p><p>
+		<font face="Arial"><b>zb_recentdisconnects</b><i><br>
+		- Displays information on the most recent players to leave your server.</i></font></p></td>
+	</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<table id="table4" bordercolordark="#000000" bordercolorlight="#C0C0C0" border="2" cellpadding="4" cellspacing="4">
+	<tbody><tr>
+		<td>
+		<p align="right"><b><font face="Arial" size="5">Server CVARS (Settings)</font></b></p>
+		<p align="right"><i><b><font face="Arial">Must be executed through RCON 
+		or directly at the server</font></b></i></p>
+		<p><font face="Arial"><b><br>
+		zb_warmode (Default: 0)<br>
+- Counter-Strike Source Only</b><i><br>
+- Enables/Disable zBlock Warmode<br>
+		- Public servers should set this to "0" (zb_warmode 0).<br>
+		- Competitive / Match servers should set this to "1".<br>
+		- Note: See below for complete warmode based changes.</i></font></p><p>
+		<font face="Arial"><b>zb_matchconfig (Default: None)</b><i><br>
+- Match config to be executed before initiating the live on 3 sequence<br>
+- Note: To reset this value using rcon use: rcon zb_matchconfig " "</i><b><br>
+<br>
+		zb_readyup_max (Default: 10)<br>
+- Counter-Strike Source Only</b><i><br>
+- The minimum number of players required to be ready to initiate live-on-three</i><b><br>
+<br>
+		zb_startmoney (Default: 800)<br>
+- Counter-Strike Source Only<br>
+</b><i>- The amount that the starting money should be returned to after the live 
+		on 3 sequence is completed<br>
+-&nbsp; Note:This is to prevent players from regaining full money by using "retry" in the 
+second round of overtime</i><b><br>
+<br>
+		zb_authhost (Default: NONE)<br>
+</b><i>- Configures the auth-host to use with zBlock. <br>
+- Changing this setting will re-authenticate all existing players in the server 
+and continue to authenticate new players who join.<br>
+(Please see our article on "Player Authentication" at our website for more 
+details).<br>
+- Note: To reset this value using rcon use: rcon zb_authhost " " OR rcon 
+zb_authhost NONE</i><b><br>
+<br>
+		zb_autoupdate (Default: 1)<br>
+</b><i>- Enable/Disable zBlock plugin auto-updating.<br>
+- Note: Updates can be downloaded manually using the server command "zb_update"<br>
+- Note: Automatic updates are never downloaded whilst players are connected to 
+the server.</i></font></p><p><b><font face="Arial">zb_allowcashcalling (Default: 1)</font></b><br>
+		<b><font face="Arial">- Counter-Strike: Source Only</font></b><br><i>
+		<font face="Arial">- Enable/Disable Team money calling with 
+		"zb_teamcash"<br>
+		- Note: 0 = Disabled / 1 = Enabled / 2 = Allow automatic cash calling<br>
+		- To use automatic cash calling clients must use the command "setinfo 
+		zb_wantautocashcalling 1"</font></i></p><p><font face="Arial"><b>zb_dosprotect (Default: 1)</b><i><br>
+		- </i></font><i><font face="Arial">Protects the game-server from several 
+		network level attacks.<br>
+		- Note: 0 = Disabled / 1 = Enabled</font></i></p><p><font face="Arial"><b>zb_crashblock (Default: 1)</b><i><br>
+		- </i></font><i><font face="Arial">Protects the game-server from several 
+		known crash exploits.<br>
+		- Note: 0 = Disabled / 1 = Enabled</font></i></p><p>
+		<font face="Arial"><b>zb_deadvoice (Default: 1)</b></font><b><font face="Arial"><br>
+		- Counter-Strike: Source Only</font></b><i><font face="Arial"><br>
+		- When enabled dead players can chat to living members of their team 
+		using the in-game voice system.<br>
+		- Note: 0 = Disabled / 1 = Enabled</font></i></p><p>
+		<font face="Arial"><b>zb_antispeedhack (Default: 1)</b></font><b><font face="Arial"><br>
+		</font></b><i><font face="Arial">- Prevents the use of client cheats 
+		which manipulate the games view of time.<br>
+		- Note: 0 = Disabled / 1 = Enabled / 2 = Enabled and Kick.</font></i></p><p>
+		<font face="Arial"><b>zb_checkviewangles (Default: 1)</b></font><b><font face="Arial"><br>
+		</font></b><i><font face="Arial">- Prevents the use of cheats which 
+		distort the players view-angles.<br>
+		- Note: 0 = Disabled / 1 = Enabled.</font></i></p><p>
+		<font face="Arial"><b>zb_ignoreplayerqueries (Default: 0)</b></font><b><font face="Arial"><br>
+		</font></b><i><font face="Arial">- When enabled the server will ignore 
+		queries which ask for the names of the players connected.<br>
+		- This is for use in high-profile competitive matches where players do 
+		not wish their whereabouts to be known.<br>
+		- <u>We highly recommend this is kept disabled (default).</u><br>
+		- Note: 0 = Disabled / 1 = Enabled.</font></i></p><p>
+		<font face="Arial"><b>zb_antispam_max_cmds_per_sec (Default: 5)</b></font><b><font face="Arial"><br>
+		</font></b><i><font face="Arial">- Blocks command spam attempts.<br>
+		- We are currently tweaking the effects of this feature. A setting of 
+		4-6 appears to be adequate.</font></i></p><p>
+		<font face="Arial"><b>zb_removals (Default: 0)<br>
+		</b><i>- When set to "1" all junk props are removed from the map.<br>
+		- When set to "2" it removes all oil drums.<br>
+		- When set to "3" it removes both oil drums and junk. <br>
+		</i>Best combined with the client setting "cl_phys_props_enable 0".</font></p><p>
+		<font face="Arial"><b>zb_illegaldefusefix (Default: 0)<br>
+		</b></font><b><font face="Arial">- Counter-Strike: Source Only</font></b><font face="Arial"><br>
+		<i>- When enabled you are unable to defuse unless you can see the bomb 
+		and a message is displayed telling you so.<br>
+		</i></font><i><font face="Arial">- Note: 0 = Disabled / 1 = Enabled.</font></i></p><p>
+		<font face="Arial"><b>zb_antiflash (Default: 1)<br>
+		</b></font><b><font face="Arial">- Counter-Strike: Source Only</font></b><font face="Arial"><br>
+		<i>- When enabled players who are under the full effect of a flashbang 
+		will be unable to see other players by cheating to remove the white 
+		screen effect.<br>
+		</i></font><i><font face="Arial">- Note: 0 = Disabled / 1 = Enabled.</font></i></p><p>
+		<font face="Arial"><b>zb_antismoke (Default: 0)<br>
+		</b></font><b><font face="Arial">- Counter-Strike: Source Only</font></b><font face="Arial"><br>
+		<i>- When enabled players who are stood in the middle of a bloomed smoke 
+		grenade are not visible by the use of exploits.<br>
+		</i></font><i><font face="Arial">- Note: 0 = Disabled / 1 = Enabled.</font></i></p><p>
+		<font face="Arial"><b>zb_force_dx (Default: 0)</b><br>
+		<b>- Counter-Strike: Source Only / Warmode Only</b><br>
+		- When set to "1" players must use a DirectX9 video mode (resolves 
+		ambient occlusion issues).<br>
+		- When set to "2" players must use a DirectX8 video mode (stronger 
+		flashbang effect).<br>
+		</font><i><font face="Arial">- Note: 0 = Disabled</font></i>.</p><p>
+		<font face="Arial"><b>zb_bancheaters (Default: 1)</b><br>
+		- When enabled confirmed cheaters will be banned.<br>
+		- When disabled they are kicked.</font><i><font face="Arial"><br>
+		- Note: 0 = Disabled / 1 = Enabled.</font></i><font face="Arial"><br>
+		<br>
+		<b>zb_forwardbans (Default: 1)</b><br>
+		- When enabled bans made by zBlock will be forwarded to SourceBans if 
+		that plugin is also running (<a href="http://www.sourcebans.net/">www.sourcebans.net</a>).<br>
+		</font><i><font face="Arial">- Note: 0 = Disabled / 1 = Enabled.</font></i><font face="Arial"><br>
+		<br>
+		<b>zb_crouchfix (Default: 0)<br>
+		</b></font><b><font face="Arial">- Counter-Strike: Source Only</font></b><font face="Arial"><br>
+		- When enabled players must wait until they're standing to crouch again.<br>
+		</font><i><font face="Arial">- Note: 0 = Disabled / 1 = Enabled.</font></i></p><p>
+		<font face="Arial"><b>zb_fadetoblack (Default: 1)<br>
+		- Counter-Strike: Source Only<br>
+		</b>- When enabled "mp_fadetoblack 1" is forced and dead players sound 
+		is disabled.</font></p><p>
+		<font face="Arial"><b>zb_maxnamechanges (Default: 3)</b><br>
+		- The total number of name changes a player is allowed to make in the 
+		time "zb_namechangeperiod"<br>
+		- Note: 0=unlimited/disabled</font></p><p>
+		<font face="Arial"><b>zb_namechangeperiod (Default: 300)</b><br>
+		- The number of seconds between tracked name changes (over which "zb_maxnamechanges" 
+		applies")</font></p><p>
+		<font face="Arial"><b>zb_kicknamethieves (Default: 0)</b><br>
+		- When enabled players are removed if they have a name very similar or 
+		identical to an existing player (on joining or on name change).<br>
+		- Note: This defaults to disabled. (0 = Disabled / 1 = Enabled)</font></p><p>
+		<font face="Arial"><b>zb_dramaticheadshots (Default: 0)<br>
+		- Counter-Strike: Source Only</b><br>
+		- Just for fun!<br>
+		- Enable/Disable classic style headshot ragdolls</font></p></td>
+	</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p><b><font face="Arial" size="5">zb_status</font></b></p>
+<p align="left"><font face="Arial">Is a public cvar which is queryable from 
+connected clients and also via server monitoring tools such as HLSW.<br>
+<b>We highly recommend you stay clear of servers where zb_status has a value 
+greater than 1, this indicates a problem with the configuration of the server.</b><br>
+A description of the current zb_status value is shown in the welcome message to 
+connecting clients (console) and also by using the command "zb_status".</font></p>
+<p align="left">&nbsp;</p>
+<p align="left"><font face="Arial"><b><font size="5">A Note About "sv_pure"</font><br>
+<br>
+</b>zBlock 4 will only allow sv_pure values 1 or 2 whilst the plugin is active and will 
+automatically change the map (issuing a kick message to all connected clients) 
+whenever its value is changed - this is to allow the new value to take effect 
+correctly.<b><br>
+<br>
+Note: All league servers should have the setting "sv_pure 2" in their 
+server.cfg's.<br>
+<br>
+</b>A further change in zBlock v4 is that sv_consistency is forced to 1 whilst zBlock is active.</font></p>
+<p align="left"><font face="Arial">When sv_pure takes a value of 1 or 2 it 
+enforces connecting players to use some default content ("sv_pure 2" being more 
+restrictive than 1), this can affect some sound modifications such as the "quake 
+sounds pack" or "admin sounds" from being played and also older player skins 
+from being used.</font></p>
+<p align="left"><font face="Arial">We recommend that server operators who wish 
+to use this modified content use "sv_pure 1" in their server.cfg's and enforce a 
+whitelist.</font></p>
+<p align="left"><font face="Arial">Details on how to configure your servers 
+whitelist is available here:</font></p>
+<p align="left"><font face="Arial">
+<a href="http://developer.valvesoftware.com/wiki/Pure_Servers">
+http://developer.valvesoftware.com/wiki/Pure_Servers</a></font></p>
+<p align="left"><font face="Arial"><i>(You will need to allow the custom content 
+from disk)</i></font></p>
+<p align="left">&nbsp;</p>
+<p align="left"><font face="Arial"><b><font size="5">Map Restarts Triggered by the zBlock 
+Plugin</font><br>
+<br>
+</b>On changing the value of certain server cvars when running the zBlock plugin 
+your server will automatically restart the current map (kicking all players to 
+give the reason for the map change), this is done to ensure a level playing 
+field on your server and also for ease of use to server administrators.</font></p>
+<p align="left"><font face="Arial"><b>A change in the following cvars will trigger a map restart:<br>
+zb_active (on only)<br>
+zb_warmode<br>
+sv_cheats (off from on)<br>
+sv_pure<br>
+sv_consistency<br>
+<br>
+<br>
+CAUTION: Be careful that you do not make contradicting references to these cvar 
+values in your "server.cfg" (ran automatically on map loads) as this will cause 
+your server to repeatedly reload the map.</b></font></p>
+<p align="left"><font face="Arial">i.e. </font></p>
+<table id="table6" bordercolordark="#000000" bordercolorlight="#C0C0C0" border="2" cellpadding="4" cellspacing="4">
+	<tbody><tr>
+		<td><font face="Arial">sv_pure 0<br>
+		<b>...</b><br>
+sv_pure 2</font></td>
+	</tr>
+</tbody></table>
+<p>&nbsp;</p>
+<p><b><font face="Arial" size="5">zb_warmode</font></b></p>
+<p><font face="Arial">Warmode is a new concept found in zBlock from version 4.5, 
+this is designed to give a distinction in the plugins configuration between a 
+public and a private/competition/war-server.<br>
+<br>
+As such when zb_warmode is disabled the settings are not as strict. We turn off 
+things such as map consistency, the super-boost fix, warnings and welcome 
+messages.<br>
+With warmode on we enable the match functionality and lock down a lot of
+ the 
+server cvars, disable certain features which are unsuitable for 
+competitive play and also only allow pausing during round-end and 
+freeze-time.</font></p>
+<p><font face="Arial">We expect further features to be tied in with the 
+functionality of the cvar in the future.</font></p>
+<p>&nbsp;</p>
+<p align="left"><font face="Arial"> <b><font size="5">Plugin Not Loading?</font></b></font></p>
+<p align="left"><font face="Arial"><b>If the plugin does not seem to be loading, here are some tips for 
+troubleshooting the issue.</b></font></p>
+<ol>
+	<li>
+	<p align="left"><font face="Arial">Restart the server and join and type "rcon plugin_print", is zBlock listed in 
+the list of plugins?<br>-If it is, then maybe "zb_active" is set to '0'.</font></p>
+	</li>
+	<li>
+	<p align="left"><font face="Arial">Load the plugin manually using:<br>rcon plugin_load 
+	"addons/zblock"<br>View the message which appears, this should help you locate the issue.<br>-Note: This action will not actually allow you to load the plugin, but should 
+indicate the problem.</font></p></li>
+	<li>
+	<p align="left"><font face="Arial">Stop your server.<br>Remove all zBlock files from your "addons/" directory.<br>Make sure the server is up-to-date using the hldsupdatetool (use the "-verify_all" 
+command line option when updating to check for corrupt files).<br>Re-install zBlock as per the instructions in this text file. (Make sure your 
+version of zBlock is also the latest).<br>Restart the server.</font></p></li>
+	<li>
+	<p align="left"><font face="Arial">Contact your server administrator/GSP staff.</font></p>
+	</li>
+</ol>
+<p align="left">&nbsp;</p>
+<p align="left"><b><font face="Arial" size="5">Contacting Us for Support </font>
+</b></p>
+<p align="left"><font face="Arial" size="4"><b>Only when you have exhausted all 
+other troubleshooting methods</b> </font><font face="Arial">then please contact us at our websites forums, 
+following the support sticky thread as an example for support.</font></p>
+<p align="left"><font face="Arial">If you have not already tried the 
+methods outlined in this readme (or show that you have not even read the readme 
+file) we will not be able to help you!</font></p>
+<p align="left"><font face="Arial">We like to keep our forums a tidy 
+place if you have any difficulties running a server or with cvars/rcon admin 
+etc.. Then we recommend you get support from another place such as: <a href="http://www.srcds.com/">www.srcds.com</a> or
+<a href="http://www.steampowered.com/v/index.php?area=forums">
+http://www.steampowered.com/v/index.php?area=forums</a></font></p>
+<p align="left">&nbsp;</p>
+<p align="center"><font face="Arial"><b><font size="5">Authors and Credited Others</font><br>&nbsp;</b></font></p>
+<p align="center"><font face="Arial"><b><font size="4">TheUnknownFactor<br>J3Di<br>
+Trepje<br>
+Orion<br>
+CodeRed</font></b></font><i><b><font face="Arial" size="4"><br>
+zBlock Competitive Consultants</font></b></i></p>
+<p align="center"><font face="Arial"><b><br><i>Contact details are available from our website</i></b></font></p>
+<p align="center"><b><font face="Arial">
+<a href="http://zblock.mgamez.eu/">http://zblock.mgamez.eu</a></font></b></p>
+
+
+
+
+</body></html>
