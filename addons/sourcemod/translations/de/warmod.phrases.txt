@@ -1,0 +1,263 @@
+﻿"Phrases"
+{
+	"Match Reset"
+	{
+		"de"			"Match Reset - Spiel ist nicht live!"
+	}
+	"Half Reset"
+	{
+		"de"			"Matchhдlfte Reset - Spiel ist nicht live!"
+	}
+	"Half Time"
+	{
+		"de"			"Halbzeit! Bitte Teams wechseln..."
+	}
+	"Half Time Auto Swap"
+	{
+		"de"			"Halbzeit! Wechsle Teams..."
+	}
+	"Full Time"
+	{
+		"de"			"Zeit erreicht!"
+	}
+	"Over Time"
+	{
+		"de"			"Verlдngerung! MR{1}"
+	}
+	"Over Time Sudden Death"
+	{
+		"de"			"Verlдngerung! KO-System"
+	}
+	"Playing Out Notice"
+	{
+		"de"			"Hinweis: Alle {1} Runden mьssen gespielt werden!"
+	}
+	"Ready"
+	{
+		"de"			"Du wurdest als bereit markiert"
+	}
+	"Not Ready"
+	{
+		"de"			"Du wurdest als nicht bereit markiert"
+	}
+	"Score Overtime"
+	{
+		"de"			"Verlдngerung: "
+	}
+	"Score Overall"
+	{
+		"de"			"Insgesamt: "
+	}
+	"Knife Round Cancelled"
+	{
+		"de"			"Messerrunde abgebrochen - nicht live"
+	}
+	"Knife Round Inactive"
+	{
+		"de"			"Messerrunde ist nicht aktiv"
+	}
+	"Ready System Enabled"
+	{
+		"de"			"Bereitschaftssystem aktiviert"
+	}
+	"Ready System Disabled"
+	{
+		"de"			"Bereitschaftssystem deaktiviert"
+	}
+	"Set Active"
+	{
+		"de"			"Auf aktiv gestellt"
+	}
+	"Set Inactive"
+	{
+		"de"			"Auf inaktiv gestellt"
+	}
+	"Console Ready"
+	{
+		"de"			"Konsole kann nicht als bereit markiert werden"
+	}
+	"Console Not Ready"
+	{
+		"de"			"Konsole kann nicht als nicht bereit markiert werden"
+	}
+	"Not on Team"
+	{
+		"de"			"Du gehцrst keinem Team an"
+	}
+	"Already Ready"
+	{
+		"de"			"Du wurdest bereits als bereit markiert"
+	}
+	"Already Not Ready"
+	{
+		"de"			"Du wurdest bereits als nich bereit markiert"
+	}
+	"Forced Ready"
+	{
+		"de"			"Alle Spieler auf bereit gesetzt"
+	}
+	"Forced Not Ready"
+	{
+		"de"			"Alle Spieler auf nicht bereit gesetzt"
+	}
+	"Match Not In Progress"
+	{
+		"de"			"Match ist nicht aktiv!"
+	}
+	"T Winning"
+	{
+		"de"			"{1} haben gewonnen"
+	}
+	"Tied"
+	{
+		"de"			"Spielstand ist ausgeglichen"
+	}
+	"CT Winning"
+	{
+		"de"			"{1} haben gewonnen"
+	}
+	"Change Teams Midgame"
+	{
+		"de"			"Blockiert - Match ist bereits aktiv"
+	}
+	"Maximum Players"
+	{
+		"de"			"Derzeit steht kein freier Spielerslot zur VerfГјgung"
+	}
+	"Nightvision Blocked"
+	{
+		"de"			"Nachtsicht ist deaktiviert"
+	}
+	"Grenades Blocked"
+	{
+		"de"			"Granaten sind wдhrend des Warmups deaktiviert"
+	}
+	"Ready System"
+	{
+		"de"			"Bereitschaftssystem"
+	}
+	"Match Begin Msg"
+	{
+		"de"			"Das Match startet, nachdem {1} Spieler bereit sind"
+	}
+	"No Players Found"
+	{
+		"de"			"Keine Spieler gefunden"
+	}
+	"Info Not Ready"
+	{
+		"de"			"Nicht bereit:"
+	}
+	"Info Exit"
+	{
+		"de"			"Verlassen"
+	}
+	"Ready System Disabled2"
+	{
+		"de"			"Das Bereitschaftssystem ist nicht aktiviert"
+	}
+	"Match Is Live"
+	{
+		"de"			"Das Match ist live"
+	}
+	"WarMod Inactive"
+	{
+		"de"			"WarMod ist nicht aktviviert"
+	}
+	"Change T Name"
+	{
+		"de"			"Name der Terroristen in '{1}' geдndert"
+	}
+	"Change CT Name"
+	{
+		"de"			"Name der Counter-Terroristen in '{1}' geдndert"
+	}
+	"Console"
+	{
+		"de"			"Konsole: "
+	}
+	"Available Commands"
+	{
+		"de"			"Verfьgbarer klient-befehle"
+	}
+	"No Permission"
+	{
+		"de"			"Du hast keine Berechtigung diesen Befehl zu verwenden"
+	}
+	"Set Minready"
+	{
+		"de"			"wm_min_ready gesetzt auf {1}"
+	}
+	"Set Maxrounds"
+	{
+		"de"			"wm_max_rounds gesetzt auf {1}"
+	}
+	"WarMod Rcon Only"
+	{
+		"de"			"Admin-Kommandos wurden auf RCON beschrдnkt"
+	}
+	"Set Password"
+	{
+		"de"			"sv_password gesetzt auf '{1}'"
+	}
+	"Autokick"
+	{
+		"de"			"Sie wurden automatisch vom Server gekickt"
+	}
+	"Names Required"
+	{
+		"de"			"Match wird nicht lo3 bis beide Team-Namen wurden"
+	}
+	"Admin_Menu WarMod Commands"
+	{
+		"de"			"WarMod Kommandos"
+	}
+	"Admin_Menu Enable ReadyUp"
+	{
+		"de"			"Aktiviere ReadyUp"
+	}
+	"Admin_Menu Disable ReadyUp"
+	{
+		"de"			"Deaktiviere ReadyUp"
+	}
+	"Admin_Menu Knife"
+	{
+		"de"			"Messer"
+	}
+	"Admin_Menu Force Start"
+	{
+		"de"			"Erzwinge Start"
+	}
+	"Admin_Menu Force End"
+	{
+		"de"			"Erzwinge Ende"
+	}
+	"Admin_Menu Cancel Half"
+	{
+		"de"			"Breche Hдlfte ab"
+	}
+	"Admin_Menu Cancel Match"
+	{
+		"de"			"Breche Match ab"
+	}
+	"Admin_Menu Cancel Knife"
+	{
+		"de"			"Breche Messerrunde ab"
+	}
+	"Admin_Menu ForceAllReady"
+	{
+		"de"			"Erzwinge alle bereit"
+	}
+	"Admin_Menu ForceAllUnready"
+	{
+		"de"			"Erzwinge alle nicht bereit"
+	}
+	"Admin_Menu Activate WarMod"
+	{
+		"de"			"WarMod aktivieren"
+	}
+	"Admin_Menu Deactivate WarMod"
+	{
+		"de"			"WarmMod deaktivieren"
+	}
+}

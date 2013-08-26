@@ -1,0 +1,264 @@
+﻿"Phrases"
+{
+	"Match Reset"
+	{
+		"pt"			"Partida Reiniciada - O jogo ainda nao esta valendo!"
+	}
+	"Half Reset"
+	{
+		"pt"			"Metade da Partida Reiniciada - O jogo ainda nao esta valendo!"
+	}
+	"Half Time"
+	{
+		"pt"			"Intervalo! Por Favor vire os times..."
+	}
+	"Half Time Auto Swap"
+	{
+		"pt"			"Intervalo! Virando os Times..."
+	}
+	"Full Time"
+	{
+		"pt"			"Fim de Jogo"
+	}
+	"Over Time"
+	{
+		"pt"			"Tempo Extra! MR{1}"
+	}
+	"Over Time Sudden Death"
+	{
+		"pt"			"Tempo Extra! Morte Subita"
+	}
+	"Playing Out Notice"
+	{
+		"pt"			"Nota: Todos {1} Turnos devem ser jogados!"
+	}
+	"Ready"
+	{
+		"pt"			"Voce foi marcado como Pronto"
+	}
+	"Not Ready"
+	{
+		"pt"			"Voce nao esta marcado como Pronto"
+	}
+	"Score Overtime"
+	{
+		"pt"			"Tempo extra: "
+	}
+	"Score Overall"
+	{
+		"pt"			"Placar Final: "
+	}
+	"Knife Round Cancelled"
+	{
+		"pt"			"Turno de Faca Cancelado - Nao esta valendo"
+	}
+	"Knife Round Inactive"
+	{
+		"pt"			"Turno de Faca Nao esta Ativo"
+	}
+	"Ready System Enabled"
+	{
+		"pt"			"Sistem de Pronto - Ativado"
+	}
+	"Ready System Disabled"
+	{
+		"pt"			"Sistema de Pronto - Desativado"
+	}
+	"Set Active"
+	{
+		"pt"			"Mudar para Ativado"
+	}
+	"Set Inactive"
+	{
+		"pt"			"Mudar para Desativado"
+	}
+	"Console Ready"
+	{
+		"pt"			"Console nao pode ser marcado como Pronto"
+	}
+	"Console Not Ready"
+	{
+		"pt"			"Console nao pode ser marcado como Nao Pronto"
+	}
+	"Not on Team"
+	{
+		"pt"			"Voce nao esta em nenhum time"
+	}
+	"Already Ready"
+	{
+		"pt"			"Voce ja esta marcado como Pronto"
+	}
+	"Already Not Ready"
+	{
+		"pt"			"Voce ja esta marcado como Nao Pronto"
+	}
+	"Forced Ready"
+	{
+		"pt"			"Forcar todos Jogadores a ficarem Prontos"
+	}
+	"Forced Not Ready"
+	{
+		"pt"			"Forcar todos Jogares a Nao pronto"
+	}
+	"Match Not In Progress"
+	{
+		"pt"			"A Partida ainda nao comecou!"
+	}
+	"T Winning"
+	{
+		"pt"			"{1} Estao Ganhando!"
+	}
+	"Tied"
+	{
+		"pt"			"Os Pontos estao Empatados!"
+	}
+	"CT Winning"
+	{
+		"pt"			"{1} Estao Ganhando!"
+	}
+	"Change Teams Midgame"
+	{
+		"pt"			"Boqueado - A Partida Nao Comecou"
+	}
+	"Maximum Players"
+	{
+		"pt"			"Os times atingiram o numero maximo de jogadores!"
+	}
+	"Nightvision Blocked"
+	{
+		"pt"			"Visao Noturna Desativada"
+	}
+	"Grenades Blocked"
+	{
+		"pt"			"Granadas no aquecimento sao desativadas"
+	}
+	"Ready System"
+	{
+		"pt"			"Sistema Pronto"
+	}
+	"Match Begin Msg"
+	{
+		"pt"			"A partida ira comecar apos {1} estiverem prontos"
+	}
+	"No Players Found"
+	{
+		"pt"			"Nenhum jogador encontrado"
+	}
+	"Info Not Ready"
+	{
+		"pt"			"Nao esta Pronto:"
+	}
+	"Info Exit"
+	{
+		"pt"			"Saida"
+	}
+	"Ready System Disabled2"
+	{
+		"pt"			"O sistema de Pronto nao esta ativado"
+	}
+	"Match Is Live"
+	{
+		"pt"			"A partida iniciou"
+	}
+	"WarMod Inactive"
+	{
+		"pt"			"WarMod nao esta ativo"
+	}
+	"Change T Name"
+	{
+		"pt"			"Nome dos Terroristas modificado para  '{1}'"
+	}
+	"Change CT Name"
+	{
+		"pt"			"Nome dos Contra-Terroristas modificado para '{1}'"
+	}
+	"Console"
+	{
+		"pt"			"Matrix: "
+	}
+	"Available Commands"
+	{
+		"pt"			"Comandos de Cliente disponiveis"
+	}
+	"No Permission"
+	{
+		"pt"			"Voce nao tem permissao para usar este comando"
+	}
+	"Set Minready"
+	{
+		"pt"			"wm_min_ready modifricado para {1}"
+	}
+	"Set Maxrounds"
+	{
+		"pt"			"wm_max_rounds modificado para {1}"
+	}
+	"WarMod Rcon Only"
+	{
+		"pt"			"Comandos de Admin foram restritos para somente RCON"
+
+	}
+	"Set Password"
+	{
+		"pt"			"sv_password modificado para '{1}'"
+	}
+	"Autokick"
+	{
+		"pt"			"Voce foi automaticamente removido do servidor"
+	}
+	"Names Required"
+	{
+		"pt"			"A partida nao sera iniciada enquanto os nomes de ambos times nao forem adicionados"
+	}
+	"Admin_Menu WarMod Commands"
+	{
+		"pt"			"Comandos WarMod"
+	}
+	"Admin_Menu Enable ReadyUp"
+	{
+		"pt"			"Permitir Ficar Pronto"
+	}
+	"Admin_Menu Disable ReadyUp"
+	{
+		"pt"			"Proibir Ficar Pronto"
+	}
+	"Admin_Menu Knife"
+	{
+		"pt"			"Faca"
+	}
+	"Admin_Menu Force Start"
+	{
+		"pt"			"Forcar Inicio"
+	}
+	"Admin_Menu Force End"
+	{
+		"pt"			"Forcar Fim"
+	}
+	"Admin_Menu Cancel Half"
+	{
+		"pt"			"Cancelar no Meio"
+	}
+	"Admin_Menu Cancel Match"
+	{
+		"pt"			"Cancelar Partida"
+	}
+	"Admin_Menu Cancel Knife"
+	{
+		"pt"			"Cancelar Faca"
+	}
+	"Admin_Menu ForceAllReady"
+	{
+		"pt"			"Forcar todos ficarem Prontos"
+	}
+	"Admin_Menu ForceAllUnready"
+	{
+		"pt"			"Forcar todos a ficar Nao Pronto"
+	}
+	"Admin_Menu Activate WarMod"
+	{
+		"pt"			"Ativar WarMod"
+	}
+	"Admin_Menu Deactivate WarMod"
+	{
+		"pt"			"Desativar WarMod"
+	}
+}

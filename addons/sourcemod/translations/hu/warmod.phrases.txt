@@ -1,0 +1,263 @@
+﻿"Phrases"
+{
+	"Match Reset"
+	{
+		"hu"			"Jatek Reset – Jatszma nem eles!"
+	}
+	"Half Reset"
+	{
+		"hu"			"Felido Reset – Jatszma nem eles!"
+	}
+	"Half Time"
+	{
+		"hu"			"Felido! – Jatszma nem eles!"
+	}
+	"Half Time Auto Swap"
+	{
+		"hu"			"Felido! –Csapattok felcserelese…!"
+	}
+	"Full Time"
+	{
+		"hu"			"Jatszma vege! – GG!"
+	}
+	"Over Time"
+	{
+		"hu"			"Hosszabbitas!"
+	}
+	"Over Time Sudden Death"
+	{
+		"hu"			"Hosszabbitas! Hirtelen halal!"
+	}
+	"Playing Out Notice"
+	{
+		"hu"			"Megjegyzes: Mind a {1} kort le kell jatszani!"
+	}
+	"Ready"
+	{
+		"hu"			"Keszen allsz!
+	}
+	"Not Ready"
+	{
+		"hu"			"Nem allsz keszen!
+	}
+	"Score Overtime"
+	{
+		"hu"			"Hosszabbitas: "
+	}
+	"Score Overall"
+	{
+		"hu"			"Vegeredmeny: "
+	}
+	"Knife Round Cancelled"
+	{
+		"hu"			"Kes kor leallitva –Jatszma nem eles"
+	}
+	"Knife Round Inactive"
+	{
+		"hu"			"Kes kor nem aktiv"
+	}
+	"Ready System Enabled"
+	{
+		"hu"			"Felkeszulesi rendszer - Engedelyzeve"
+	}
+	"Ready System Disabled"
+	{
+		"hu"			"Felkeszulesi rendszer - Kikapcsolva"
+	}
+	"Set Active"
+	{
+		"hu"			"Aktivalva"
+	}
+	"Set Inactive"
+	{
+		"hu"			"Inaktivalva"
+	}
+	"Console Ready"
+	{
+		"hu"			"Console nem all keszen"
+	}
+	"Console Not Ready"
+	{
+		"hu"			"Console nem keszen all"
+	}
+	"Not on Team"
+	{
+		"hu"			"Nem tartozol egy csapatba sem"
+	}
+	"Already Ready"
+	{
+		"hu"			"Mar keszen allsz"
+	}
+	"Already Not Ready"
+	{
+		"hu"			"Meg mindig nem allsz keszen"
+	}
+	"Forced Ready"
+	{
+		"hu"			"Mindenki keszen all"
+	}
+	"Forced Not Ready"
+	{
+		"hu"			"Senki sem all keszen"
+	}
+	"Match Not In Progress"
+	{
+		"hu"			"A jatszma nem aktiv"
+	}
+	"T Winning"
+	{
+		"hu"			"{1} nyertek"
+	}
+	"Tied"
+	{
+		"hu"			"Egyeblo allas"
+	}
+	"CT Winning"
+	{
+		"hu"			"{1} nyertek"
+	}
+	"Change Teams Midgame"
+	{
+		"hu"			"Blokkolva – A jatszam aktiv"
+	}
+	"Maximum Players"
+	{
+		"hu"			"A csapatok elertek a maximalis letszamot"
+	}
+	"Nightvision Blocked"
+	{
+		"hu"			"Ejjellato blokkolva"
+	}
+	"Grenades Blocked"
+	{
+		"hu"			"Granatok blokkolva"
+	}
+	"Ready System"
+	{
+		"hu"			"Felkeszulesi rendszer"
+	}
+	"Match Begin Msg"
+	{
+		"hu"			"A jatszma elkezdodik amint {1} jatekos keszen all"
+	}
+	"No Players Found"
+	{
+		"hu"			"Nem talalhato jatekos"
+	}
+	"Info Not Ready"
+	{
+		"hu"			"Nem all keszen:"
+	}
+	"Info Exit"
+	{
+		"hu"			"Kilepes"
+	}
+	"Ready System Disabled2"
+	{
+		"hu"			"Felkeszulesi rendszer nincs engedelyezve"
+	}
+	"Match Is Live"
+	{
+		"hu"			"A jatszma eles"
+	}
+	"WarMod Inactive"
+	{
+		"hu"			"A WarMod nem aktiv"
+	}
+	"Change T Name"
+	{
+		"hu"			"Terroristak neve atallitva '{1}'"
+	}
+	"Change CT Name"
+	{
+		"hu"			"Elharitok neve atallitva '{1}'"
+	}
+	"Console"
+	{
+		"hu"			"Console: "
+	}
+	"Available Commands"
+	{
+		"hu"			"Lehetseges parancsok"
+	}
+	"No Permission"
+	{
+		"hu"			"Nincs jogosultsagod ehhez a parancshoz"
+	}
+	"Set Minready"
+	{
+		"hu"			"wm_min_ready {1} -re allitva"
+	}
+	"Set Maxrounds"
+	{
+		"hu"			"wm_max_rounds {1} –re allitva"
+	}
+	"WarMod Rcon Only"
+	{
+		"hu"			"Admin parancsok Rcon-ra korlatozva"
+	}
+	"Set Password"
+	{
+		"hu"			"sv_password '{1}' allitva"
+	}
+	"Autokick"
+	{
+		"hu"			"Automatikusan ki lettel dobva a serverrol"
+	}
+	"Names Required"
+	{
+		"hu"			"Addig nem kezdodi kaz eles jatszma míg mindenki be nem allitja a csapat nevet"
+	}
+	"Admin_Menu WarMod Commands"
+	{
+		"hu"			"WarMod parancsok"
+	}
+	"Admin_Menu Enable ReadyUp"
+	{
+		"hu"			"Felkeszules engedelyezese"
+	}
+	"Admin_Menu Disable ReadyUp"
+	{
+		"hu"			"Felkeszules tiltasa"
+	}
+	"Admin_Menu Knife"
+	{
+		"hu"			"Kes"
+	}
+	"Admin_Menu Force Start"
+	{
+		"hu"			"Inditas"
+	}
+	"Admin_Menu Force End"
+	{
+		"hu"			"Vege"
+	}
+	"Admin_Menu Cancel Half"
+	{
+		"hu"			"Felebeszakitas"
+	}
+	"Admin_Menu Cancel Match"
+	{
+		"hu"			"Jatszma torlese"
+	}
+	"Admin_Menu Cancel Knife"
+	{
+		"hu"			"Keskor torlese"
+	}
+	"Admin_Menu ForceAllReady"
+	{
+		"hu"			"Mindneki keszen alljon"
+	}
+	"Admin_Menu ForceAllUnready"
+	{
+		"hu"			"Senki ne alljon keszen"
+	}
+	"Admin_Menu Activate WarMod"
+	{
+		"hu"			"WarMod aktivalasa"
+	}
+	"Admin_Menu Deactivate WarMod"
+	{
+		"hu"			"WarMod deaktivalasa"
+	}
+}

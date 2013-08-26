@@ -1,0 +1,59 @@
+L 08/26/2013 - 20:07:27: SourceMod log file session started (file "L20130826.log") (Version "1.6.0-dev+4081")
+L 08/26/2013 - 20:07:27: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:07:27: [GEOIP] GeoIP database info: GEO-106FREE 20091001 Build 1 Copyright (c) 2009 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 20:07:32: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:21:38: SourceMod log file session started (file "L20130826.log") (Version "1.6.0-dev+4081")
+L 08/26/2013 - 20:21:38: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:21:38: [GEOIP] GeoIP database info: GEO-106FREE 20091001 Build 1 Copyright (c) 2009 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 20:21:41: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:30:33: SourceMod log file session started (file "L20130826.log") (Version "1.6.0-dev+4081")
+L 08/26/2013 - 20:30:33: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:30:33: [GEOIP] GeoIP database info: GEO-106FREE 20091001 Build 1 Copyright (c) 2009 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 20:30:36: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:37:08: SourceMod log file session started (file "L20130826.log") (Version "1.6.0-dev+4081")
+L 08/26/2013 - 20:37:08: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:37:08: [GEOIP] GeoIP database info: GEO-106FREE 20091001 Build 1 Copyright (c) 2009 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 20:37:10: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:41:15: SourceMod log file session started (file "L20130826.log") (Version "1.6.0-dev+4081")
+L 08/26/2013 - 20:41:15: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:41:15: [GEOIP] GeoIP database info: GEO-106FREE 20091001 Build 1 Copyright (c) 2009 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 20:41:17: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:46:29: SourceMod log file session started (file "L20130826.log") (Version "1.6.0-dev+4081")
+L 08/26/2013 - 20:46:29: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:46:29: [GEOIP] GeoIP database info: GEO-106FREE 20091001 Build 1 Copyright (c) 2009 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 20:46:31: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:47:16: [playercommands.smx] "Versatile [BFG]<3><STEAM_0:0:635066><>" slapped "Versatile [BFG]<3><STEAM_0:0:635066><>" (damage "1")
+L 08/26/2013 - 20:47:32: SourceMod log file session started (file "L20130826.log") (Version "1.6.0-dev+4081")
+L 08/26/2013 - 20:47:32: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:47:32: [GEOIP] GeoIP database info: GEO-106FREE 20091001 Build 1 Copyright (c) 2009 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 20:47:35: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:49:24: [warmod.smx] "force_start" (player "Versatile [BFG]<3><STEAM_0:0:635066><>")
+L 08/26/2013 - 20:50:15: [warmod.smx] "half_reset" (player "Versatile [BFG]<3><STEAM_0:0:635066><>")
+L 08/26/2013 - 20:50:21: [warmod.smx] "force_start" (player "Versatile [BFG]<3><STEAM_0:0:635066><>")
+L 08/26/2013 - 20:50:50: [playercommands.smx] "Versatile [BFG]<3><STEAM_0:0:635066><>" slayed "Versatile [BFG]<3><STEAM_0:0:635066><>"
+L 08/26/2013 - 20:50:59: [playercommands.smx] "Versatile [BFG]<3><STEAM_0:0:635066><>" slapped "Versatile [BFG]<3><STEAM_0:0:635066><>" (damage "0")
+L 08/26/2013 - 20:51:17: SourceMod log file session started (file "L20130826.log") (Version "1.6.0-dev+4081")
+L 08/26/2013 - 20:51:17: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 20:51:17: [GEOIP] GeoIP database info: GEO-106FREE 20091001 Build 1 Copyright (c) 2009 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 20:51:19: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 21:06:57: SourceMod log file session started (file "L20130826.log") (Version "1.5.0")
+L 08/26/2013 - 21:06:57: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 21:06:57: [GEOIP] GeoIP database info: GEO-106FREE 20130806 Build 1 Copyright (c) 2013 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 21:06:58: [UPDATER] Successfully updated gamedata file "sdkhooks.games/engine.csgo.txt"
+L 08/26/2013 - 21:06:58: [UPDATER] Successfully updated gamedata file "sdkhooks.games/master.games.txt"
+L 08/26/2013 - 21:06:58: [UPDATER] SourceMod has been updated, please reload it or restart your server.
+L 08/26/2013 - 21:06:59: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 21:09:20: SourceMod log file session started (file "L20130826.log") (Version "1.5.0")
+L 08/26/2013 - 21:09:20: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 21:09:20: [GEOIP] GeoIP database info: GEO-106FREE 20130806 Build 1 Copyright (c) 2013 MaxMind Inc All Rights Reserved
+L 08/26/2013 - 21:09:22: -------- Mapchange to de_dust2 --------
+L 08/26/2013 - 21:09:43: [playercommands.smx] "Versatile [BFG]<3><STEAM_0:0:635066><>" slapped "Versatile [BFG]<3><STEAM_0:0:635066><>" (damage "0")
+L 08/26/2013 - 21:10:16: [warmod.smx] "force_start" (player "Versatile [BFG]<3><STEAM_0:0:635066><>")
+L 08/26/2013 - 21:10:33: [warmod.smx] "match_reset" (player "Versatile [BFG]<3><STEAM_0:0:635066><>")
+L 08/26/2013 - 21:10:40: [warmod.smx] "team_swap" (player "Versatile [BFG]<3><STEAM_0:0:635066><>")
+L 08/26/2013 - 21:10:49: [warmod.smx] "force_start" (player "Versatile [BFG]<3><STEAM_0:0:635066><>")
+L 08/26/2013 - 21:11:31: [basecommands.smx] "Versatile [BFG]<3><STEAM_0:0:635066><>" console command (cmdline "add_bot_ct")
+L 08/26/2013 - 21:11:41: [basecommands.smx] "Versatile [BFG]<3><STEAM_0:0:635066><>" console command (cmdline "bot_add_ct ")
+L 08/26/2013 - 21:13:00: [basecommands.smx] "Versatile [BFG]<3><STEAM_0:0:635066><>" console command (cmdline "mp_freezetime 1")
+L 08/26/2013 - 21:20:18: [warmod.smx] "force_start" (player "Versatile [BFG]<3><STEAM_0:0:635066><>")
+L 08/26/2013 - 21:20:24: [basecommands.smx] "Versatile [BFG]<3><STEAM_0:0:635066><>" console command (cmdline "mp_freezetime 1")

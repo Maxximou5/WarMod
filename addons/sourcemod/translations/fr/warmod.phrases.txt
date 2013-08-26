@@ -1,0 +1,263 @@
+﻿"Phrases"
+{
+	"Match Reset"
+	{
+		"fr"			"Match Reset - Le match n est pas commencer!"
+	}
+	"Half Reset"
+	{
+		"fr"			"Match Reset - Le side n est pas commencer!"
+	}
+	"Half Time"
+	{
+		"fr"			"Fin du side! Swap teams svp ..."
+	}
+	"Half Time Auto Swap"
+	{
+		"fr"			"Fin du side! Swapping teams..."
+	}
+	"Full Time"
+	{
+		"fr"			"Le match est fini! GG"
+	}
+	"Over Time"
+	{
+		"fr"			"Overtime! MR{1}"
+	}
+	"Over Time Sudden Death"
+	{
+		"fr"			"Overtime! Mort subite"
+	}
+	"Playing Out Notice"
+	{
+		"fr"			"Note : Les {1} rounds doivent etre joues dabord !"
+	}
+	"Ready"
+	{
+		"fr"			"Vous ete maintenant ready"
+	}
+	"Not Ready"
+	{
+		"fr"			"Vous ete maintenant unready"
+	}
+	"Score Overtime"
+	{
+		"fr"			"Overtime: "
+	}
+	"Score Overall"
+	{
+		"fr"			"Overall: "
+	}
+	"Knife Round Cancelled"
+	{
+		"fr"			"Knife round annuler - Ce n est pas Live!"
+	}
+	"Knife Round Inactive"
+	{
+		"fr"			"Knife round desactive"
+	}
+	"Ready System Enabled"
+	{
+		"fr"			"Ready System - Active"
+	}
+	"Ready System Disabled"
+	{
+		"fr"			"Ready System - Desactive"
+	}
+	"Set Active"
+	{
+		"fr"			"WarMod Active"
+	}
+	"Set Inactive"
+	{
+		"fr"			"WarMod Desactive"
+	}
+	"Console Ready"
+	{
+		"fr"			"La console ne peut pas etre marquee comme ready"
+	}
+	"Console Not Ready"
+	{
+		"fr"			"La console ne peut pas etre marquee comme Unready"
+	}
+	"Not on Team"
+	{
+		"fr"			"Vous n ete pas dans une team"
+	}
+	"Already Ready"
+	{
+		"fr"			"Vous ete deja ready"
+	}
+	"Already Not Ready"
+	{
+		"fr"			"Vous ete deja unready"
+	}
+	"Forced Ready"
+	{
+		"fr"			"Tous les player forcer a etre ready"
+	}
+	"Forced Not Ready"
+	{
+		"fr"			"Tous les player forcer a etre unready"
+	}
+	"Match Not In Progress"
+	{
+		"fr"			"Le match n est pas lancer!"
+	}
+	"T Winning"
+	{
+		"fr"			"{1} gagnent !"
+	}
+	"Tied"
+	{
+		"fr"			"Egalite"
+	}
+	"CT Winning"
+	{
+		"fr"			"{1} gagnent !"
+	}
+	"Change Teams Midgame"
+	{
+		"fr"			"Blocker - Match en cour"
+	}
+	"Maximum Players"
+	{
+		"fr"			"Les equipes ont atteint la limite maximum de joueur!"
+	}
+	"Nightvision Blocked"
+	{
+		"fr"			"Night vision desactiver"
+	}
+	"Grenades Blocked"
+	{
+		"fr"			"Grenades desactiver durant le warmup"
+	}
+	"Ready System"
+	{
+		"fr"			"Ready System"
+	}
+	"Match Begin Msg"
+	{
+		"fr"			"Le match commencera quand {1} player seront ready"
+	}
+	"No Players Found"
+	{
+		"fr"			"Player non trouve"
+	}
+	"Info Not Ready"
+	{
+		"fr"			"Unready:"
+	}
+	"Info Exit"
+	{
+		"fr"			"Fermer"
+	}
+	"Ready System Disabled2"
+	{
+		"fr"			"The Ready System est desactive"
+	}
+	"Match Is Live"
+	{
+		"fr"			"Le match est en cour"
+	}
+	"WarMod Inactive"
+	{
+		"fr"			"WarMod est desactive"
+	}
+	"Change T Name"
+	{
+		"fr"			"Le nom des terroristes est '{1}'"
+	}
+	"Change CT Name"
+	{
+		"fr"			"Le nom des Counter-terroristes est '{1}'"
+	}
+	"Console"
+	{
+		"fr"			"WarMod: "
+	}
+	"Available Commands"
+	{
+		"fr"			"Commandes client disponible"
+	}
+	"No Permission"
+	{
+		"fr"			"Vous n avez pas la permission d utilise cette commande"
+	}
+	"Set Minready"
+	{
+		"fr"			"Le wm_min_ready est a {1}"
+	}
+	"Set Maxrounds"
+	{
+		"fr"			"Le wm_max_rounds est a {1}"
+	}
+	"WarMod Rcon Only"
+	{
+		"fr"			"Les commandes admin sont limite a RCON selement"
+	}
+	"Set Password"
+	{
+		"fr"			"Le password est '{1}'"
+	}
+	"Autokick"
+	{
+		"fr"			"Vous avez ete kick automatiquement par le serveur"
+	}
+	"Names Required"
+	{
+		"fr"			"Le match ne peut commencer temp que les noms de team ne sont pas mis"
+	}
+	"Admin_Menu WarMod Commands"
+	{
+		"fr"			"WarMod"
+	}
+	"Admin_Menu Enable ReadyUp"
+	{
+		"fr"			"Activer ReadyUp"
+	}
+	"Admin_Menu Disable ReadyUp"
+	{
+		"fr"			"Desactiver ReadyUp"
+	}
+	"Admin_Menu Knife"
+	{
+		"fr"			"Knife"
+	}
+	"Admin_Menu Force Start"
+	{
+		"fr"			"Forcer le lancement"
+	}
+	"Admin_Menu Force End"
+	{
+		"fr"			"Forcer l arret du match"
+	}
+	"Admin_Menu Cancel Half"
+	{
+		"fr"			"Annuler le side"
+	}
+	"Admin_Menu Cancel Match"
+	{
+		"fr"			"Annuler le match"
+	}
+	"Admin_Menu Cancel Knife"
+	{
+		"fr"			"Annuler le knife"
+	}
+	"Admin_Menu ForceAllReady"
+	{
+		"fr"			"Forcer les joueurs a etre ready"
+	}
+	"Admin_Menu ForceAllUnready"
+	{
+		"fr"			"Forcer les joueurs a etre unready"
+	}
+	"Admin_Menu Activate WarMod"
+	{
+		"fr"			"Activer WarMod"
+	}
+	"Admin_Menu Deactivate WarMod"
+	{
+		"fr"			"Desactiver WarMod"
+	}
+}
