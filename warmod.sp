@@ -74,7 +74,7 @@ new Handle:g_h_max_players = INVALID_HANDLE;
 new Handle:g_h_match_config = INVALID_HANDLE;
 new Handle:g_h_end_config = INVALID_HANDLE;
 new Handle:g_h_half_time_config = INVALID_HANDLE;
-new Handle:g_h_half_time_brake = INVALID_HANDLE;
+new Handle:g_h_half_time_break = INVALID_HANDLE;
 new Handle:g_h_round_money = INVALID_HANDLE;
 new Handle:g_h_ingame_scores = INVALID_HANDLE;
 new Handle:g_h_max_rounds = INVALID_HANDLE;
@@ -285,7 +285,7 @@ public OnPluginStart()
 	g_h_match_config = CreateConVar("wm_match_config", "warmod/ruleset_mr15.cfg", "Sets the match config to load on Live on 3");
 	g_h_end_config = CreateConVar("wm_reset_config", "warmod/on_match_end.cfg", "Sets the config to load at the end/reset of a match");
 	g_h_half_time_config = CreateConVar("wm_half_time_config", "warmod/on_match_half_time.cfg", "Sets the config to load at half time of a match (including overtime)");
-	g_h_half_time_brake = CreateConVar("wm_half_time_brake", "1", "Pause game at halftime for a brake, No brake = 0, Brake = 1");
+	g_h_half_time_break = CreateConVar("wm_half_time_break", "0", "Pause game at halftime for a break, No break = 0, break = 1");
 	g_h_round_money = CreateConVar("wm_round_money", "1", "Enable or disable a client's team mates money to be displayed at the start of a round (to him only)", FCVAR_NOTIFY);
 	g_h_ingame_scores = CreateConVar("wm_ingame_scores", "1", "Enable or disable ingame scores to be showed at the end of each round", FCVAR_NOTIFY);
 	g_h_max_rounds = CreateConVar("wm_max_rounds", "15", "Sets maxrounds before auto team switch", FCVAR_NOTIFY);
@@ -952,19 +952,7 @@ public Action:Pause(client, args)
     {
         if (GetConVarBool(g_h_pause_comfirm))
         {
-			if (GetClientTeam(client) == 3 && GetConVarBool(g_h_ct_pause_count) != GetConVarBool(g_h_pause_limit) && g_pause_offered_ct == false)
-			{
-				g_pause_offered_ct = true;
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 CT have asked for a Pause. Please type !pause to pause the match.");
-				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
-			}
-			else if (GetClientTeam(client) == 2 && GetConVarBool(g_h_t_pause_count) != GetConVarBool(g_h_pause_limit) && g_pause_offered_t == false)
-			{
-				g_pause_offered_t = true;
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 T have asked for a Pause. Please type !pause to pause the match.");
-				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
-			}
-			else if (GetClientTeam(client) == 2 && g_pause_offered_ct == true)
+			if (GetClientTeam(client) == 2 && g_pause_offered_ct == true)
 			{
 				if(g_h_stored_timer != INVALID_HANDLE)
 				{
@@ -989,7 +977,7 @@ public Action:Pause(client, args)
 						g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 					}
 					g_paused = true;
-					ServerCommand("pause");
+					ServerCommand("mp_pause_match 1");
 				}
 			}
 			else if (GetClientTeam(client) == 3 && g_pause_offered_t == true)
@@ -1016,7 +1004,7 @@ public Action:Pause(client, args)
 						g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 					}
 					g_paused = true;
-					ServerCommand("pause");
+					ServerCommand("mp_pause_match 1");
 				}
 			}
 			else if (GetClientTeam(client) == 2 && g_h_t_pause_count == g_h_pause_limit)
@@ -1030,6 +1018,18 @@ public Action:Pause(client, args)
 			else if (GetClientTeam(client) < 2 )
 			{
 				PrintToChat(client, "\x03 <WarMod_BFG> \x04 You must be on T or CT to enable !pause");
+			}
+			else if (GetClientTeam(client) == 3 && GetConVarBool(g_h_ct_pause_count) != GetConVarBool(g_h_pause_limit) && g_pause_offered_ct == false)
+			{
+				g_pause_offered_ct = true;
+				PrintToChatAll("\x03 <WarMod_BFG> \x04 CT have asked for a Pause. Please type !pause to pause the match.");
+				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
+			}
+			else if (GetClientTeam(client) == 2 && GetConVarBool(g_h_t_pause_count) != GetConVarBool(g_h_pause_limit) && g_pause_offered_t == false)
+			{
+				g_pause_offered_t = true;
+				PrintToChatAll("\x03 <WarMod_BFG> \x04 T have asked for a Pause. Please type !pause to pause the match.");
+				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
 			}
 		}
 		else if (GetClientTeam(client) == 3 && g_h_ct_pause_count != g_h_pause_limit && !GetConVarBool(g_h_pause_comfirm))
@@ -1049,7 +1049,7 @@ public Action:Pause(client, args)
 					g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 				}
 				g_paused = true;
-				ServerCommand("pause");
+				ServerCommand("mp_pause_match 1");
 			}
 		}
 		else if (GetClientTeam(client) == 2 &&  GetConVarBool(g_h_t_pause_count) != GetConVarBool(g_h_pause_limit) && GetConVarBool(g_h_pause_comfirm) == false)
@@ -1069,7 +1069,7 @@ public Action:Pause(client, args)
 					g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 				}
 				g_paused = true;
-				ServerCommand("pause");
+				ServerCommand("mp_pause_match 1");
 			}
 		}
 		else if (GetClientTeam(client) == 2 && GetConVarBool(g_h_t_pause_count) == GetConVarBool(g_h_pause_limit))
@@ -1111,13 +1111,13 @@ public Action:UnPause(client, args)
 			{
 				g_pause_offered_ct = false;
 				g_paused = false;
-				ServerCommand("unpause");
+				ServerCommand("mp_unpause_match 1");
 			}
 			else if (GetClientTeam(client) == 3 && g_pause_offered_t == true)
 			{
 				g_pause_offered_t = false;
 				g_paused = false;
-				ServerCommand("unpause");
+				ServerCommand("mp_unpause_match 1");
 			}
 			else if (GetClientTeam(client) < 2 )
 			{
@@ -1130,13 +1130,13 @@ public Action:UnPause(client, args)
 			{
 				PrintToChatAll("%s T have unpaused the match", CHAT_PREFIX);
 				g_paused = false;
-				ServerCommand("unpause");
+				ServerCommand("mp_unpause_match 1");
 			}
 			else if (GetClientTeam(client) == 3)
 			{
 				PrintToChatAll("%s CT have unpaused the match", CHAT_PREFIX);
 				g_paused = false;
-				ServerCommand("unpause");
+				ServerCommand("mp_unpause_match 1");
 			}
 			else if (GetClientTeam(client) < 2 )
 			{
@@ -1162,7 +1162,7 @@ public Action:UnPauseTimer(Handle:timer)
 {
 	g_h_stored_timer = INVALID_HANDLE;
 	PrintToChatAll("Auto Unpaused!");
-	ServerCommand("unpause");
+	ServerCommand("mp_unpause_match 1");
 	g_pause_offered_ct = false;
 	g_pause_offered_t = false;
 }
@@ -1822,7 +1822,7 @@ public Event_Round_Start(Handle:event, const String:name[], bool:dontBroadcast)
 			g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 		}
 		g_paused = true;
-		ServerCommand("pause");
+		ServerCommand("mp_pause_match 1");
 	}
 	
 	if (GetConVarBool(g_h_stats_enabled))
@@ -2765,7 +2765,7 @@ CheckScores()
 				new String:half_time_config[128];
 				GetConVarString(g_h_half_time_config, half_time_config, sizeof(half_time_config));
 				ServerCommand("exec %s", half_time_config);
-				if (GetConVarInt(g_h_half_time_brake))
+				if (GetConVarInt(g_h_half_time_break))
 				{
 					g_live = false;
 					ReadySystem(true);
@@ -3453,7 +3453,7 @@ LiveOn3(bool:e_war)
 
 stock LiveOn3Override()
 {
-	if (!g_first_half && !g_half_swap)
+	if (!g_half_swap)
 	{
 		ServerCommand("mp_halftime_pausetimer 0");
 		PrintToChatAll("%s%t", CHAT_PREFIX, "LIVE!");
