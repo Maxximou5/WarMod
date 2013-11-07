@@ -151,7 +151,7 @@ new bool:g_paused = false;
 new Handle:sv_pausable;
 new Handle:g_h_auto_unpause = INVALID_HANDLE;
 new Handle:g_h_auto_unpause_delay = INVALID_HANDLE;
-new Handle:g_h_pause_freezetime = INVALID_HANDLE;
+//new Handle:g_h_pause_freezetime = INVALID_HANDLE;
 new Handle:g_h_pause_comfirm = INVALID_HANDLE;
 new Handle:g_h_pause_limit = INVALID_HANDLE;
 new Handle:g_h_t_pause_count = INVALID_HANDLE;
@@ -163,11 +163,11 @@ new Handle:g_h_stored_timer = INVALID_HANDLE;
 new Handle:g_h_menu = INVALID_HANDLE;
 
 public Plugin:myinfo = {
-	name = "GameTech WarMod BFG",
+	name = "WarMod BFG",
 	author = "Twelve-60, Updated by Versatile_BFG",
 	description = WM_DESCRIPTION,
 	version = WM_VERSION,
-	url = "http://www.gametech.com.au/warmod/"
+	url = "http://www.csgo.com.au"
 };
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
@@ -379,7 +379,7 @@ public OnPluginStart()
 	sv_pausable = FindConVar ("sv_pausable");
 	g_h_pause_comfirm = CreateConVar("wm_pause_comfirm", "1", "Wait for other team to comfirm pause: 0 = off, 1 = on", FCVAR_NOTIFY);
 	g_h_auto_unpause = CreateConVar("wm_auto_unpause", "1", "Sets auto unpause: 0 = off, 1 = on", FCVAR_NOTIFY);
-	g_h_pause_freezetime = CreateConVar("wm_pause_freezetime", "1", "Wait for freeze time to pause: 0 = off, 1 = on", FCVAR_NOTIFY);
+//	g_h_pause_freezetime = CreateConVar("wm_pause_freezetime", "1", "Wait for freeze time to pause: 0 = off, 1 = on", FCVAR_NOTIFY);
 	g_h_auto_unpause_delay = CreateConVar("wm_auto_unpause_delay", "180", "Sets the seconds to wait before auto unpause", FCVAR_NOTIFY, true, 0.0);
 	g_h_pause_limit = CreateConVar("wm_pause_limit", "1", "Sets max pause count per team per half", FCVAR_NOTIFY);
 	g_h_t_pause_count = CreateConVar("wm_t_pause_count", "0", "WarMod automatically updates this value to the Terrorist's total pause count", FCVAR_NOTIFY);
@@ -963,11 +963,11 @@ public Action:Pause(client, args)
 				g_pause_offered_ct = false;
 				g_h_ct_pause_count++;
 				
-				if (GetConVarBool(g_h_pause_freezetime))
-				{
-					PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at freeze time.");
-					g_pause_freezetime = true;
-				}
+				//if (GetConVarBool(g_h_pause_freezetime))
+				//{
+				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at freeze time.");
+				g_pause_freezetime = true;
+				/*}
 				else
 				{
 					PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
@@ -975,10 +975,11 @@ public Action:Pause(client, args)
 					{
 						PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
 						g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
-					}
-					g_paused = true;
-					ServerCommand("mp_pause_match 1");
-				}
+					}*/
+				g_paused = true;
+				ServerCommand("mp_pause_match 1");
+				return;
+				//}
 			}
 			else if (GetClientTeam(client) == 3 && g_pause_offered_t == true)
 			{
@@ -990,11 +991,11 @@ public Action:Pause(client, args)
 				g_pause_offered_t = false;
 				g_h_t_pause_count++;
 				
-				if (GetConVarBool(g_h_pause_freezetime))
-				{
-					PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at the end of the round");
-					g_pause_freezetime = true;
-				}
+				//if (GetConVarBool(g_h_pause_freezetime))
+				//{
+				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at the end of the round");
+				g_pause_freezetime = true;
+				/*}
 				else
 				{
 					PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
@@ -1002,10 +1003,11 @@ public Action:Pause(client, args)
 					{
 						PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
 						g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
-					}
-					g_paused = true;
-					ServerCommand("mp_pause_match 1");
-				}
+					}*/
+				g_paused = true;
+				ServerCommand("mp_pause_match 1");
+				return;
+				//}
 			}
 			else if (GetClientTeam(client) == 2 && g_h_t_pause_count == g_h_pause_limit)
 			{
@@ -1035,11 +1037,11 @@ public Action:Pause(client, args)
 		else if (GetClientTeam(client) == 3 && g_h_ct_pause_count != g_h_pause_limit && !GetConVarBool(g_h_pause_comfirm))
 		{
 			g_h_ct_pause_count++;
-			if (GetConVarBool(g_h_pause_freezetime))
-			{
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at the end of the round");
-				g_pause_freezetime = true;
-			}
+			//if (GetConVarBool(g_h_pause_freezetime))
+			//{
+			PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at the end of the round");
+			g_pause_freezetime = true;
+			/*}
 			else
 			{
 				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
@@ -1047,19 +1049,20 @@ public Action:Pause(client, args)
 				{
 					PrintToChatAll("\x03 <WarMod_BFG> \x04s Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
 					g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
-				}
-				g_paused = true;
-				ServerCommand("mp_pause_match 1");
-			}
+				}*/
+			g_paused = true;
+			ServerCommand("mp_pause_match 1");
+			return;
+			//}
 		}
 		else if (GetClientTeam(client) == 2 &&  GetConVarBool(g_h_t_pause_count) != GetConVarBool(g_h_pause_limit) && GetConVarBool(g_h_pause_comfirm) == false)
 		{
 			g_h_t_pause_count++;
-			if (GetConVarBool(g_h_pause_freezetime))
-			{
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at the end of the round");
-				g_pause_freezetime = true;
-			}
+			//if (GetConVarBool(g_h_pause_freezetime))
+			//{
+			PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at the end of the round");
+			g_pause_freezetime = true;
+			/*}
 			else
 			{
 				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
@@ -1067,10 +1070,11 @@ public Action:Pause(client, args)
 				{
 					PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
 					g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
-				}
-				g_paused = true;
-				ServerCommand("mp_pause_match 1");
-			}
+				}*/
+			g_paused = true;
+			ServerCommand("mp_pause_match 1");
+			return;
+			//}
 		}
 		else if (GetClientTeam(client) == 2 && GetConVarBool(g_h_t_pause_count) == GetConVarBool(g_h_pause_limit))
 		{
@@ -1101,11 +1105,13 @@ public Action:UnPause(client, args)
 			{
 				g_pause_offered_ct = true;
 				PrintToConsoleAll("<WarMod_BFG> CT have asked to unpause the game. Please type /unpause to unpause the match.");
+				PrintToChatAll("<WarMod_BFG> CT have asked to unpause the game. Please type /unpause to unpause the match.");
 			}
 			else if (GetClientTeam(client) == 2 && g_pause_offered_t == false && g_pause_offered_ct == false)
 			{
 				g_pause_offered_t = true;
 				PrintToConsoleAll("<WarMod_BFG> T have asked to unpause the game. Please type /unpause to unpause the match.");
+				PrintToChatAll("<WarMod_BFG> T have asked to unpause the game. Please type /unpause to unpause the match.");
 			}
 			else if (GetClientTeam(client) == 2 && g_pause_offered_ct == true)
 			{
@@ -1122,6 +1128,7 @@ public Action:UnPause(client, args)
 			else if (GetClientTeam(client) < 2 )
 			{
 				PrintToConsole(client, "<WarMod_BFG> You must be on T or CT to enable /unpause");
+				PrintToChat(client, "<WarMod_BFG> You must be on T or CT to enable /unpause");
 			}
 		}
 		else
@@ -1141,6 +1148,7 @@ public Action:UnPause(client, args)
 			else if (GetClientTeam(client) < 2 )
 			{
 				PrintToConsole(client, "<WarMod_BFG> You must be on T or CT to enable /unpause");
+				PrintToChat(client, "<WarMod_BFG> You must be on T or CT to enable /unpause");
 			}
 		}
 	}
@@ -1816,13 +1824,14 @@ public Event_Round_Start(Handle:event, const String:name[], bool:dontBroadcast)
 	if (g_pause_freezetime == true)
 	{
 		g_pause_freezetime = false;
+		PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
 		if(GetConVarBool(g_h_auto_unpause))
 		{
 			PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", g_h_auto_unpause_delay);
 			g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 		}
 		g_paused = true;
-		ServerCommand("mp_pause_match 1");
+		//ServerCommand("mp_pause_match 1");
 	}
 	
 	if (GetConVarBool(g_h_stats_enabled))
