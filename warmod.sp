@@ -117,7 +117,7 @@ new bool:g_ready_enabled = false;
 new bool:g_active = true;
 new bool:g_match = false;
 new bool:g_live = false;
-new bool:g_half_swap = false;
+new bool:g_half_swap = true;
 new bool:g_playing_out = false;
 new bool:g_first_half = true;
 new bool:g_overtime = false;
@@ -680,7 +680,7 @@ ResetMatch(bool:silent)
 	// reset state
 	g_match = false;
 	g_live = false;
-	g_half_swap = false;
+	g_half_swap = true;
 	g_first_half = true;
 	g_second_half_first = false;
 	g_t_money = false;
@@ -737,6 +737,10 @@ ResetHalf(bool:silent)
 			new String:event_name[] = "match_half_reset";
 			LogSimpleEvent(event_name, sizeof(event_name));
 		}
+	}
+	if (!g_first_half)
+	{
+		g_half_swap = true;
 	}
 	
 	// reset half state
@@ -1162,14 +1166,14 @@ public Action:UnPause(client, args)
 public Action:PauseTimeout(Handle:timer)
 {
 	g_h_stored_timer = INVALID_HANDLE;
-	PrintToChatAll("!pause offer was not comfirmed by the other team.");
+	PrintToChatAll("%s Pause offer was not comfirmed by the other team.", CHAT_PREFIX);
 	g_pause_offered_ct = false;
 	g_pause_offered_t = false;
 }
 public Action:UnPauseTimer(Handle:timer)
 {
 	g_h_stored_timer = INVALID_HANDLE;
-	PrintToChatAll("Auto Unpaused!");
+	PrintToChatAll("%s Auto Unpaused!", CHAT_PREFIX);
 	ServerCommand("mp_unpause_match 1");
 	g_pause_offered_ct = false;
 	g_pause_offered_t = false;
@@ -2776,6 +2780,7 @@ CheckScores()
 				ServerCommand("exec %s", half_time_config);
 				if (GetConVarInt(g_h_half_time_break))
 				{
+					g_half_swap = false;
 					g_live = false;
 					ReadySystem(true);
 					ShowInfo(0, true, false, 0);
@@ -5352,7 +5357,7 @@ public Action:ShowPluginInfo(Handle:timer, any:client)
 		PrintToConsole(client, "==============================================================");
 		PrintToConsole(client, "This server is running WarMod [BFG] %s Server Plugin", WM_VERSION);
 		PrintToConsole(client, "");
-		PrintToConsole(client, "Created by Twelve-60 of GameTech (www.gametech.com.au) and Updated by Versatile_BFG");
+		PrintToConsole(client, "Created by Twelve-60 and updated by Versatile [BFG]");
 		PrintToConsole(client, "");
 		PrintToConsole(client, "Messagemode commands:				Aliases:");
 		PrintToConsole(client, "  /ready - Mark yourself as ready 		  /rdy /r");
