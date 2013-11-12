@@ -314,7 +314,7 @@ public OnPluginStart()
 	g_h_status = CreateConVar("wm_status", "0", "WarMod automatically updates this value to the corresponding match status code", FCVAR_NOTIFY);
 	g_h_upload_results = CreateConVar("wm_upload_results", "0", "Enable or disable the uploading of match results via MySQL", FCVAR_NOTIFY);
 	g_h_table_name = CreateConVar("wm_table_name", "wm_results", "The MySQL table name to store match results in");
-	g_h_chat_prefix = CreateConVar("wm_chat_prefix", "<WarMod_BFG>", "Change the chat prefix. Default is <WarMod_BFG>", FCVAR_PROTECTED);
+	g_h_chat_prefix = CreateConVar("wm_chat_prefix", "WarMod_BFG", "Change the chat prefix. Default is WarMod_BFG", FCVAR_PROTECTED);
 	g_h_t = CreateConVar("wm_t", DEFAULT_T_NAME, "Team starting terrorists, designed for score and demo naming purposes", FCVAR_NOTIFY);
 	g_h_ct = CreateConVar("wm_ct", DEFAULT_CT_NAME, "Team starting counter-terrorists, designed for score and demo naming purposes", FCVAR_NOTIFY);
 	g_h_t_score = CreateConVar("wm_t_score", "0", "WarMod automatically updates this value to the Terrorist's total score", FCVAR_NOTIFY);
@@ -399,7 +399,7 @@ public OnLibraryAdded(const String:name[])
 
 public OnConfigsExecuted()
 {
-	GetConVarString(handleof_cvar, CHAT_PREFIX, sizeof(CHAT_PREFIX));
+	GetConVarString(g_h_chat_prefix, CHAT_PREFIX, sizeof(CHAT_PREFIX));
 }
 
 
@@ -412,7 +412,7 @@ public Action:LiveWire_ReConnect(client, args)
 	}
 	else
 	{
-		ReplyToCommand(client, "%sLiveWire not enabled!", CHAT_PREFIX);
+		ReplyToCommand(client, "\x01 \x09[\x04%s\x09]\x01 LiveWire not enabled!", CHAT_PREFIX);
 	}
 	return Plugin_Handled;
 }
@@ -728,7 +728,7 @@ ResetMatch(bool:silent)
 		// message display to players
 		for (new x = 1; x <= 3; x++)
 		{
-			PrintToChatAll("%s%t", CHAT_PREFIX, "Match Reset");
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Match Reset");
 		}
 		// restart round
 		ServerCommand("mp_restartgame 1");
@@ -782,7 +782,7 @@ ResetHalf(bool:silent)
 		// display message for players
 		for (new x = 1; x <= 3; x++)
 		{
-			PrintToChatAll("%s%t", CHAT_PREFIX, "Half Reset");
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Half Reset");
 		}
 		// restart round
 		ServerCommand("mp_restartgame 1");
@@ -889,11 +889,11 @@ public Action:ReadyToggle(client, args)
 		ShowInfo(client, true, false, 0);
 		if (client != 0)
 		{
-			PrintToConsole(client, "%s%t", CHAT_PREFIX, "Ready System Enabled");
+			PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Enabled");
 		}
 		else
 		{
-			PrintToServer("<WarMod_BFG> %T", "Ready System Enabled", LANG_SERVER);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Ready System Enabled", LANG_SERVER);
 		}
 		// check if anyone is ready
 		CheckReady();
@@ -905,11 +905,11 @@ public Action:ReadyToggle(client, args)
 		ReadySystem(false);
 		if (client != 0)
 		{
-			PrintToConsole(client, "%s%t", CHAT_PREFIX, "Ready System Disabled");
+			PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled");
 		}
 		else
 		{
-			PrintToServer("<WarMod_BFG> %T", "Ready System Disabled", LANG_SERVER);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Ready System Disabled", LANG_SERVER);
 		}
 	}
 	
@@ -932,11 +932,11 @@ public Action:ActiveToggle(client, args)
 		SetConVarBool(g_h_active, false);
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Set Inactive");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Set Inactive");
 		}
 		else
 		{
-			PrintToServer("WarMod - %T", "Set Inactive", LANG_SERVER);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Set Inactive", LANG_SERVER);
 		}
 	}
 	else
@@ -945,11 +945,11 @@ public Action:ActiveToggle(client, args)
 		SetConVarBool(g_h_active, true);
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Set Active");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Set Active");
 		}
 		else
 		{
-			PrintToServer("WarMod - %T", "Set Active", LANG_SERVER);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Set Active", LANG_SERVER);
 		}
 	}
 	
@@ -1091,20 +1091,20 @@ public Action:Pause(client, args)
 		}
 		else if (GetClientTeam(client) == 2 && GetConVarBool(g_h_t_pause_count) == GetConVarBool(g_h_pause_limit))
 		{
-			PrintToChat(client, "%s You have used your pause limit already", CHAT_PREFIX);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01  You have used your pause limit already", CHAT_PREFIX);
 		}
 		else if (GetClientTeam(client) == 3 && GetConVarBool(g_h_ct_pause_count) == GetConVarBool(g_h_pause_limit))
 		{
-			PrintToChat(client, "%s You have used your pause limit already", CHAT_PREFIX);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01  You have used your pause limit already", CHAT_PREFIX);
 		}
 		else if (GetClientTeam(client) < 2)
 		{
-		PrintToChat(client, "%s You must be on T or CT to enable !pause", CHAT_PREFIX);
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01  You must be on T or CT to enable !pause", CHAT_PREFIX);
 		}
 	}
 	else
 	{
-		PrintToChatAll("%s sv_pauseable is set to 0. Pause fuction not enabled", CHAT_PREFIX);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  sv_pauseable is set to 0. Pause fuction not enabled", CHAT_PREFIX);
 	}
 }
 
@@ -1148,13 +1148,13 @@ public Action:UnPause(client, args)
 		{
 			if (GetClientTeam(client) == 2)
 			{
-				PrintToChatAll("%s T have unpaused the match", CHAT_PREFIX);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  T have unpaused the match", CHAT_PREFIX);
 				g_paused = false;
 				ServerCommand("mp_unpause_match 1");
 			}
 			else if (GetClientTeam(client) == 3)
 			{
-				PrintToChatAll("%s CT have unpaused the match", CHAT_PREFIX);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  CT have unpaused the match", CHAT_PREFIX);
 				g_paused = false;
 				ServerCommand("mp_unpause_match 1");
 			}
@@ -1167,7 +1167,7 @@ public Action:UnPause(client, args)
 	}
 	else
 	{
-		PrintToChat(client,"%s Server is not paused or was paused via rcon", CHAT_PREFIX);
+		PrintToChat(client,"\x01 \x09[\x04%s\x09]\x01  Server is not paused or was paused via rcon", CHAT_PREFIX);
 		PrintToConsole(client,"<WarMod_BFG> Server is not paused or was paused via rcon");
 	}
 }
@@ -1175,14 +1175,14 @@ public Action:UnPause(client, args)
 public Action:PauseTimeout(Handle:timer)
 {
 	g_h_stored_timer = INVALID_HANDLE;
-	PrintToChatAll("%s Pause offer was not comfirmed by the other team.", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  Pause offer was not comfirmed by the other team.", CHAT_PREFIX);
 	g_pause_offered_ct = false;
 	g_pause_offered_t = false;
 }
 public Action:UnPauseTimer(Handle:timer)
 {
 	g_h_stored_timer = INVALID_HANDLE;
-	PrintToChatAll("%s Auto Unpaused!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  Auto Unpaused!", CHAT_PREFIX);
 	ServerCommand("mp_unpause_match 1");
 	g_pause_offered_ct = false;
 	g_pause_offered_t = false;
@@ -1213,11 +1213,11 @@ public Action:ChangeMinReady(client, args)
 		SetConVarInt(g_h_min_ready, minready);
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Set Minready", minready);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Set Minready", minready);
 		}
 		else
 		{
-			PrintToServer("WarMod - %T", "Set Minready", LANG_SERVER, minready);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Set Minready", LANG_SERVER, minready);
 		}
 		LogAction(client, -1, "\"set_min_ready\" (player \"%L\") (min_ready \"%d\")", client, minready);
 	}
@@ -1226,11 +1226,11 @@ public Action:ChangeMinReady(client, args)
 		// getter
 		if (client != 0)
 		{
-			PrintToChat(client, "%swm_min_ready = %d", CHAT_PREFIX, GetConVarInt(g_h_min_ready));
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 wm_min_ready = %d", CHAT_PREFIX, GetConVarInt(g_h_min_ready));
 		}
 		else
 		{
-			PrintToServer("WarMod - wm_min_ready = %d", GetConVarInt(g_h_min_ready));
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 - wm_min_ready = %d", CHAT_PREFIX, GetConVarInt(g_h_min_ready));
 		}
 	}
 	
@@ -1262,11 +1262,11 @@ public Action:ChangeMaxRounds(client, args)
 		SetConVarInt(g_h_max_rounds, maxrounds);
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Set Maxrounds", maxrounds);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Set Maxrounds", maxrounds);
 		}
 		else
 		{
-			PrintToServer("WarMod - %T", "Set Maxrounds", LANG_SERVER, maxrounds);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Set Maxrounds", LANG_SERVER, maxrounds);
 		}
 		LogAction(client, -1, "\"set_max_rounds\" (player \"%L\") (max_rounds \"%d\")", client, maxrounds);
 	}
@@ -1275,11 +1275,11 @@ public Action:ChangeMaxRounds(client, args)
 		// getter
 		if (client != 0)
 		{
-			PrintToChat(client, "%swm_max_rounds = %d", CHAT_PREFIX, GetConVarInt(g_h_max_rounds));
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 wm_max_rounds = %d", CHAT_PREFIX, GetConVarInt(g_h_max_rounds));
 		}
 		else
 		{
-			PrintToServer("WarMod - wm_max_rounds = %d", GetConVarInt(g_h_max_rounds));
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 - wm_max_rounds = %d", CHAT_PREFIX, GetConVarInt(g_h_max_rounds));
 		}
 	}
 	
@@ -1310,11 +1310,11 @@ public Action:ChangePassword(client, args)
 		
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Set Password", new_password);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Set Password", new_password);
 		}
 		else
 		{
-			PrintToServer("WarMod - %T", "Set Password", LANG_SERVER, new_password);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Set Password", LANG_SERVER, new_password);
 		}
 		
 		LogAction(client, -1, "\"set_password\" (player \"%L\")", client);
@@ -1326,11 +1326,11 @@ public Action:ChangePassword(client, args)
 		GetConVarString(FindConVar("sv_password"), passwd, sizeof(passwd));
 		if (client != 0)
 		{
-			PrintToChat(client, "%ssv_password = '%s'", CHAT_PREFIX, passwd);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 sv_password = '%s'", CHAT_PREFIX, passwd);
 		}
 		else
 		{
-			PrintToServer("WarMod - sv_password = '%s'", passwd);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 - sv_password = '%s'", CHAT_PREFIX, passwd);
 		}
 	}
 	
@@ -1367,13 +1367,13 @@ ReadyUp(client)
 		else
 		{
 			// player is not on a valid team
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Not on Team");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Not on Team");
 		}
 	}
 	else
 	{
 		// player is already ready
-		PrintToChat(client, "%s%t", CHAT_PREFIX, "Already Ready");
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Already Ready");
 	}
 }
 
@@ -1406,13 +1406,13 @@ ReadyDown(client)
 		else
 		{
 			// player is not on a valid team
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Not on Team");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Not on Team");
 		}
 	}
 	else
 	{
 		// player is already ready
-		PrintToChat(client, "%s%t", CHAT_PREFIX, "Already Not Ready");
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Already Not Ready");
 	}
 }
 
@@ -1439,7 +1439,7 @@ public Action:ForceAllReady(client, args)
 		
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Forced Ready");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Forced Ready");
 		}
 		else
 		{
@@ -1453,7 +1453,7 @@ public Action:ForceAllReady(client, args)
 	{
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Ready System Disabled2");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled2");
 		}
 		else
 		{
@@ -1488,11 +1488,11 @@ public Action:ForceAllUnready(client, args)
 		
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Forced Not Ready");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Forced Not Ready");
 		}
 		else
 		{
-			PrintToServer("<WarMod_BFG> %T", "Forced Not Ready", LANG_SERVER);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Forced Not Ready", LANG_SERVER);
 		}
 		
 		// display readym system
@@ -1502,11 +1502,11 @@ public Action:ForceAllUnready(client, args)
 	{
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Ready System Disabled2");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled2");
 		}
 		else
 		{
-			PrintToServer("<WarMod_BFG> %T", "Ready System Disabled2", LANG_SERVER);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Ready System Disabled2", LANG_SERVER);
 		}
 	}
 	
@@ -1597,11 +1597,11 @@ public Action:ReadyOn(client, args)
 	ShowInfo(client, true, false, 0);
 	if (client != 0)
 	{
-		PrintToConsole(client, "%s%t", CHAT_PREFIX, "Ready System Enabled");
+		PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Enabled");
 	}
 	else
 	{
-		PrintToServer("<WarMod_BFG> %T", "Ready System Enabled", LANG_SERVER);
+		PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Ready System Enabled", LANG_SERVER);
 	}
 	CheckReady();
 	
@@ -1642,11 +1642,11 @@ public Action:ReadyOff(client, args)
 	
 	if (client != 0)
 	{
-		PrintToConsole(client, "%s%t", CHAT_PREFIX, "Ready System Disabled");
+		PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled");
 	}
 	else
 	{
-		PrintToServer("<WarMod_BFG> %T", "Ready System Disabled", LANG_SERVER);
+		PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Ready System Disabled", LANG_SERVER);
 	}
 	
 	LogAction(client, -1, "\"ready_off\" (player \"%L\")", client);
@@ -1663,28 +1663,28 @@ public Action:ConsoleScore(client, args)
 		{
 			if (client != 0)
 			{
-				PrintToConsole(client, "%s%t:", CHAT_PREFIX, "Match Is Live");
+				PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01 %t:", CHAT_PREFIX, "Match Is Live");
 			}
 			else
 			{
-				PrintToServer("<WarMod_BFG> %T:", "Match Is Live", LANG_SERVER);
+				PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T:", CHAT_PREFIX, "Match Is Live", LANG_SERVER);
 			}
 		}
-		PrintToConsole(client, "%s %s: [%d] %s: [%d] MR%d", CHAT_PREFIX, g_t_name, GetTScore(), g_ct_name, GetCTScore(), GetConVarInt(g_h_max_rounds));
+		PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01  %s: [%d] %s: [%d] MR%d", CHAT_PREFIX, g_t_name, GetTScore(), g_ct_name, GetCTScore(), GetConVarInt(g_h_max_rounds));
 		if (g_overtime)
 		{
-			PrintToConsole(client, "%s %t (%d): %s: [%d], %s: [%d] MR%d", CHAT_PREFIX, "Score Overtime", g_overtime_count + 1, g_t_name, GetTOTScore(), g_ct_name, GetCTOTScore(), GetConVarInt(g_h_overtime_mr));
+			PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01 %t (%d): %s: [%d], %s: [%d] MR%d", CHAT_PREFIX, "Score Overtime", g_overtime_count + 1, g_t_name, GetTOTScore(), g_ct_name, GetCTOTScore(), GetConVarInt(g_h_overtime_mr));
 		}
 	}
 	else
 	{
 		if (client != 0)
 		{
-			PrintToConsole(client, "%s%t", CHAT_PREFIX, "Match Not In Progress");
+			PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Match Not In Progress");
 		}
 		else
 		{
-			PrintToServer("<WarMod_BFG> %T", "Match Not In Progress", LANG_SERVER);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Match Not In Progress", LANG_SERVER);
 		}
 	}
 	
@@ -1704,7 +1704,7 @@ public Action:LastMatch(client, args)
 	// display details of last match to the console
 	if (g_last_scores[SCORE_T] != -1)
 	{
-		PrintToConsole(client, "%s Last Match: %s [%d] %s [%d] MR%d", CHAT_PREFIX, g_last_names[SCORE_T], g_last_scores[SCORE_T], g_last_names[SCORE_CT], g_last_scores[SCORE_CT], g_last_maxrounds);
+		PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01  Last Match: %s [%d] %s [%d] MR%d", CHAT_PREFIX, g_last_names[SCORE_T], g_last_scores[SCORE_T], g_last_names[SCORE_CT], g_last_scores[SCORE_CT], g_last_maxrounds);
 	}
 	else
 	{
@@ -1735,7 +1735,7 @@ ShowScore(client)
 	}
 	else
 	{
-		PrintToChat(client, "%s%t", CHAT_PREFIX, "Match Not In Progress");
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Match Not In Progress");
 	}
 	
 	return;
@@ -1754,11 +1754,11 @@ DisplayScore(client, msgindex, bool:priv)
 		GetScoreMsg(client, score_msg, sizeof(score_msg), GetTScore(), GetCTScore());
 		if (priv)
 		{
-			PrintToChat(client, "%s %s", CHAT_PREFIX, score_msg);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01  %s", CHAT_PREFIX, score_msg);
 		}
 		else
 		{
-			PrintToChatAll("%s %s", CHAT_PREFIX, score_msg);
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  %s", CHAT_PREFIX, score_msg);
 		}
 	}
 	else if (msgindex == 1) // overtime play score
@@ -1767,11 +1767,11 @@ DisplayScore(client, msgindex, bool:priv)
 		GetScoreMsg(client, score_msg, sizeof(score_msg), GetTOTScore(), GetCTOTScore());
 		if (priv)
 		{
-			PrintToChat(client, "%s%t%s", CHAT_PREFIX, "Score Overtime", score_msg);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t%s", CHAT_PREFIX, "Score Overtime", score_msg);
 		}
 		else
 		{
-			PrintToChatAll("%s%t%s", CHAT_PREFIX, "Score Overtime", score_msg);
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t%s", CHAT_PREFIX, "Score Overtime", score_msg);
 		}
 	}
 	else if (msgindex == 2) // overall play score
@@ -1780,11 +1780,11 @@ DisplayScore(client, msgindex, bool:priv)
 		GetScoreMsg(client, score_msg, sizeof(score_msg), GetTTotalScore(), GetCTTotalScore());
 		if (priv)
 		{
-			PrintToChat(client, "%s%t%s", CHAT_PREFIX, "Score Overall", score_msg);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t%s", CHAT_PREFIX, "Score Overall", score_msg);
 		}
 		else
 		{
-			PrintToChatAll("%s%t%s", CHAT_PREFIX, "Score Overall", score_msg);
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t%s", CHAT_PREFIX, "Score Overall", score_msg);
 		}
 	}
 }
@@ -2042,14 +2042,14 @@ public Event_Round_End(Handle:event, const String:name[], bool:dontBroadcast)
 			/*// knife round won
 			if (GetConVarBool(g_h_auto_knife) && GetConVarBool(g_h_auto_ready))
 			{
-				PrintToServer( "Team %d voting for stay/swap.", winner );
+				PrintToServer("\x01 \x09[\x04%s\x09]\x01 Team %d voting for stay/swap.", CHAT_PREFIX, winner );
 				DisplayStayLeaveVote( winner );
 			}*/
 			if (GetConVarBool(g_h_stats_enabled))
 			{
 				LogEvent("{\"event\": \"knife_win\", \"team\": %d}", winner);
 			}
-			PrintToServer( "Team %d voting for stay/swap.", winner );
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 Team %d voting for stay/swap.", CHAT_PREFIX, winner );
 			DisplayStayLeaveVote( winner );
 			g_t_knife = false;
 			g_t_had_knife = true;
@@ -2759,11 +2759,11 @@ CheckScores()
 				
 				/*if (!GetConVarBool(g_h_auto_swap))
 				{
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Half Time");
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Half Time");
 				}
 				else
 				{
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Half Time Auto Swap");
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Half Time Auto Swap");
 					CreateTimer(GetConVarFloat(g_h_auto_swap_delay), Swap, TIMER_FLAG_NO_MAPCHANGE);
 				}*/
 				
@@ -2805,7 +2805,7 @@ CheckScores()
 						LogEvent("{\"event\": \"over_time\", \"teams\": [{\"name\": \"%s\", \"team\": %d, \"score\": %d}, {\"name\": \"%s\", \"team\": %d, \"score\": %d}]}", g_t_name_escaped, TERRORIST_TEAM, GetTTotalScore(), g_ct_name_escaped, COUNTER_TERRORIST_TEAM, GetCTTotalScore());
 					}
 					DisplayScore(0, 0, false);
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Over Time", GetConVarInt(g_h_overtime_mr));
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Over Time", GetConVarInt(g_h_overtime_mr));
 					g_live = false;
 					g_t_money = false;
 					g_overtime = true;
@@ -2828,7 +2828,7 @@ CheckScores()
 						LogEvent("{\"event\": \"over_time\", \"teams\": [{\"name\": \"%s\", \"team\": %d, \"score\": %d}, {\"name\": \"%s\", \"team\": %d, \"score\": %d}]}", g_t_name_escaped, TERRORIST_TEAM, GetTTotalScore(), g_ct_name_escaped, COUNTER_TERRORIST_TEAM, GetCTTotalScore());
 					}
 					DisplayScore(0, 0, false);
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Over Time Sudden Death");
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Over Time Sudden Death");
 					g_live = false;
 					g_t_money = false;
 					g_overtime = true;
@@ -2864,7 +2864,7 @@ CheckScores()
 					{
 						CreateTimer(GetConVarFloat(g_h_auto_kick_delay), KickLoserTeam, GetLoserTeam());
 					}
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Full Time");
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
 					
 					if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
 					{
@@ -2896,7 +2896,7 @@ CheckScores()
 					RenameLogs();
 				}
 				DisplayScore(0, 0, false);
-				PrintToChatAll("%s%t", CHAT_PREFIX, "Full Time");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
 				if (GetConVarBool(g_h_auto_kick_team))
 				{
 					CreateTimer(GetConVarFloat(g_h_auto_kick_delay), KickLoserTeam, GetLoserTeam());
@@ -2919,7 +2919,7 @@ CheckScores()
 			else if (!g_playing_out && GetTScore() == GetConVarInt(g_h_max_rounds) + 1 || GetCTScore() == GetConVarInt(g_h_max_rounds) + 1) // full time
 			{
 				DisplayScore(0, 0, false);
-				PrintToChatAll("%s%t", CHAT_PREFIX, "Full Time");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
 				
 				if (!GetConVarBool(g_h_play_out))
 				{
@@ -2962,7 +2962,7 @@ CheckScores()
 						LogEvent("{\"event\": \"full_time_playing_out\", \"teams\": [{\"name\": \"%s\", \"team\": %d, \"score\": %d}, {\"name\": \"%s\", \"team\": %d, \"score\": %d}]}", g_t_name_escaped, TERRORIST_TEAM, GetTTotalScore(), g_ct_name_escaped, COUNTER_TERRORIST_TEAM, GetCTTotalScore());
 					}
 					g_playing_out = true;
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Playing Out Notice", (GetConVarInt(g_h_max_rounds) * 2));
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Playing Out Notice", (GetConVarInt(g_h_max_rounds) * 2));
 				}
 			}
 			else
@@ -2988,11 +2988,11 @@ CheckScores()
 				
 				/*if (!GetConVarBool(g_h_auto_swap))
 				{
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Half Time");
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Half Time");
 				}
 				else
 				{
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Half Time Auto Swap");
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Half Time Auto Swap");
 					CreateTimer(GetConVarFloat(g_h_auto_swap_delay), Swap, TIMER_FLAG_NO_MAPCHANGE);
 				}*/
 				
@@ -3028,7 +3028,7 @@ CheckScores()
 						LogEvent("{\"event\": \"over_time\", \"teams\": [{\"name\": \"%s\", \"team\": %d, \"score\": %d}, {\"name\": \"%s\", \"team\": %d, \"score\": %d}]}", g_t_name_escaped, TERRORIST_TEAM, GetTTotalScore(), g_ct_name_escaped, COUNTER_TERRORIST_TEAM, GetCTTotalScore());
 					}
 					DisplayScore(0, 1, false);
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Over Time", GetConVarInt(g_h_overtime_mr));
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Over Time", GetConVarInt(g_h_overtime_mr));
 					g_live = false;
 					g_t_money = false;
 					g_overtime_count++;
@@ -3079,7 +3079,7 @@ CheckScores()
 						RenameLogs();
 					}
 					DisplayScore(0, 2, false);
-					PrintToChatAll("%s%t", CHAT_PREFIX, "Full Time");
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
 					ResetMatch(true);
 					return;
 				}
@@ -3102,7 +3102,7 @@ CheckScores()
 					RenameLogs();
 				}
 				DisplayScore(0, 2, false);
-				PrintToChatAll("%s%t", CHAT_PREFIX, "Full Time");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
 				
 				if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
 				{
@@ -3143,11 +3143,11 @@ CheckScores()
 			
 			/*if (!GetConVarBool(g_h_auto_swap))
 			{
-				PrintToChatAll("%s%t", CHAT_PREFIX, "Half Time");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Half Time");
 			}
 			else
 			{
-				PrintToChatAll("%s%t", CHAT_PREFIX, "Half Time Auto Swap");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Half Time Auto Swap");
 				CreateTimer(GetConVarFloat(g_h_auto_swap_delay), Swap, TIMER_FLAG_NO_MAPCHANGE);
 			}*/
 			
@@ -3192,7 +3192,7 @@ CheckScores()
 			{
 				CreateTimer(GetConVarFloat(g_h_auto_kick_delay), KickLoserTeam, GetLoserTeam());
 			}
-			PrintToChatAll("%s%t", CHAT_PREFIX, "Full Time");
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
 			
 			if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
 			{
@@ -3319,7 +3319,7 @@ ReadyServ(client, bool:ready, bool:silent, bool:show, bool:priv)
 		g_player_list[client] = PLAYER_READY;
 		if (!silent)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Ready");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready");
 		}
 	}
 	else
@@ -3331,7 +3331,7 @@ ReadyServ(client, bool:ready, bool:silent, bool:show, bool:priv)
 		g_player_list[client] = PLAYER_UNREADY;
 		if (!silent)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Not Ready");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Not Ready");
 		}
 	}
 	
@@ -3479,7 +3479,7 @@ stock LiveOn3Override()
 	if (!g_half_swap)
 	{
 		ServerCommand("mp_halftime_pausetimer 0");
-		PrintToChatAll("%s%t", CHAT_PREFIX, "LIVE!");
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "LIVE!");
 		g_half_swap = true;
 		return true;
 	}
@@ -3704,14 +3704,14 @@ public Action:ChooseTeam(client, args)
 
 	if (g_match && GetClientTeam(client) > 1 && GetConVarBool(g_h_locked))
 	{
-		PrintToChat(client, "%s%t", CHAT_PREFIX, "Change Teams Midgame");
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Change Teams Midgame");
 		return Plugin_Stop;
 	}
 
 	new max_players = GetConVarInt(g_h_max_players);
 	if ((g_ready_enabled || g_match) && max_players != 0 && GetClientTeam(client) <= 1 && CS_GetPlayingCount() >= max_players)
 	{
-		PrintToChat(client, "%s%t", CHAT_PREFIX, "Maximum Players");
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Maximum Players");
 		ChangeClientTeam(client, SPECTATOR_TEAM);
 		return Plugin_Stop;
 	}
@@ -3742,7 +3742,7 @@ public Action:RestrictBuy(client, args)
 
 		if (StrContains(the_weapon, "hegren", false) != -1 || StrContains(the_weapon, "flash", false) != -1 || StrContains(the_weapon, "smokegrenade", false) != -1 || StrContains(the_weapon, "molotov", false) != -1 || StrContains(the_weapon, "incgrenade", false) != -1 || StrContains(the_weapon, "decoy", false) != -1)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Grenades Blocked");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Grenades Blocked");
 			return Plugin_Handled;
 		}
 	}
@@ -3761,7 +3761,7 @@ public Action:ReadyList(client, args)
 	new String:player_name[64];
 	new player_count;
 	
-	ReplyToCommand(client, "%s %T:", CHAT_PREFIX, "Ready System", LANG_SERVER);
+	ReplyToCommand(client, "\x01 \x09[\x04%s\x09]\x01 %T:", CHAT_PREFIX, "Ready System", LANG_SERVER);
 	for (new i = 1; i <= MaxClients; i++)
 	{
 		if (IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) > 1)
@@ -3811,7 +3811,7 @@ public Action:NotLive(client, args)
 	
 	if (client == 0)
 	{
-		PrintToServer("%s %T", CHAT_PREFIX, "Half Reset", LANG_SERVER);
+		PrintToServer("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Half Reset", LANG_SERVER);
 	}
 	
 	LogAction(client, -1, "\"half_reset\" (player \"%L\")", client);
@@ -3837,7 +3837,7 @@ public Action:CancelMatch(client, args)
 	
 	if (client == 0)
 	{
-		PrintToServer("%s %T", CHAT_PREFIX, "Match Reset", LANG_SERVER);
+		PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Match Reset", LANG_SERVER);
 	}
 	
 	LogAction(client, -1, "\"match_reset\" (player \"%L\")", client);
@@ -3872,22 +3872,22 @@ public Action:CancelKnife(client, args)
 		ServerCommand("mp_restartgame 1");
 		for (new x = 1; x <= 3; x++)
 		{
-			PrintToChatAll("%s%t", CHAT_PREFIX, "Knife Round Cancelled");
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Knife Round Cancelled");
 		}
 		if (client == 0)
 		{
-			PrintToServer("%s %T", CHAT_PREFIX, "Knife Round Cancelled", LANG_SERVER);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Knife Round Cancelled", LANG_SERVER);
 		}
 	}
 	else
 	{
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Knife Round Inactive");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Knife Round Inactive");
 		}
 		else
 		{
-			PrintToServer("%s %T", CHAT_PREFIX, "Knife Round Inactive", LANG_SERVER);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Knife Round Inactive", LANG_SERVER);
 		}
 	}
 	
@@ -3939,7 +3939,7 @@ ShowInfo(client, bool:enable, bool:priv, time)
 	{
 		g_m_ready_up = CreatePanel();
 		new String:panel_title[128];
-		Format(panel_title, sizeof(panel_title), "%s %t", CHAT_PREFIX, "Ready System Disabled", client);
+		Format(panel_title, sizeof(panel_title), "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled", client);
 		SetPanelTitle(g_m_ready_up, panel_title);
 		
 		for (new i = 1; i <= MaxClients; i++)
@@ -4060,11 +4060,11 @@ IsReadyEnabled(client, bool:silent)
 		{
 			if (client != 0)
 			{
-				PrintToChat(client, "%s%t", CHAT_PREFIX, "Ready System Disabled2");
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled2");
 			}
 			else
 			{
-				PrintToServer("%s %T", CHAT_PREFIX, "Ready System Disabled2", LANG_SERVER);
+				PrintToServer("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Ready System Disabled2", LANG_SERVER);
 			}
 		}
 	}
@@ -4083,11 +4083,11 @@ IsLive(client, bool:silent)
 		{
 			if (client != 0)
 			{
-				PrintToChat(client, "%s%t", CHAT_PREFIX, "Match Is Live");
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Match Is Live");
 			}
 			else
 			{
-				PrintToServer("%s %T", CHAT_PREFIX, "Match Is Live", LANG_SERVER);
+				PrintToServer("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Match Is Live", LANG_SERVER);
 			}
 		}
 	}
@@ -4106,11 +4106,11 @@ IsActive(client, bool:silent)
 		{
 			if (client != 0)
 			{
-				PrintToChat(client, "%s%t", CHAT_PREFIX, "WarMod Inactive");
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "WarMod Inactive");
 			}
 			else
 			{
-				PrintToServer("%s %T", CHAT_PREFIX, "WarMod Inactive", LANG_SERVER);
+				PrintToServer("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "WarMod Inactive", LANG_SERVER);
 			}
 		}
 	}
@@ -4127,7 +4127,7 @@ IsAdminCmd(client, bool:silent)
 	{
 		if (!silent)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "WarMod Rcon Only");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "WarMod Rcon Only");
 		}
 	}
 	return false;
@@ -4388,11 +4388,11 @@ public Action:ChangeT(client, args)
 		ServerCommand("mp_teamname_2 %s", name);
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Change T Name", name);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Change T Name", name);
 		}
 		else
 		{
-			PrintToServer("WarMod - %T", "Change T Name", LANG_SERVER, name);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Change T Name", LANG_SERVER, name);
 		}
 		CheckReady();
 		LogAction(client, -1, "\"set_t_name\" (player \"%L\") (name \"%s\")", client, name);
@@ -4402,11 +4402,11 @@ public Action:ChangeT(client, args)
 		GetConVarString(g_h_t, name, sizeof(name));
 		if (client != 0)
 		{
-			PrintToChat(client, "%swm_t = %s", CHAT_PREFIX, name);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 wm_t = %s", CHAT_PREFIX, name);
 		}
 		else
 		{
-			PrintToServer("WarMod - wm_t = %s", name);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 - wm_t = %s", CHAT_PREFIX, name);
 		}
 	}
 	
@@ -4439,11 +4439,11 @@ public Action:ChangeCT(client, args)
 		ServerCommand("mp_teamname_1 %s", name);
 		if (client != 0)
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "Change CT Name", name);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Change CT Name", name);
 		}
 		else
 		{
-			PrintToServer("WarMod - %T", "Change CT Name", LANG_SERVER, name);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Change CT Name", LANG_SERVER, name);
 		}
 		CheckReady();
 		LogAction(client, -1, "\"set_ct_name\" (player \"%L\") (name \"%s\")", client, name);
@@ -4453,11 +4453,11 @@ public Action:ChangeCT(client, args)
 		GetConVarString(g_h_ct, name, sizeof(name));
 		if (client != 0)
 		{
-			PrintToChat(client, "%swm_ct = %s", CHAT_PREFIX, name);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 wm_ct = %s", CHAT_PREFIX, name);
 		}
 		else
 		{
-			PrintToServer("WarMod - wm_ct = %s", name);
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 - wm_ct = %s", CHAT_PREFIX, name);
 		}
 	}
 	
@@ -4609,7 +4609,7 @@ public Action:SayChat(client, args)
 		}
 		else
 		{
-			PrintToChat(client, "%s%t", CHAT_PREFIX, "No Permission");
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "No Permission");
 		}
 	}
 	else if (message[0] == '!' || message[0] == '.' || message[0] == '/')
@@ -4648,7 +4648,7 @@ public Action:SayChat(client, args)
 			}
 			else
 			{
-				PrintToChat(client, "%s%t", CHAT_PREFIX, "ShowInfo Disabled");
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "ShowInfo Disabled");
 			}
 		}
 		else if (StrEqual(command, "whois", false) || StrEqual(command, "w", false))
@@ -4659,7 +4659,7 @@ public Action:SayChat(client, args)
 			}
 			else
 			{
-				PrintToChat(client, "%sGameTech Premium Member Feature", CHAT_PREFIX);
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 GameTech Premium Member Feature", CHAT_PREFIX);
 			}
 		}
 		else if (StrEqual(command, "help", false))
@@ -4829,7 +4829,7 @@ stock LogEvent(const String:format[], any:...)
 	if (stats_method == 0 || stats_method == 2)
 	{
 		// standard server log files + udp stream
-		LogToGame("%s %s", CHAT_PREFIX, event);
+		LogToGame("\x01 \x09[\x04%s\x09]\x01  %s", CHAT_PREFIX, event);
 	}
 	
 	// inject timestamp into JSON object, hacky but quite simple
@@ -5294,7 +5294,7 @@ public Action:CheckNames(Handle:timer, any:client)
 			{
 				if (IsClientInGame(i) && !IsFakeClient(i))
 				{
-					PrintToChat(i, "%s%t", CHAT_PREFIX, "Names Required");
+					PrintToChat(i, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Names Required");
 				}
 			}
 		}
