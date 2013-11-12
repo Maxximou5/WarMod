@@ -1,6 +1,6 @@
 #define UPDATE_URL    "http://bfg-esports.com/myplugin/updatefile.txt"
 
-#define CHAT_PREFIX             "\x03 <WarMod_BFG> \x04"
+//#define CHAT_PREFIX             "\x03 <WarMod_BFG> \x04"
 #define SPECTATOR_TEAM          1
 #define TERRORIST_TEAM          2
 #define COUNTER_TERRORIST_TEAM  3
@@ -49,7 +49,7 @@
 #define CLUTCH_WON         3
 #define CLUTCH_NUM         4
 
-#define WM_VERSION         "0.1.6"
+#define WM_VERSION         "0.1.7"
 #define WM_DESCRIPTION     "An automative service created by Twelve-60 and updated by Versatile BFG(www.csgo.com.au) for CS:GO competition matches."
 
 new String:g_team_name_cache[16][64];
