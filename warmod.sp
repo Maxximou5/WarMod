@@ -136,6 +136,9 @@ new bool:g_lw_connected = false;
 /* modes */
 new g_overtime_mode = 0;
 
+/* chat prefix */
+new String:CHAT_PREFIX[64];
+
 /* teams */
 new String:g_t_name[64];
 new String:g_t_name_escaped[64]; // pre-escaped for warmod logs
@@ -311,7 +314,7 @@ public OnPluginStart()
 	g_h_status = CreateConVar("wm_status", "0", "WarMod automatically updates this value to the corresponding match status code", FCVAR_NOTIFY);
 	g_h_upload_results = CreateConVar("wm_upload_results", "0", "Enable or disable the uploading of match results via MySQL", FCVAR_NOTIFY);
 	g_h_table_name = CreateConVar("wm_table_name", "wm_results", "The MySQL table name to store match results in");
-	g_h_chat_prefix = CreateConVar("wm_chat_prefix", CHAT_PREFIX, "Change the chat prefix. Default is <WarMod_BFG>", FCVAR_NOTIFY);
+	g_h_chat_prefix = CreateConVar("wm_chat_prefix", "<WarMod_BFG>", "Change the chat prefix. Default is <WarMod_BFG>", FCVAR_PROTECTED);
 	g_h_t = CreateConVar("wm_t", DEFAULT_T_NAME, "Team starting terrorists, designed for score and demo naming purposes", FCVAR_NOTIFY);
 	g_h_ct = CreateConVar("wm_ct", DEFAULT_CT_NAME, "Team starting counter-terrorists, designed for score and demo naming purposes", FCVAR_NOTIFY);
 	g_h_t_score = CreateConVar("wm_t_score", "0", "WarMod automatically updates this value to the Terrorist's total score", FCVAR_NOTIFY);
@@ -393,6 +396,12 @@ public OnLibraryAdded(const String:name[])
 		Updater_AddPlugin(UPDATE_URL);
 	}
 }
+
+public OnConfigsExecuted()
+{
+	GetConVarString(handleof_cvar, CHAT_PREFIX, sizeof(CHAT_PREFIX));
+}
+
 
 public Action:LiveWire_ReConnect(client, args)
 {
