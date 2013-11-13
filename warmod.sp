@@ -403,11 +403,11 @@ public OnConfigsExecuted()
 	
 	if (!GetConVarBool(g_h_play_out))
 	{
-		ServerCommand("mp_match_can_clinch 0";
+		ServerCommand("mp_match_can_clinch 0");
 	}
 	else
 	{
-		ServerCommand("mp_match_can_clinch 1";
+		ServerCommand("mp_match_can_clinch 1");
 	}
 }
 
@@ -1863,7 +1863,7 @@ public Event_Round_Start(Handle:event, const String:name[], bool:dontBroadcast)
 
 	if (g_second_half_first)
 	{
-		LiveOn3OverrideFinish(3.5 + 3.5);
+		LiveOn3Override();
 		g_second_half_first = false;
 	}
 	
@@ -3489,18 +3489,16 @@ stock LiveOn3Override()
 	{
 		ServerCommand("mp_halftime_pausetimer 0");
 		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 LIVE!", CHAT_PREFIX);
-		PrintToServer("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
-		PrintToServer("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 		g_half_swap = true;
 		return true;
 	}
 	
 	ServerCommand("mp_warmup_end");
 	ServerCommand("mp_restartgame 3");
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Live in 3", CHAT_PREFIX);
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 The match is now \x02Live", CHAT_PREFIX);
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Live in 3", CHAT_PREFIX);
+	CreateTimer(2.5, LiveOn3Text);
 	
 	if (GetConVarBool(g_h_stats_enabled))
 	{
@@ -3509,12 +3507,18 @@ stock LiveOn3Override()
 	return true;
 }
 
+public Action:LiveOn3Text(Handle:timer)
+{
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 The match is now \x02Live!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
+}
+
 public Action:AdvertGameTech(Handle:timer, any:client)
 {
 	if (IsClientConnected(client) && IsFakeClient(client))
 	{
-		PrintToChat(client, "\x03GameTech WarMod powered by \x04www.GameTech.com.au");
-		PrintToChat(client, "\x03Advanced Gaming Modifications");
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 	}
 }
 
@@ -3524,8 +3528,7 @@ public Action:AdvertGameTechSpecs(Handle:timer)
 	{
 		if (IsClientConnected(i) && IsFakeClient(i))
 		{
-			PrintToChat(i, "\x03GameTech WarMod powered by \x04www.GameTech.com.au");
-			PrintToChat(i, "\x03Advanced Gaming Modifications");
+			PrintToChat(i, "\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 		}
 	}
 }
@@ -3569,13 +3572,19 @@ stock KnifeOn3Override()
 {
 	ServerCommand("mp_warmup_end");
 	ServerCommand("mp_restartgame 3");
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Knife in 3", CHAT_PREFIX);
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
-	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Knife in 3", CHAT_PREFIX);
+	CreateTimer(2.5, KnifeOn3Text);
+	
 	return true;
+}
+
+public Action:KnifeOn3Text(Handle:timer)
+{
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 }
 
 public Action:ChooseTeam(client, args)
