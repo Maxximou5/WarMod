@@ -401,7 +401,7 @@ public OnConfigsExecuted()
 {
 	GetConVarString(g_h_chat_prefix, CHAT_PREFIX, sizeof(CHAT_PREFIX));
 	
-	if (!GetConVarBool(g_h_play_out))
+	if (GetConVarBool(g_h_play_out))
 	{
 		ServerCommand("mp_match_can_clinch 0");
 	}
