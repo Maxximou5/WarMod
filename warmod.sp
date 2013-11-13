@@ -400,6 +400,15 @@ public OnLibraryAdded(const String:name[])
 public OnConfigsExecuted()
 {
 	GetConVarString(g_h_chat_prefix, CHAT_PREFIX, sizeof(CHAT_PREFIX));
+	
+	if (!GetConVarBool(g_h_play_out))
+	{
+		ServerCommand("mp_match_can_clinch 0";
+	}
+	else
+	{
+		ServerCommand("mp_match_can_clinch 1";
+	}
 }
 
 
@@ -3479,87 +3488,20 @@ stock LiveOn3Override()
 	if (!g_half_swap)
 	{
 		ServerCommand("mp_halftime_pausetimer 0");
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "LIVE!");
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 LIVE!", CHAT_PREFIX);
+		PrintToServer("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
+		PrintToServer("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 		g_half_swap = true;
 		return true;
 	}
-	new Handle:kv = CreateKeyValues("live_override");
-	new String:path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, sizeof(path), "configs/warmod_live_override.txt");
-	if (!FileToKeyValues(kv, path))
-	{
-		return false;
-	}
-	new String:text[128];
-	new lastdelay;
-	new delay;
 	
-	if (KvJumpToKey(kv, "live_first_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(0.1, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(0.9, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_second_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(float(lastdelay) + 1.3, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(float(lastdelay) + 2.0, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = lastdelay + delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_third_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(float(lastdelay) + 2.5, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(float(lastdelay) + 3.5, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = lastdelay + delay;
-		KvGoBack(kv);
-	}
-	LiveOn3OverrideFinish(float(lastdelay) + 3.5);
-	CloseHandle(kv);
-	return true;
-}
-
-LiveOn3OverrideFinish(Float:delay)
-{
-	new Handle:kv = CreateKeyValues("live_override", "", "");
-	new String:path[256];
-	BuildPath(PathType:0, path, 256, "configs/warmod_live_override.txt");
-	if (!FileToKeyValues(kv, path))
-	{
-		return 0;
-	}
-	new String:text[128];
-	if (KvJumpToKey(kv, "live_finished", false))
-	{
-		new String:key[8];
-		for (new i = 1; i <= 5; i++)
-		{
-			IntToString(i, key, sizeof(key));
-			Format(key, sizeof(key), "text%s", key);
-			
-			KvGetString(kv, key, text, sizeof(text));
-			if (!StrEqual(text, ""))
-			{
-				new Handle:datapack;
-				CreateDataTimer((delay) + 3.5, PrintToChatDelayed, datapack);
-				WritePackString(datapack, text);
-			}
-		}
-	}
-	CloseHandle(kv);
+	ServerCommand("mp_warmup_end");
+	ServerCommand("mp_restartgame 3");
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Live in 3", CHAT_PREFIX);
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 The match is now \x02Live", CHAT_PREFIX);
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
+	
 	if (GetConVarBool(g_h_stats_enabled))
 	{
 		LogEvent("{\"event\": \"live_on_3\", \"map\": \"%s\", \"teams\": [{\"name\": \"%s\", \"team\": %d}, {\"name\": \"%s\", \"team\": %d}], \"status\": %d, \"version\": \"%s\"}", g_map, g_t_name_escaped, TERRORIST_TEAM, g_ct_name_escaped, COUNTER_TERRORIST_TEAM, UpdateStatus(), WM_VERSION);
@@ -3625,68 +3567,14 @@ public Action:KnifeOn3(client, args)
 
 stock KnifeOn3Override()
 {
-	new Handle:kv = CreateKeyValues("live_override");
-	new String:path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, sizeof(path), "configs/warmod_live_override_knife.txt");
-	if (!FileToKeyValues(kv, path))
-	{
-		return false;
-	}
-	new String:text[128];
-	new lastdelay;
-	new delay;
-	
-	if (KvJumpToKey(kv, "live_first_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(0.1, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(0.9, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_second_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(float(lastdelay) + 1.3, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(float(lastdelay) + 2.0, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = lastdelay + delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_third_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(float(lastdelay) + 2.5, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(float(lastdelay) + 3.5, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = lastdelay + delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_finished"))
-	{
-		new String:key[8];
-		for (new i = 1; i <= 5; i++)
-		{
-			IntToString(i, key, sizeof(key));
-			Format(key, sizeof(key), "text%s", key);
-			
-			KvGetString(kv, key, text, sizeof(text));
-			if (!StrEqual(text, ""))
-			{
-				new Handle:datapack;
-				CreateDataTimer(float(lastdelay) + 3.5, PrintToChatDelayed, datapack);
-				WritePackString(datapack, text);
-			}
-		}
-	}
-	CloseHandle(kv);
+	ServerCommand("mp_warmup_end");
+	ServerCommand("mp_restartgame 3");
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Knife in 3", CHAT_PREFIX);
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
+	PrintToServer("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 	return true;
 }
 
