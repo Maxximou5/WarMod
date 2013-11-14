@@ -316,7 +316,7 @@ public OnPluginStart()
 	g_h_ct = CreateConVar("wm_ct", DEFAULT_CT_NAME, "Team starting counter-terrorists, designed for score and demo naming purposes", FCVAR_NOTIFY);
 	g_h_t_score = CreateConVar("wm_t_score", "0", "WarMod automatically updates this value to the Terrorist's total score", FCVAR_NOTIFY);
 	g_h_ct_score = CreateConVar("wm_ct_score", "0", "WarMod automatically updates this value to the Counter-Terrorist's total score", FCVAR_NOTIFY);
-	g_h_notify_version = CreateConVar("wm_notify_version", WM_VERSION, WM_DESCRIPTION, FCVAR_NOTIFY|FCVAR_REPLICATED);
+	g_h_notify_version = CreateConVar("wm_version_notify", WM_VERSION, WM_DESCRIPTION, FCVAR_NOTIFY|FCVAR_REPLICATED);
 	
 	g_h_mp_startmoney = FindConVar("mp_startmoney");
 	g_i_account = FindSendPropOffs("CCSPlayer", "m_iAccount");
