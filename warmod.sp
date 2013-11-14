@@ -103,6 +103,7 @@ new Handle:g_h_ct = INVALID_HANDLE;
 new Handle:g_h_notify_version = INVALID_HANDLE;
 new Handle:g_h_t_score = INVALID_HANDLE;
 new Handle:g_h_ct_score = INVALID_HANDLE;
+new Handle:g_h_play_out = INVALID_HANDLE;
 
 new Handle:g_h_mp_startmoney = INVALID_HANDLE;
 
@@ -115,6 +116,7 @@ new bool:g_active = true;
 new bool:g_match = false;
 new bool:g_live = false;
 new bool:g_half_swap = true;
+new bool:g_play_out = false;
 new bool:g_playing_out = false;
 new bool:g_first_half = true;
 new bool:g_overtime = false;
@@ -131,7 +133,6 @@ new bool:g_lw_connected = false;
 
 /* modes */
 new g_overtime_mode = 0;
-new bool:g_play_out = false;
 
 /* chat prefix */
 new String:CHAT_PREFIX[64];
@@ -306,7 +307,6 @@ public OnPluginStart()
 	g_h_auto_record = CreateConVar("wm_auto_record", "1", "Enable or disable auto SourceTV demo record on Live on 3", FCVAR_NOTIFY);
 	g_h_save_file_dir = CreateConVar("wm_save_dir", "warmod", "Directory to store SourceTV demos and WarMod logs");
 	g_h_prefix_logs = CreateConVar("wm_prefix_logs", "1", "Enable or disable the prefixing of \"_\" to uncompleted match SourceTV demos and WarMod logs", FCVAR_NOTIFY);
-//	g_h_play_out = CreateConVar("wm_play_out", "0", "Enable or disable teams required to play out the match even after a winner has been decided", FCVAR_NOTIFY);
 	g_h_warmup_respawn = CreateConVar("wm_warmup_respawn", "0", "Enable or disable the respawning of players in warmup", FCVAR_NOTIFY);
 	g_h_status = CreateConVar("wm_status", "0", "WarMod automatically updates this value to the corresponding match status code", FCVAR_NOTIFY);
 	g_h_upload_results = CreateConVar("wm_upload_results", "0", "Enable or disable the uploading of match results via MySQL", FCVAR_NOTIFY);
@@ -321,6 +321,17 @@ public OnPluginStart()
 	g_h_mp_startmoney = FindConVar("mp_startmoney");
 	g_i_account = FindSendPropOffs("CCSPlayer", "m_iAccount");
 	
+	g_h_play_out = FindConVar("mp_match_can_clinch");
+	
+	if (g_h_play_out)
+	{
+		g_play_out = false;
+	}
+	else
+	{
+		g_play_out = true;
+	}
+	
 	HookConVarChange(g_h_active, OnActiveChange);
 	HookConVarChange(g_h_req_names, OnReqNameChange);
 	HookConVarChange(g_h_min_ready, OnMinReadyChange);
@@ -332,7 +343,6 @@ public OnPluginStart()
 	HookConVarChange(g_h_lw_enabled, OnLiveWireChange);
 	HookConVarChange(g_h_t, OnTChange);
 	HookConVarChange(g_h_ct, OnCTChange);
-	HookConVarChange(FindConVar("mp_match_can_clinch"), OnPlayOutChange);
 	
 	HookEvent("round_start", Event_Round_Start);
 	HookEvent("round_end", Event_Round_End);
@@ -4014,18 +4024,6 @@ IsAdminCmd(client, bool:silent)
 	return false;
 }
 
-public OnPlayOutChange(Handle:cvar, const String:oldVal[], const String:newVal[])
-{
-	if (StringToInt(newVal) != 0)
-	{
-		g_play_out = false;
-	}
-	else
-	{
-		g_play_out = true;
-	}
-}
-
 public OnActiveChange(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
 	if (StringToInt(newVal) != 0)
@@ -5254,7 +5252,7 @@ public Action:ShowPluginInfo(Handle:timer, any:client)
 		GetConVarName(g_h_max_rounds, max_rounds, sizeof(max_rounds));
 		new String:min_ready[64];
 		GetConVarName(g_h_min_ready, min_ready, sizeof(min_ready));
-		PrintToConsole(client, "==============================================================");
+		PrintToConsole(client, "===============================================================================");
 		PrintToConsole(client, "This server is running WarMod [BFG] %s Server Plugin", WM_VERSION);
 		PrintToConsole(client, "");
 		PrintToConsole(client, "Created by Twelve-60 and updated by Versatile [BFG]");
@@ -5265,8 +5263,8 @@ public Action:ShowPluginInfo(Handle:timer, any:client)
 		PrintToConsole(client, "  /info - Display the Ready System if enabled 	  /i");
 		PrintToConsole(client, "  /scores - Display the match score if live 	  /score /s");
 		PrintToConsole(client, "");
-		PrintToConsole(client, "Current settings: %s: %d / %s: %d / Play out match: %d", max_rounds, GetConVarInt(g_h_max_rounds), min_ready, GetConVarInt(g_h_min_ready), g_play_out);
-		PrintToConsole(client, "==============================================================");
+		PrintToConsole(client, "Current settings: %s: %d / %s: %d / mp_match_can_clinch: %d", max_rounds, GetConVarInt(g_h_max_rounds), min_ready, GetConVarInt(g_h_min_ready), GetConVarInt(g_h_play_out));
+		PrintToConsole(client, "===============================================================================");
 	}
 }
 
