@@ -37,7 +37,7 @@ new Float:g_match_start;
 new bool:g_log_warmod_dir = false;
 new String:g_log_filename[128];
 new Handle:g_log_file = INVALID_HANDLE;
-new String:weapon_list[][] = {"ak47","m4a1","awp","deagle","mp7","aug","p90","famas","galilar","ssg08","g3sg1","hegrenade","hkp2000","glock","m249","nova","elite","fiveseven","mac10","p250","sg556","scar20","mp9","ump45","bizon","mag7","negev","sawedoff","tec9","taser","xm1014","knife","smokegrenade","decoy","flashbang","molotov","incgrenade"};
+new String:weapon_list[][] = {"glock", "hkp2000", "p250", "fiveseven", "deagle", "elite", "tek9", "nova", "xm1014", "mag7", "sawedoff", "m249", "negev", "mp9", "mac10", "mp7", "ump45", "p90", "bizon", "famas", "m4a1", "galilar", "ak47", "ssg08", "aug", "sg556", "awp", "scar20", "g3sg1", "taser", "knife", "hegrenade", "flashbang", "smokegrenade", "molotov", "decoy"};
 new weapon_stats[MAXPLAYERS + 1][NUM_WEAPONS][LOG_HIT_NUM];
 new clutch_stats[MAXPLAYERS + 1][CLUTCH_NUM];
 new String:last_weapon[MAXPLAYERS + 1][64];
@@ -69,8 +69,6 @@ new Handle:g_h_stv_chat = INVALID_HANDLE;
 new Handle:g_h_locked = INVALID_HANDLE;
 new Handle:g_h_min_ready = INVALID_HANDLE;
 new Handle:g_h_max_players = INVALID_HANDLE;
-//new Handle:g_h_live_config = INVALID_HANDLE;
-//new Handle:g_h_knife_config = INVALID_HANDLE;
 new Handle:g_h_match_config = INVALID_HANDLE;
 new Handle:g_h_end_config = INVALID_HANDLE;
 new Handle:g_h_half_time_config = INVALID_HANDLE;
@@ -95,7 +93,6 @@ new Handle:g_h_overtime_money = INVALID_HANDLE;
 new Handle:g_h_auto_record = INVALID_HANDLE;
 new Handle:g_h_save_file_dir = INVALID_HANDLE;
 new Handle:g_h_prefix_logs = INVALID_HANDLE;
-new Handle:g_h_play_out = INVALID_HANDLE;
 new Handle:g_h_warmup_respawn = INVALID_HANDLE;
 new Handle:g_h_status = INVALID_HANDLE;
 new Handle:g_h_upload_results = INVALID_HANDLE;
@@ -106,6 +103,7 @@ new Handle:g_h_ct = INVALID_HANDLE;
 new Handle:g_h_notify_version = INVALID_HANDLE;
 new Handle:g_h_t_score = INVALID_HANDLE;
 new Handle:g_h_ct_score = INVALID_HANDLE;
+new Handle:g_h_play_out = INVALID_HANDLE;
 
 new Handle:g_h_mp_startmoney = INVALID_HANDLE;
 
@@ -118,6 +116,7 @@ new bool:g_active = true;
 new bool:g_match = false;
 new bool:g_live = false;
 new bool:g_half_swap = true;
+new bool:g_play_out = false;
 new bool:g_playing_out = false;
 new bool:g_first_half = true;
 new bool:g_overtime = false;
@@ -126,7 +125,6 @@ new bool:g_t_score = false;
 new bool:g_t_knife = true;
 new bool:g_t_had_knife = false;
 new bool:g_second_half_first = false;
-//new bool:g_round_end = false;
 
 /* livewire */
 new Handle:g_h_lw_socket = INVALID_HANDLE;
@@ -309,7 +307,6 @@ public OnPluginStart()
 	g_h_auto_record = CreateConVar("wm_auto_record", "1", "Enable or disable auto SourceTV demo record on Live on 3", FCVAR_NOTIFY);
 	g_h_save_file_dir = CreateConVar("wm_save_dir", "warmod", "Directory to store SourceTV demos and WarMod logs");
 	g_h_prefix_logs = CreateConVar("wm_prefix_logs", "1", "Enable or disable the prefixing of \"_\" to uncompleted match SourceTV demos and WarMod logs", FCVAR_NOTIFY);
-	g_h_play_out = CreateConVar("wm_play_out", "0", "Enable or disable teams required to play out the match even after a winner has been decided", FCVAR_NOTIFY);
 	g_h_warmup_respawn = CreateConVar("wm_warmup_respawn", "0", "Enable or disable the respawning of players in warmup", FCVAR_NOTIFY);
 	g_h_status = CreateConVar("wm_status", "0", "WarMod automatically updates this value to the corresponding match status code", FCVAR_NOTIFY);
 	g_h_upload_results = CreateConVar("wm_upload_results", "0", "Enable or disable the uploading of match results via MySQL", FCVAR_NOTIFY);
@@ -322,12 +319,18 @@ public OnPluginStart()
 	g_h_notify_version = CreateConVar("wm_notify_version", WM_VERSION, WM_DESCRIPTION, FCVAR_NOTIFY|FCVAR_REPLICATED);
 	
 	g_h_mp_startmoney = FindConVar("mp_startmoney");
-	
 	g_i_account = FindSendPropOffs("CCSPlayer", "m_iAccount");
-	//if (g_i_account == -1)
-	//{
-	//	SetFailState("- Failed to find offset for m_iAccount!");
-	//}
+	
+	g_h_play_out = FindConVar("mp_match_can_clinch");
+	
+	if (g_h_play_out)
+	{
+		g_play_out = false;
+	}
+	else
+	{
+		g_play_out = true;
+	}
 	
 	HookConVarChange(g_h_active, OnActiveChange);
 	HookConVarChange(g_h_req_names, OnReqNameChange);
@@ -378,6 +381,7 @@ public OnPluginStart()
 	
 	CreateTimer(600.0, LiveWire_Check, 0, TIMER_REPEAT);
 	CreateTimer(1800.0, LiveWire_Ping, _, TIMER_REPEAT);
+	
 	// Pause and Unpause stuff
 	sv_pausable = FindConVar ("sv_pausable");
 	g_h_pause_comfirm = CreateConVar("wm_pause_comfirm", "1", "Wait for other team to comfirm pause: 0 = off, 1 = on", FCVAR_NOTIFY);
@@ -401,7 +405,6 @@ public OnConfigsExecuted()
 {
 	GetConVarString(g_h_chat_prefix, CHAT_PREFIX, sizeof(CHAT_PREFIX));
 }
-
 
 public Action:LiveWire_ReConnect(client, args)
 {
@@ -1854,7 +1857,7 @@ public Event_Round_Start(Handle:event, const String:name[], bool:dontBroadcast)
 
 	if (g_second_half_first)
 	{
-		LiveOn3OverrideFinish(3.5 + 3.5);
+		LiveOn3Override();
 		g_second_half_first = false;
 	}
 	
@@ -2876,7 +2879,7 @@ CheckScores()
 					if (GetConVarBool(g_h_upload_results))
 					{
 						new match_length = RoundFloat(GetEngineTime() - g_match_start);
-						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
 					ResetMatch(true);
 				}
@@ -2912,7 +2915,7 @@ CheckScores()
 				if (GetConVarBool(g_h_upload_results))
 				{
 					new match_length = RoundFloat(GetEngineTime() - g_match_start);
-					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
 				ResetMatch(true);
 			}
@@ -2921,7 +2924,7 @@ CheckScores()
 				DisplayScore(0, 0, false);
 				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
 				
-				if (!GetConVarBool(g_h_play_out))
+				if (!g_play_out)
 				{
 					Call_StartForward(g_f_on_end_match);
 					Call_Finish();
@@ -2951,7 +2954,7 @@ CheckScores()
 					if (GetConVarBool(g_h_upload_results))
 					{
 						new match_length = RoundFloat(GetEngineTime() - g_match_start);
-						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
 					ResetMatch(true);
 				}
@@ -3071,7 +3074,7 @@ CheckScores()
 					if (GetConVarBool(g_h_upload_results))
 					{
 						new match_length = RoundFloat(GetEngineTime() - g_match_start);
-						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
 					
 					if (GetConVarBool(g_h_prefix_logs))
@@ -3114,7 +3117,7 @@ CheckScores()
 				if (GetConVarBool(g_h_upload_results))
 				{
 					new match_length = RoundFloat(GetEngineTime() - g_match_start);
-					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
 				ResetMatch(true);
 				return;
@@ -3204,7 +3207,7 @@ CheckScores()
 			if (GetConVarBool(g_h_upload_results))
 			{
 				new match_length = RoundFloat(GetEngineTime() - g_match_start);
-				MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+				MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 			}
 			ResetMatch(true);
 		}
@@ -3479,87 +3482,18 @@ stock LiveOn3Override()
 	if (!g_half_swap)
 	{
 		ServerCommand("mp_halftime_pausetimer 0");
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "LIVE!");
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 LIVE!", CHAT_PREFIX);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 		g_half_swap = true;
 		return true;
 	}
-	new Handle:kv = CreateKeyValues("live_override");
-	new String:path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, sizeof(path), "configs/warmod_live_override.txt");
-	if (!FileToKeyValues(kv, path))
-	{
-		return false;
-	}
-	new String:text[128];
-	new lastdelay;
-	new delay;
 	
-	if (KvJumpToKey(kv, "live_first_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(0.1, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(0.9, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_second_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(float(lastdelay) + 1.3, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(float(lastdelay) + 2.0, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = lastdelay + delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_third_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(float(lastdelay) + 2.5, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(float(lastdelay) + 3.5, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = lastdelay + delay;
-		KvGoBack(kv);
-	}
-	LiveOn3OverrideFinish(float(lastdelay) + 3.5);
-	CloseHandle(kv);
-	return true;
-}
-
-LiveOn3OverrideFinish(Float:delay)
-{
-	new Handle:kv = CreateKeyValues("live_override", "", "");
-	new String:path[256];
-	BuildPath(PathType:0, path, 256, "configs/warmod_live_override.txt");
-	if (!FileToKeyValues(kv, path))
-	{
-		return 0;
-	}
-	new String:text[128];
-	if (KvJumpToKey(kv, "live_finished", false))
-	{
-		new String:key[8];
-		for (new i = 1; i <= 5; i++)
-		{
-			IntToString(i, key, sizeof(key));
-			Format(key, sizeof(key), "text%s", key);
-			
-			KvGetString(kv, key, text, sizeof(text));
-			if (!StrEqual(text, ""))
-			{
-				new Handle:datapack;
-				CreateDataTimer((delay) + 3.5, PrintToChatDelayed, datapack);
-				WritePackString(datapack, text);
-			}
-		}
-	}
-	CloseHandle(kv);
+	ServerCommand("mp_warmup_end");
+	ServerCommand("mp_restartgame 3");
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Live in 3", CHAT_PREFIX);
+	CreateTimer(2.5, LiveOn3Text);
+	
 	if (GetConVarBool(g_h_stats_enabled))
 	{
 		LogEvent("{\"event\": \"live_on_3\", \"map\": \"%s\", \"teams\": [{\"name\": \"%s\", \"team\": %d}, {\"name\": \"%s\", \"team\": %d}], \"status\": %d, \"version\": \"%s\"}", g_map, g_t_name_escaped, TERRORIST_TEAM, g_ct_name_escaped, COUNTER_TERRORIST_TEAM, UpdateStatus(), WM_VERSION);
@@ -3567,12 +3501,18 @@ LiveOn3OverrideFinish(Float:delay)
 	return true;
 }
 
+public Action:LiveOn3Text(Handle:timer)
+{
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 The match is now \x02Live!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
+}
+
 public Action:AdvertGameTech(Handle:timer, any:client)
 {
 	if (IsClientConnected(client) && IsFakeClient(client))
 	{
-		PrintToChat(client, "\x03GameTech WarMod powered by \x04www.GameTech.com.au");
-		PrintToChat(client, "\x03Advanced Gaming Modifications");
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 	}
 }
 
@@ -3582,8 +3522,7 @@ public Action:AdvertGameTechSpecs(Handle:timer)
 	{
 		if (IsClientConnected(i) && IsFakeClient(i))
 		{
-			PrintToChat(i, "\x03GameTech WarMod powered by \x04www.GameTech.com.au");
-			PrintToChat(i, "\x03Advanced Gaming Modifications");
+			PrintToChat(i, "\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 		}
 	}
 }
@@ -3625,69 +3564,21 @@ public Action:KnifeOn3(client, args)
 
 stock KnifeOn3Override()
 {
-	new Handle:kv = CreateKeyValues("live_override");
-	new String:path[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, path, sizeof(path), "configs/warmod_live_override_knife.txt");
-	if (!FileToKeyValues(kv, path))
-	{
-		return false;
-	}
-	new String:text[128];
-	new lastdelay;
-	new delay;
+	ServerCommand("mp_warmup_end");
+	ServerCommand("mp_restartgame 3");
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Knife in 3", CHAT_PREFIX);
+	CreateTimer(2.5, KnifeOn3Text);
 	
-	if (KvJumpToKey(kv, "live_first_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(0.1, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(0.9, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_second_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(float(lastdelay) + 1.3, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(float(lastdelay) + 2.0, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = lastdelay + delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_third_restart"))
-	{
-		delay = KvGetNum(kv, "delay");
-		KvGetString(kv, "text", text, sizeof(text));
-		CreateTimer(float(lastdelay) + 2.5, RestartRound, delay);
-		new Handle:datapack;
-		CreateDataTimer(float(lastdelay) + 3.5, PrintToChatDelayed, datapack);
-		WritePackString(datapack, text);
-		lastdelay = lastdelay + delay;
-		KvGoBack(kv);
-	}
-	if (KvJumpToKey(kv, "live_finished"))
-	{
-		new String:key[8];
-		for (new i = 1; i <= 5; i++)
-		{
-			IntToString(i, key, sizeof(key));
-			Format(key, sizeof(key), "text%s", key);
-			
-			KvGetString(kv, key, text, sizeof(text));
-			if (!StrEqual(text, ""))
-			{
-				new Handle:datapack;
-				CreateDataTimer(float(lastdelay) + 3.5, PrintToChatDelayed, datapack);
-				WritePackString(datapack, text);
-			}
-		}
-	}
-	CloseHandle(kv);
 	return true;
+}
+
+public Action:KnifeOn3Text(Handle:timer)
+{
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 }
 
 public Action:ChooseTeam(client, args)
@@ -5361,9 +5252,7 @@ public Action:ShowPluginInfo(Handle:timer, any:client)
 		GetConVarName(g_h_max_rounds, max_rounds, sizeof(max_rounds));
 		new String:min_ready[64];
 		GetConVarName(g_h_min_ready, min_ready, sizeof(min_ready));
-		new String:play_out[64];
-		GetConVarName(g_h_play_out, play_out, sizeof(play_out));
-		PrintToConsole(client, "==============================================================");
+		PrintToConsole(client, "===============================================================================");
 		PrintToConsole(client, "This server is running WarMod [BFG] %s Server Plugin", WM_VERSION);
 		PrintToConsole(client, "");
 		PrintToConsole(client, "Created by Twelve-60 and updated by Versatile [BFG]");
@@ -5374,8 +5263,8 @@ public Action:ShowPluginInfo(Handle:timer, any:client)
 		PrintToConsole(client, "  /info - Display the Ready System if enabled 	  /i");
 		PrintToConsole(client, "  /scores - Display the match score if live 	  /score /s");
 		PrintToConsole(client, "");
-		PrintToConsole(client, "Current settings: %s: %d / %s: %d / %s: %d", max_rounds, GetConVarInt(g_h_max_rounds), min_ready, GetConVarInt(g_h_min_ready), play_out, GetConVarBool(g_h_play_out));
-		PrintToConsole(client, "==============================================================");
+		PrintToConsole(client, "Current settings: %s: %d / %s: %d / mp_match_can_clinch: %d", max_rounds, GetConVarInt(g_h_max_rounds), min_ready, GetConVarInt(g_h_min_ready), GetConVarInt(g_h_play_out));
+		PrintToConsole(client, "===============================================================================");
 	}
 }
 
