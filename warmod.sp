@@ -37,7 +37,7 @@ new Float:g_match_start;
 new bool:g_log_warmod_dir = false;
 new String:g_log_filename[128];
 new Handle:g_log_file = INVALID_HANDLE;
-new String:weapon_list[][] = {"ak47","m4a1","awp","deagle","mp7","aug","p90","famas","galilar","ssg08","g3sg1","hegrenade","hkp2000","glock","m249","nova","elite","fiveseven","mac10","p250","sg556","scar20","mp9","ump45","bizon","mag7","negev","sawedoff","tec9","taser","xm1014","knife","smokegrenade","decoy","flashbang","molotov","incgrenade"};
+new String:weapon_list[][] = {"glock", "hkp2000", "p250", "fiveseven", "deagle", "elite", "tek9", "nova", "xm1014", "mag7", "sawedoff", "m249", "negev", "mp9", "mac10", "mp7", "ump45", "p90", "bizon", "famas", "m4a1", "galilar", "ak47", "ssg08", "aug", "sg556", "awp", "scar20", "g3sg1", "taser", "knife", "hegrenade", "flashbang", "smokegrenade", "molotov", "decoy"};
 new weapon_stats[MAXPLAYERS + 1][NUM_WEAPONS][LOG_HIT_NUM];
 new clutch_stats[MAXPLAYERS + 1][CLUTCH_NUM];
 new String:last_weapon[MAXPLAYERS + 1][64];
@@ -69,8 +69,6 @@ new Handle:g_h_stv_chat = INVALID_HANDLE;
 new Handle:g_h_locked = INVALID_HANDLE;
 new Handle:g_h_min_ready = INVALID_HANDLE;
 new Handle:g_h_max_players = INVALID_HANDLE;
-//new Handle:g_h_live_config = INVALID_HANDLE;
-//new Handle:g_h_knife_config = INVALID_HANDLE;
 new Handle:g_h_match_config = INVALID_HANDLE;
 new Handle:g_h_end_config = INVALID_HANDLE;
 new Handle:g_h_half_time_config = INVALID_HANDLE;
@@ -95,7 +93,6 @@ new Handle:g_h_overtime_money = INVALID_HANDLE;
 new Handle:g_h_auto_record = INVALID_HANDLE;
 new Handle:g_h_save_file_dir = INVALID_HANDLE;
 new Handle:g_h_prefix_logs = INVALID_HANDLE;
-new Handle:g_h_play_out = INVALID_HANDLE;
 new Handle:g_h_warmup_respawn = INVALID_HANDLE;
 new Handle:g_h_status = INVALID_HANDLE;
 new Handle:g_h_upload_results = INVALID_HANDLE;
@@ -126,7 +123,6 @@ new bool:g_t_score = false;
 new bool:g_t_knife = true;
 new bool:g_t_had_knife = false;
 new bool:g_second_half_first = false;
-//new bool:g_round_end = false;
 
 /* livewire */
 new Handle:g_h_lw_socket = INVALID_HANDLE;
@@ -135,6 +131,7 @@ new bool:g_lw_connected = false;
 
 /* modes */
 new g_overtime_mode = 0;
+new bool:g_play_out = false;
 
 /* chat prefix */
 new String:CHAT_PREFIX[64];
@@ -309,7 +306,7 @@ public OnPluginStart()
 	g_h_auto_record = CreateConVar("wm_auto_record", "1", "Enable or disable auto SourceTV demo record on Live on 3", FCVAR_NOTIFY);
 	g_h_save_file_dir = CreateConVar("wm_save_dir", "warmod", "Directory to store SourceTV demos and WarMod logs");
 	g_h_prefix_logs = CreateConVar("wm_prefix_logs", "1", "Enable or disable the prefixing of \"_\" to uncompleted match SourceTV demos and WarMod logs", FCVAR_NOTIFY);
-	g_h_play_out = CreateConVar("wm_play_out", "0", "Enable or disable teams required to play out the match even after a winner has been decided", FCVAR_NOTIFY);
+//	g_h_play_out = CreateConVar("wm_play_out", "0", "Enable or disable teams required to play out the match even after a winner has been decided", FCVAR_NOTIFY);
 	g_h_warmup_respawn = CreateConVar("wm_warmup_respawn", "0", "Enable or disable the respawning of players in warmup", FCVAR_NOTIFY);
 	g_h_status = CreateConVar("wm_status", "0", "WarMod automatically updates this value to the corresponding match status code", FCVAR_NOTIFY);
 	g_h_upload_results = CreateConVar("wm_upload_results", "0", "Enable or disable the uploading of match results via MySQL", FCVAR_NOTIFY);
@@ -322,12 +319,7 @@ public OnPluginStart()
 	g_h_notify_version = CreateConVar("wm_notify_version", WM_VERSION, WM_DESCRIPTION, FCVAR_NOTIFY|FCVAR_REPLICATED);
 	
 	g_h_mp_startmoney = FindConVar("mp_startmoney");
-	
 	g_i_account = FindSendPropOffs("CCSPlayer", "m_iAccount");
-	//if (g_i_account == -1)
-	//{
-	//	SetFailState("- Failed to find offset for m_iAccount!");
-	//}
 	
 	HookConVarChange(g_h_active, OnActiveChange);
 	HookConVarChange(g_h_req_names, OnReqNameChange);
@@ -340,6 +332,7 @@ public OnPluginStart()
 	HookConVarChange(g_h_lw_enabled, OnLiveWireChange);
 	HookConVarChange(g_h_t, OnTChange);
 	HookConVarChange(g_h_ct, OnCTChange);
+	HookConVarChange(FindConVar("mp_match_can_clinch"), OnPlayOutChange);
 	
 	HookEvent("round_start", Event_Round_Start);
 	HookEvent("round_end", Event_Round_End);
@@ -378,6 +371,7 @@ public OnPluginStart()
 	
 	CreateTimer(600.0, LiveWire_Check, 0, TIMER_REPEAT);
 	CreateTimer(1800.0, LiveWire_Ping, _, TIMER_REPEAT);
+	
 	// Pause and Unpause stuff
 	sv_pausable = FindConVar ("sv_pausable");
 	g_h_pause_comfirm = CreateConVar("wm_pause_comfirm", "1", "Wait for other team to comfirm pause: 0 = off, 1 = on", FCVAR_NOTIFY);
@@ -400,17 +394,7 @@ public OnLibraryAdded(const String:name[])
 public OnConfigsExecuted()
 {
 	GetConVarString(g_h_chat_prefix, CHAT_PREFIX, sizeof(CHAT_PREFIX));
-	
-	if (GetConVarBool(g_h_play_out))
-	{
-		ServerCommand("mp_match_can_clinch 0");
-	}
-	else
-	{
-		ServerCommand("mp_match_can_clinch 1");
-	}
 }
-
 
 public Action:LiveWire_ReConnect(client, args)
 {
@@ -2885,7 +2869,7 @@ CheckScores()
 					if (GetConVarBool(g_h_upload_results))
 					{
 						new match_length = RoundFloat(GetEngineTime() - g_match_start);
-						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
 					ResetMatch(true);
 				}
@@ -2921,7 +2905,7 @@ CheckScores()
 				if (GetConVarBool(g_h_upload_results))
 				{
 					new match_length = RoundFloat(GetEngineTime() - g_match_start);
-					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
 				ResetMatch(true);
 			}
@@ -2930,7 +2914,7 @@ CheckScores()
 				DisplayScore(0, 0, false);
 				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
 				
-				if (!GetConVarBool(g_h_play_out))
+				if (!g_play_out)
 				{
 					Call_StartForward(g_f_on_end_match);
 					Call_Finish();
@@ -2960,7 +2944,7 @@ CheckScores()
 					if (GetConVarBool(g_h_upload_results))
 					{
 						new match_length = RoundFloat(GetEngineTime() - g_match_start);
-						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
 					ResetMatch(true);
 				}
@@ -3080,7 +3064,7 @@ CheckScores()
 					if (GetConVarBool(g_h_upload_results))
 					{
 						new match_length = RoundFloat(GetEngineTime() - g_match_start);
-						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
 					
 					if (GetConVarBool(g_h_prefix_logs))
@@ -3123,7 +3107,7 @@ CheckScores()
 				if (GetConVarBool(g_h_upload_results))
 				{
 					new match_length = RoundFloat(GetEngineTime() - g_match_start);
-					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
 				ResetMatch(true);
 				return;
@@ -3213,7 +3197,7 @@ CheckScores()
 			if (GetConVarBool(g_h_upload_results))
 			{
 				new match_length = RoundFloat(GetEngineTime() - g_match_start);
-				MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, GetConVarBool(g_h_play_out), g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+				MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 			}
 			ResetMatch(true);
 		}
@@ -4028,6 +4012,18 @@ IsAdminCmd(client, bool:silent)
 		}
 	}
 	return false;
+}
+
+public OnPlayOutChange(Handle:cvar, const String:oldVal[], const String:newVal[])
+{
+	if (StringToInt(newVal) != 0)
+	{
+		g_play_out = false;
+	}
+	else
+	{
+		g_play_out = true;
+	}
 }
 
 public OnActiveChange(Handle:cvar, const String:oldVal[], const String:newVal[])
@@ -5258,8 +5254,6 @@ public Action:ShowPluginInfo(Handle:timer, any:client)
 		GetConVarName(g_h_max_rounds, max_rounds, sizeof(max_rounds));
 		new String:min_ready[64];
 		GetConVarName(g_h_min_ready, min_ready, sizeof(min_ready));
-		new String:play_out[64];
-		GetConVarName(g_h_play_out, play_out, sizeof(play_out));
 		PrintToConsole(client, "==============================================================");
 		PrintToConsole(client, "This server is running WarMod [BFG] %s Server Plugin", WM_VERSION);
 		PrintToConsole(client, "");
@@ -5271,7 +5265,7 @@ public Action:ShowPluginInfo(Handle:timer, any:client)
 		PrintToConsole(client, "  /info - Display the Ready System if enabled 	  /i");
 		PrintToConsole(client, "  /scores - Display the match score if live 	  /score /s");
 		PrintToConsole(client, "");
-		PrintToConsole(client, "Current settings: %s: %d / %s: %d / %s: %d", max_rounds, GetConVarInt(g_h_max_rounds), min_ready, GetConVarInt(g_h_min_ready), play_out, GetConVarBool(g_h_play_out));
+		PrintToConsole(client, "Current settings: %s: %d / %s: %d / Play out match: %d", max_rounds, GetConVarInt(g_h_max_rounds), min_ready, GetConVarInt(g_h_min_ready), g_play_out);
 		PrintToConsole(client, "==============================================================");
 	}
 }
