@@ -205,6 +205,7 @@ public OnPluginStart()
 	RegConsoleCmd("say", SayChat);
 	RegConsoleCmd("say_team", SayChat);
 	RegConsoleCmd("buy", RestrictBuy);
+	AddCommandListener(Command_JoinTeam, "jointeam");
 	RegConsoleCmd("jointeam", ChooseTeam);
 	RegConsoleCmd("spectate", ChooseTeam);
 	RegConsoleCmd("wm_readylist", ReadyList);
@@ -3579,6 +3580,35 @@ public Action:KnifeOn3Text(Handle:timer)
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 \x02KNIFE!", CHAT_PREFIX);
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
+}
+
+public Action:Command_JoinTeam(client, args)
+{
+	if (!IsActive(client, true))
+	{
+		return Plugin_Continue;
+	}
+
+	if (client == 0)
+	{
+		return Plugin_Continue;
+	}
+
+	if (g_match && GetClientTeam(client) > 1 && GetConVarBool(g_h_locked))
+	{
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Change Teams Midgame");
+		return Plugin_Stop;
+	}
+
+	new max_players = GetConVarInt(g_h_max_players);
+	if ((g_ready_enabled || g_match) && max_players != 0 && GetClientTeam(client) <= 1 && CS_GetPlayingCount() >= max_players)
+	{
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Maximum Players");
+		ChangeClientTeam(client, SPECTATOR_TEAM);
+		return Plugin_Stop;
+	}
+
+	return Plugin_Continue;
 }
 
 public Action:ChooseTeam(client, args)
