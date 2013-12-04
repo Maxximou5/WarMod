@@ -1903,7 +1903,7 @@ public Event_Round_Start(Handle:event, const String:name[], bool:dontBroadcast)
 	{
 		return;
 	}*/
-	if (g_t_money == true || GetConVarBool(g_h_round_money))
+	if (g_t_money == true && GetConVarBool(g_h_round_money))
 	{
 		new the_money[MAXPLAYERS + 1];
 		new num_players;
