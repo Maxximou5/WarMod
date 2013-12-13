@@ -71,6 +71,8 @@ new Handle:g_h_min_ready = INVALID_HANDLE;
 new Handle:g_h_max_players = INVALID_HANDLE;
 new Handle:g_h_match_config = INVALID_HANDLE;
 new Handle:g_h_end_config = INVALID_HANDLE;
+new Handle:g_h_warmup_config = INVALID_HANDLE;
+new Handle:g_h_prac_config = INVALID_HANDLE;
 new Handle:g_h_half_time_config = INVALID_HANDLE;
 new Handle:g_h_half_time_break = INVALID_HANDLE;
 new Handle:g_h_round_money = INVALID_HANDLE;
@@ -232,6 +234,9 @@ public OnPluginStart()
 	
 	RegAdminCmd("swap", SwapAll, ADMFLAG_CUSTOM1, "Swap all players to the opposite team");
 	
+	RegAdminCmd("prac", Practice, ADMFLAG_CUSTOM1, "Puts server into a practice mode state");
+	RegAdminCmd("warmup", WarmUp, ADMFLAG_CUSTOM1, "Puts server into a warm up state");
+	
 	RegAdminCmd("pwd", ChangePassword, ADMFLAG_PASSWORD, "Set or display the sv_password console variable");
 	RegAdminCmd("pw", ChangePassword, ADMFLAG_PASSWORD, "Set or display the sv_password console variable");
 	
@@ -286,6 +291,8 @@ public OnPluginStart()
 	g_h_max_players = CreateConVar("wm_max_players", "10", "Sets the maximum players allowed on both teams combined, others will be forced to spectator (0 = unlimited)", FCVAR_NOTIFY, true, 0.0);
 	g_h_match_config = CreateConVar("wm_match_config", "warmod/ruleset_mr15.cfg", "Sets the match config to load on Live on 3");
 	g_h_end_config = CreateConVar("wm_reset_config", "warmod/on_match_end.cfg", "Sets the config to load at the end/reset of a match");
+	g_h_warmup_config = CreateConVar("wm_warmup_config", "warmod/ruleset_warmup.cfg", "Sets the config to load up for warmup");
+	g_h_prac_config = CreateConVar("wm_prac_config", "warmod/prac.cfg", "Sets the config to load up for practice");
 	g_h_half_time_config = CreateConVar("wm_half_time_config", "warmod/on_match_half_time.cfg", "Sets the config to load at half time of a match (including overtime)");
 	g_h_half_time_break = CreateConVar("wm_half_time_break", "0", "Pause game at halftime for a break, No break = 0, break = 1");
 	g_h_round_money = CreateConVar("wm_round_money", "1", "Enable or disable a client's team mates money to be displayed at the start of a round (to him only)", FCVAR_NOTIFY);
@@ -1183,6 +1190,7 @@ public Action:PauseTimeout(Handle:timer)
 	g_pause_offered_ct = false;
 	g_pause_offered_t = false;
 }
+
 public Action:UnPauseTimer(Handle:timer)
 {
 	g_h_stored_timer = INVALID_HANDLE;
@@ -1190,6 +1198,13 @@ public Action:UnPauseTimer(Handle:timer)
 	ServerCommand("mp_unpause_match 1");
 	g_pause_offered_ct = false;
 	g_pause_offered_t = false;
+}
+
+public Action:UploadResults(Handle:timer)
+{
+	new match_length = RoundFloat(GetEngineTime() - g_match_start);
+	MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  Results uploaded", CHAT_PREFIX);
 }
 
 public Action:ChangeMinReady(client, args)
@@ -2879,8 +2894,9 @@ CheckScores()
 					
 					if (GetConVarBool(g_h_upload_results))
 					{
-						new match_length = RoundFloat(GetEngineTime() - g_match_start);
-						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+						CreateTimer(3.0, UploadResults);
+						//new match_length = RoundFloat(GetEngineTime() - g_match_start);
+						//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
 					ResetMatch(true);
 				}
@@ -2915,8 +2931,9 @@ CheckScores()
 				
 				if (GetConVarBool(g_h_upload_results))
 				{
-					new match_length = RoundFloat(GetEngineTime() - g_match_start);
-					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+					CreateTimer(3.0, UploadResults);
+					//new match_length = RoundFloat(GetEngineTime() - g_match_start);
+					//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
 				ResetMatch(true);
 			}
@@ -2954,8 +2971,9 @@ CheckScores()
 					
 					if (GetConVarBool(g_h_upload_results))
 					{
-						new match_length = RoundFloat(GetEngineTime() - g_match_start);
-						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+						CreateTimer(3.0, UploadResults);
+						//new match_length = RoundFloat(GetEngineTime() - g_match_start);
+						//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
 					ResetMatch(true);
 				}
@@ -3074,8 +3092,9 @@ CheckScores()
 					
 					if (GetConVarBool(g_h_upload_results))
 					{
-						new match_length = RoundFloat(GetEngineTime() - g_match_start);
-						MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+						CreateTimer(3.0, UploadResults);
+						//new match_length = RoundFloat(GetEngineTime() - g_match_start);
+						//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
 					
 					if (GetConVarBool(g_h_prefix_logs))
@@ -3117,8 +3136,9 @@ CheckScores()
 				
 				if (GetConVarBool(g_h_upload_results))
 				{
-					new match_length = RoundFloat(GetEngineTime() - g_match_start);
-					MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+					CreateTimer(3.0, UploadResults);
+					//new match_length = RoundFloat(GetEngineTime() - g_match_start);
+					//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
 				ResetMatch(true);
 				return;
@@ -3207,8 +3227,9 @@ CheckScores()
 			
 			if (GetConVarBool(g_h_upload_results))
 			{
-				new match_length = RoundFloat(GetEngineTime() - g_match_start);
-				MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
+				CreateTimer(3.0, UploadResults);
+				//new match_length = RoundFloat(GetEngineTime() - g_match_start);
+				//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 			}
 			ResetMatch(true);
 		}
@@ -3582,7 +3603,7 @@ public Action:KnifeOn3Text(Handle:timer)
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
 }
 
-public Action:Command_JoinTeam(client, args)
+public Action:Command_JoinTeam(client, const String:command[], args)
 {
 	if (!IsActive(client, true))
 	{
@@ -3736,6 +3757,60 @@ public Action:NotLive(client, args)
 	}
 	
 	LogAction(client, -1, "\"half_reset\" (player \"%L\")", client);
+	
+	return Plugin_Handled;
+}
+
+public Action:WarmUp(client, args)
+{
+	if (g_live)
+	{
+		// warmod is disabled
+		PrintToChat(client,"\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Match is LIVE", LANG_SERVER);
+		return Plugin_Handled;
+	}
+	
+	if (!IsAdminCmd(client, false))
+	{
+		// not allowed, rcon only
+		return Plugin_Handled;
+	}
+	
+	new String:warmup_config[128];
+	GetConVarString(g_h_warmup_config, warmup_config, sizeof(warmup_config));
+	ServerCommand("exec %s", warmup_config);
+	
+	if (client == 0)
+	{
+		PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Warm Up Active", LANG_SERVER);
+	}
+	
+	return Plugin_Handled;
+}
+
+public Action:Practice(client, args)
+{
+	if (g_live)
+	{
+		// warmod is disabled
+		PrintToChat(client,"\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Match is LIVE", LANG_SERVER);
+		return Plugin_Handled;
+	}
+	
+	if (!IsAdminCmd(client, false))
+	{
+		// not allowed, rcon only
+		return Plugin_Handled;
+	}
+	
+	new String:prac_config[128];
+	GetConVarString(g_h_prac_config, prac_config, sizeof(prac_config));
+	ServerCommand("exec %s", prac_config);
+	
+	if (client == 0)
+	{
+		PrintToServer("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Practice Mode Active", LANG_SERVER);
+	}
 	
 	return Plugin_Handled;
 }
