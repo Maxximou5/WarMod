@@ -1207,6 +1207,36 @@ public Action:UploadResults(Handle:timer)
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  Results uploaded", CHAT_PREFIX);
 }
 
+stock bool:IsValidClient(client)
+{
+	if (client <= 0 || client > MaxClients) 
+	{
+		return false;
+	}
+	
+	if (!IsClientInGame(client)) 
+	{
+		return false;
+	}
+	
+	if (IsFakeClient(client))
+	{
+		return false;
+	}
+	
+	if (!IsClientConnected(client))
+	{
+		return false;
+	}
+	
+	if (IsClientSourceTV(client) || IsClientReplay(client)) 
+	{
+		return false;
+	}
+	
+	return true;
+}
+
 public Action:ChangeMinReady(client, args)
 {
 	if (!IsActive(client, false))
@@ -3431,6 +3461,16 @@ LiveOn3(bool:e_war)
 		new String:date[32];
 		FormatTime(date, sizeof(date), "%Y-%m-%d-%H%M");
 		
+		if (StrEqual(g_t_name, DEFAULT_T_NAME))
+		{
+			getTerroristTeamName();
+		}
+	
+		if (StrEqual(g_ct_name, DEFAULT_CT_NAME))
+		{
+			getCounterTerroristTeamName();
+		}
+		
 		new String:t_name[64];
 		new String:ct_name[64];
 		t_name = g_t_name;
@@ -3779,6 +3819,7 @@ public Action:WarmUp(client, args)
 	new String:warmup_config[128];
 	GetConVarString(g_h_warmup_config, warmup_config, sizeof(warmup_config));
 	ServerCommand("exec %s", warmup_config);
+	ServerCommand("mp_warmup_start");
 	
 	if (client == 0)
 	{
@@ -3806,6 +3847,7 @@ public Action:Practice(client, args)
 	new String:prac_config[128];
 	GetConVarString(g_h_prac_config, prac_config, sizeof(prac_config));
 	ServerCommand("exec %s", prac_config);
+	ServerCommand("mp_warmup_start 1");
 	
 	if (client == 0)
 	{
@@ -4356,6 +4398,96 @@ public SetAllCancelled(bool:cancelled)
 			g_cancel_list[i] = cancelled;
 		}
 	}
+}
+
+//Eddylad created this part for me. There was no way I could of come up with this. Thanks Eddy =D
+ public getTerroristTeamName()
+{
+	new String:clanTags[MAXPLAYERS+1][MAX_NAME_LENGTH];
+	new j = 0;
+	
+	for (new i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidClient(i) && GetClientTeam(i) == 2)
+		{
+			CS_GetClientClanTag(i, clanTags[j], sizeof(clanTags[])); 
+		}
+		j++;
+	}
+	
+	decl String:finalTag[MAX_NAME_LENGTH];
+	new finalCount = 0;
+	new storedCount = 0;
+	new arraySize = sizeof(clanTags[]);
+	
+	for (new k = 0; k < arraySize; k++)
+	{
+		for (new z = 0; z < arraySize; z++)
+		{
+			if (strlen(clanTags[k]) > 0 && strlen(clanTags[z]) > 0 && StrEqual(clanTags[k], clanTags[z]))
+			{
+				finalCount++;
+			}
+		}
+		
+		if(finalCount > storedCount)
+		{
+			storedCount = finalCount;
+			Format(finalTag, sizeof(finalTag), clanTags[k]);
+		}
+	}
+	
+	Format(g_t_name, sizeof(g_t_name), finalTag);
+	Format(g_t_name_escaped, sizeof(g_t_name_escaped), finalTag);
+	EscapeString(g_t_name_escaped, sizeof(g_t_name_escaped));
+	SetConVarStringHidden(g_h_t, g_t_name);
+	ServerCommand("mp_teamname_2 %s", g_t_name);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Terrorists are called \x02%s", CHAT_PREFIX, g_t_name);
+}
+
+//Eddylad created this part for me. There was no way I could of come up with this. Thanks Eddy =D
+ public getCounterTerroristTeamName()
+{
+	new String:clanTags[MAXPLAYERS+1][MAX_NAME_LENGTH];
+	new j = 0;
+	
+	for (new i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidClient(i) && GetClientTeam(i) == 3)
+		{
+			CS_GetClientClanTag(i, clanTags[j], sizeof(clanTags[])); 
+		}
+		j++;
+	}
+	
+	decl String:finalTag[MAX_NAME_LENGTH];
+	new finalCount = 0;
+	new storedCount = 0;
+	new arraySize = sizeof(clanTags[]);
+	
+	for (new k = 0; k < arraySize; k++)
+	{
+		for (new z = 0; z < arraySize; z++)
+		{
+			if (strlen(clanTags[k]) > 0 && strlen(clanTags[z]) > 0 && StrEqual(clanTags[k], clanTags[z]))
+			{
+				finalCount++;
+			}
+		}
+		
+		if(finalCount > storedCount)
+		{
+			storedCount = finalCount;
+			Format(finalTag, sizeof(finalTag), clanTags[k]);
+		}
+	}
+	
+	Format(g_ct_name, sizeof(g_ct_name), finalTag);
+	Format(g_ct_name_escaped, sizeof(g_ct_name_escaped), finalTag);
+	EscapeString(g_ct_name_escaped, sizeof(g_ct_name_escaped));
+	SetConVarStringHidden(g_h_ct, g_ct_name);
+	ServerCommand("mp_teamname_1 %s", g_ct_name);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Counter Terrorists are called \x09%s", CHAT_PREFIX, g_ct_name);
 }
 
 public Action:ChangeT(client, args)
