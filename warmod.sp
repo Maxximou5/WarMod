@@ -3847,7 +3847,6 @@ public Action:Practice(client, args)
 	new String:prac_config[128];
 	GetConVarString(g_h_prac_config, prac_config, sizeof(prac_config));
 	ServerCommand("exec %s", prac_config);
-	ServerCommand("mp_warmup_start 1");
 	
 	if (client == 0)
 	{
