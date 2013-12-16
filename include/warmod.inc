@@ -48,7 +48,7 @@
 #define CLUTCH_WON         3
 #define CLUTCH_NUM         4
 
-#define WM_VERSION         "0.1.8"
+#define WM_VERSION         "0.1.9"
 #define WM_DESCRIPTION     "An automative service created by Twelve-60 and updated by Versatile BFG for CS:GO competition matches."
 
 new String:g_team_name_cache[16][64];
