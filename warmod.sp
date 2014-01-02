@@ -989,12 +989,12 @@ public Action:Pause(client, args)
 				
 				//if (GetConVarBool(g_h_pause_freezetime))
 				//{
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at freeze time.");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Freeze Time", LANG_SERVER);
 				g_pause_freezetime = true;
 				/*}
 				else
 				{
-					PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Game is Paused. Please type !unpause to unpause the game", LANG_SERVER);
 					if (GetConVarBool(g_h_auto_unpause))
 					{
 						PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
@@ -1017,12 +1017,12 @@ public Action:Pause(client, args)
 				
 				//if (GetConVarBool(g_h_pause_freezetime))
 				//{
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at the end of the round");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Round End", LANG_SERVER);
 				g_pause_freezetime = true;
 				/*}
 				else
 				{
-					PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Game is Paused. Please type !unpause to unpause the game", LANG_SERVER);
 					if (GetConVarBool(g_h_auto_unpause))
 					{
 						PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
@@ -1035,26 +1035,26 @@ public Action:Pause(client, args)
 			}
 			else if (GetClientTeam(client) == 2 && g_h_t_pause_count == g_h_pause_limit)
 			{
-				PrintToChat(client, "\x03 <WarMod_BFG> \x04 You have used your pause limit already");
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 			}
 			else if (GetClientTeam(client) == 3 && g_h_ct_pause_count == g_h_pause_limit)
 			{
-				PrintToChat(client, "\x03 <WarMod_BFG> \x04 You have used your pause limit already");
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 			}
 			else if (GetClientTeam(client) < 2 )
 			{
-				PrintToChat(client, "\x03 <WarMod_BFG> \x04 You must be on T or CT to enable !pause");
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Non-player", LANG_SERVER);
 			}
 			else if (GetClientTeam(client) == 3 && GetConVarBool(g_h_ct_pause_count) != GetConVarBool(g_h_pause_limit) && g_pause_offered_ct == false)
 			{
 				g_pause_offered_ct = true;
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 CT have asked for a Pause. Please type !pause to pause the match.");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause CT Offer", LANG_SERVER);
 				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
 			}
 			else if (GetClientTeam(client) == 2 && GetConVarBool(g_h_t_pause_count) != GetConVarBool(g_h_pause_limit) && g_pause_offered_t == false)
 			{
 				g_pause_offered_t = true;
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 T have asked for a Pause. Please type !pause to pause the match.");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause T Offer", LANG_SERVER);
 				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
 			}
 		}
@@ -1063,7 +1063,7 @@ public Action:Pause(client, args)
 			g_h_ct_pause_count++;
 			//if (GetConVarBool(g_h_pause_freezetime))
 			//{
-			PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at the end of the round");
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Freeze Time", LANG_SERVER);
 			g_pause_freezetime = true;
 			/*}
 			else
@@ -1084,12 +1084,12 @@ public Action:Pause(client, args)
 			g_h_t_pause_count++;
 			//if (GetConVarBool(g_h_pause_freezetime))
 			//{
-			PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will pause at the end of the round");
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Freeze Time", LANG_SERVER);
 			g_pause_freezetime = true;
 			/*}
 			else
 			{
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Game is Paused. Please type !unpause to unpause the game", LANG_SERVER);
 				if(GetConVarBool(g_h_auto_unpause))
 				{
 					PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
@@ -1102,20 +1102,20 @@ public Action:Pause(client, args)
 		}
 		else if (GetClientTeam(client) == 2 && GetConVarBool(g_h_t_pause_count) == GetConVarBool(g_h_pause_limit))
 		{
-			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01  You have used your pause limit already", CHAT_PREFIX);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 		}
 		else if (GetClientTeam(client) == 3 && GetConVarBool(g_h_ct_pause_count) == GetConVarBool(g_h_pause_limit))
 		{
-			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01  You have used your pause limit already", CHAT_PREFIX);
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 		}
 		else if (GetClientTeam(client) < 2)
 		{
-		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01  You must be on T or CT to enable !pause", CHAT_PREFIX);
+		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Non-player", LANG_SERVER);
 		}
 	}
 	else
 	{
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  sv_pauseable is set to 0. Pause fuction not enabled", CHAT_PREFIX);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Not Enabled", LANG_SERVER);
 	}
 }
 
@@ -1129,13 +1129,13 @@ public Action:UnPause(client, args)
 			{
 				g_pause_offered_ct = true;
 				PrintToConsoleAll("<WarMod_BFG> CT have asked to unpause the game. Please type /unpause to unpause the match.");
-				PrintToChatAll("<WarMod_BFG> CT have asked to unpause the game. Please type /unpause to unpause the match.");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause CT Offer", LANG_SERVER);
 			}
 			else if (GetClientTeam(client) == 2 && g_pause_offered_t == false && g_pause_offered_ct == false)
 			{
 				g_pause_offered_t = true;
 				PrintToConsoleAll("<WarMod_BFG> T have asked to unpause the game. Please type /unpause to unpause the match.");
-				PrintToChatAll("<WarMod_BFG> T have asked to unpause the game. Please type /unpause to unpause the match.");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause T Offer", LANG_SERVER);
 			}
 			else if (GetClientTeam(client) == 2 && g_pause_offered_ct == true)
 			{
@@ -1152,33 +1152,33 @@ public Action:UnPause(client, args)
 			else if (GetClientTeam(client) < 2 )
 			{
 				PrintToConsole(client, "<WarMod_BFG> You must be on T or CT to enable /unpause");
-				PrintToChat(client, "<WarMod_BFG> You must be on T or CT to enable /unpause");
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause Non-player", LANG_SERVER);
 			}
 		}
 		else
 		{
 			if (GetClientTeam(client) == 2)
 			{
-				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  T have unpaused the match", CHAT_PREFIX);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "T have unpaused the match", LANG_SERVER);
 				g_paused = false;
 				ServerCommand("mp_unpause_match 1");
 			}
 			else if (GetClientTeam(client) == 3)
 			{
-				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  CT have unpaused the match", CHAT_PREFIX);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "CT have unpaused the match", LANG_SERVER);
 				g_paused = false;
 				ServerCommand("mp_unpause_match 1");
 			}
 			else if (GetClientTeam(client) < 2 )
 			{
 				PrintToConsole(client, "<WarMod_BFG> You must be on T or CT to enable /unpause");
-				PrintToChat(client, "<WarMod_BFG> You must be on T or CT to enable /unpause");
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause Non-player", LANG_SERVER);
 			}
 		}
 	}
 	else
 	{
-		PrintToChat(client,"\x01 \x09[\x04%s\x09]\x01  Server is not paused or was paused via rcon", CHAT_PREFIX);
+		PrintToChat(client,"\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Paused Via Rcon", LANG_SERVER);
 		PrintToConsole(client,"<WarMod_BFG> Server is not paused or was paused via rcon");
 	}
 }
@@ -1186,7 +1186,7 @@ public Action:UnPause(client, args)
 public Action:PauseTimeout(Handle:timer)
 {
 	g_h_stored_timer = INVALID_HANDLE;
-	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  Pause offer was not comfirmed by the other team.", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Offer Not Confirmed", LANG_SERVER);
 	g_pause_offered_ct = false;
 	g_pause_offered_t = false;
 }
@@ -1194,7 +1194,7 @@ public Action:PauseTimeout(Handle:timer)
 public Action:UnPauseTimer(Handle:timer)
 {
 	g_h_stored_timer = INVALID_HANDLE;
-	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  Auto Unpaused!", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause Auto", LANG_SERVER);
 	ServerCommand("mp_unpause_match 1");
 	g_pause_offered_ct = false;
 	g_pause_offered_t = false;
@@ -1204,7 +1204,12 @@ public Action:UploadResults(Handle:timer)
 {
 	new match_length = RoundFloat(GetEngineTime() - g_match_start);
 	MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
-	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01  Results uploaded", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Results uploaded", LANG_SERVER);
+}
+
+public Action:ResetMatchTimer(Handle:timer)
+{
+	ResetMatch(true);
 }
 
 stock bool:IsValidClient(client)
@@ -2098,7 +2103,15 @@ public Event_Round_End(Handle:event, const String:name[], bool:dontBroadcast)
 			{
 				LogEvent("{\"event\": \"knife_win\", \"team\": %d}", winner);
 			}
-			PrintToServer("\x01 \x09[\x04%s\x09]\x01 Team %d voting for stay/swap.", CHAT_PREFIX, winner );
+			if (winner == 2)
+			{
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_t_name, "Knife Vote Team", LANG_SERVER);			
+			}
+			else
+			{
+			PrintToServer("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_ct_name, "Knife Vote Team", LANG_SERVER);			
+			}
+			
 			DisplayStayLeaveVote( winner );
 			g_t_knife = false;
 			g_t_had_knife = true;
@@ -2928,7 +2941,8 @@ CheckScores()
 						//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 						//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
-					ResetMatch(true);
+					CreateTimer(3.0, ResetMatchTimer);
+					//ResetMatch(true);
 				}
 			}
 			else if (GetScore() == GetConVarInt(g_h_max_rounds) * 2) // full time (all rounds have been played out)
@@ -2965,7 +2979,8 @@ CheckScores()
 					//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 					//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
-				ResetMatch(true);
+				CreateTimer(3.0, ResetMatchTimer);
+				//ResetMatch(true);
 			}
 			else if (!g_playing_out && GetTScore() == GetConVarInt(g_h_max_rounds) + 1 || GetCTScore() == GetConVarInt(g_h_max_rounds) + 1) // full time
 			{
@@ -3005,7 +3020,8 @@ CheckScores()
 						//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 						//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
-					ResetMatch(true);
+					CreateTimer(3.0, ResetMatchTimer);
+					//ResetMatch(true);
 				}
 				else
 				{
@@ -3133,7 +3149,8 @@ CheckScores()
 					}
 					DisplayScore(0, 2, false);
 					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
-					ResetMatch(true);
+					CreateTimer(3.0, ResetMatchTimer);
+					//ResetMatch(true);
 					return;
 				}
 			}
@@ -3170,7 +3187,8 @@ CheckScores()
 					//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 					//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
-				ResetMatch(true);
+				CreateTimer(3.0, ResetMatchTimer);
+				//ResetMatch(true);
 				return;
 			}
 			else
@@ -3261,7 +3279,8 @@ CheckScores()
 				//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 				//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 			}
-			ResetMatch(true);
+			CreateTimer(3.0, ResetMatchTimer);
+			//ResetMatch(true);
 		}
 		else
 		{
@@ -3603,6 +3622,16 @@ public Action:KnifeOn3(client, args)
 		return Plugin_Handled;
 	}
 	
+	if (StrEqual(g_t_name, DEFAULT_T_NAME))
+	{
+		getTerroristTeamName();
+	}
+	
+	if (StrEqual(g_ct_name, DEFAULT_CT_NAME))
+	{
+		getCounterTerroristTeamName();
+	}
+		
 	g_t_knife = true;
 	g_t_score = false;
 	
@@ -4373,6 +4402,10 @@ public Handle_VoteStayLeave(Handle:menu, MenuAction:action, param1, param2)
 				}
 			}*/
 			
+			if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+			{
+				SwitchTeamNames();
+			}
 			ServerCommand("mp_swapteams");
 			// show ready system
 			ReadyChangeAll(0, false, true);
@@ -4410,20 +4443,129 @@ public SetAllCancelled(bool:cancelled)
 		if (IsValidClient(i) && GetClientTeam(i) == 2)
 		{
 			CS_GetClientClanTag(i, clanTags[j], sizeof(clanTags[])); 
+			j++;
 		}
-		j++;
+		//j++;
 	}
 	
 	decl String:finalTag[MAX_NAME_LENGTH];
-	new finalCount = 0;
-	new storedCount = 0;
-	new arraySize = sizeof(clanTags[]);
+	//new finalCount = 0;
+	//new storedCount = 0;
+	//new arraySize = sizeof(clanTags[]);
 	
-	for (new k = 0; k < arraySize; k++)
+	if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[2]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[2]) && StrEqual(clanTags[2], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[2]) > 0 && StrEqual(clanTags[2], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[2]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[2]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[2]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[2]) > 0 && StrEqual(clanTags[2], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[2]);
+	}
+	else if (strlen(clanTags[2]) > 0 && StrEqual(clanTags[2], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[2]);
+	}
+	else if (strlen(clanTags[3]) > 0 && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[3]);
+	}
+	else
+	{
+		Format(finalTag, sizeof(finalTag), DEFAULT_T_NAME);
+	}
+	/*for (new k = 0; k < arraySize; k++)
 	{
 		for (new z = 0; z < arraySize; z++)
 		{
-			if (strlen(clanTags[k]) > 0 && strlen(clanTags[z]) > 0 && StrEqual(clanTags[k], clanTags[z]))
+			if (strlen(clanTags[k]) > 1 && strlen(clanTags[z]) > 1 && StrEqual(clanTags[k], clanTags[z]))
 			{
 				finalCount++;
 			}
@@ -4434,14 +4576,17 @@ public SetAllCancelled(bool:cancelled)
 			storedCount = finalCount;
 			Format(finalTag, sizeof(finalTag), clanTags[k]);
 		}
-	}
+	}*/
 	
+	if (!StrEqual(finalTag, DEFAULT_T_NAME))
+	{
 	Format(g_t_name, sizeof(g_t_name), finalTag);
 	Format(g_t_name_escaped, sizeof(g_t_name_escaped), finalTag);
 	EscapeString(g_t_name_escaped, sizeof(g_t_name_escaped));
 	SetConVarStringHidden(g_h_t, g_t_name);
 	ServerCommand("mp_teamname_2 %s", g_t_name);
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Terrorists are called \x02%s", CHAT_PREFIX, g_t_name);
+	}
 }
 
 //Eddylad created this part for me. There was no way I could of come up with this. Thanks Eddy =D
@@ -4455,16 +4600,125 @@ public SetAllCancelled(bool:cancelled)
 		if (IsValidClient(i) && GetClientTeam(i) == 3)
 		{
 			CS_GetClientClanTag(i, clanTags[j], sizeof(clanTags[])); 
+			j++;
 		}
-		j++;
+		//j++;
 	}
 	
 	decl String:finalTag[MAX_NAME_LENGTH];
-	new finalCount = 0;
-	new storedCount = 0;
-	new arraySize = sizeof(clanTags[]);
+	//new finalCount = 0;
+	//new storedCount = 0;
+	//new arraySize = sizeof(clanTags[]);
 	
-	for (new k = 0; k < arraySize; k++)
+	if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[2]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]) && StrEqual(clanTags[1], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[2]) && StrEqual(clanTags[2], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[2]) && StrEqual(clanTags[2], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[2]) > 0 && StrEqual(clanTags[2], clanTags[3]) && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[2]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[1]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[2]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[0]) > 0 && StrEqual(clanTags[0], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[0]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[2]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[1]) > 0 && StrEqual(clanTags[1], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[1]);
+	}
+	else if (strlen(clanTags[2]) > 0 && StrEqual(clanTags[2], clanTags[3]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[2]);
+	}
+	else if (strlen(clanTags[2]) > 0 && StrEqual(clanTags[2], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[2]);
+	}
+	else if (strlen(clanTags[3]) > 0 && StrEqual(clanTags[3], clanTags[4]))
+	{
+		Format(finalTag, sizeof(finalTag), clanTags[3]);
+	}
+	else
+	{
+		Format(finalTag, sizeof(finalTag), DEFAULT_CT_NAME);
+	}
+	/*for (new k = 0; k < arraySize; k++)
 	{
 		for (new z = 0; z < arraySize; z++)
 		{
@@ -4479,14 +4733,16 @@ public SetAllCancelled(bool:cancelled)
 			storedCount = finalCount;
 			Format(finalTag, sizeof(finalTag), clanTags[k]);
 		}
-	}
-	
+	}*/
+	if (!StrEqual(finalTag, DEFAULT_CT_NAME))
+	{
 	Format(g_ct_name, sizeof(g_ct_name), finalTag);
 	Format(g_ct_name_escaped, sizeof(g_ct_name_escaped), finalTag);
 	EscapeString(g_ct_name_escaped, sizeof(g_ct_name_escaped));
 	SetConVarStringHidden(g_h_ct, g_ct_name);
 	ServerCommand("mp_teamname_1 %s", g_ct_name);
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Counter Terrorists are called \x09%s", CHAT_PREFIX, g_ct_name);
+	}
 }
 
 public Action:ChangeT(client, args)
