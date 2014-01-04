@@ -236,41 +236,45 @@
 	}
 	"Pause Non-player"
 	{
-		"en"			"You must be on T or CT to use !pause"
+		"en"			"You must be on T or CT to use /pause"
 	}
-	"Pause CT Offer"
+	"Pause Offer"
 	{
-		"en"			"CT have asked for a Pause. Please type !pause to pause the match"
-	}
-	"Pause T Offer"
-	{
-		"en"			"T have asked for a Pause. Please type !pause to pause the match"
+		"en"			"have asked for a Pause. Please type /pause to pause the match"
 	}
 	"Pause Not Enabled"
 	{
 		"en"			"sv_pauseable is set to 0. Pause function not enabled"
 	}
-	"Unpause CT Offer"
+	"Unpause Notice"
 	{
-		"en"			"CT have asked to unpause the game. Please type /unpause to unpause the match"
+		"en"			"Match is now Paused. Please type /unpause to unpause the match"
 	}
-	"Unpause T Offer"
+	"Unpause Offer"
 	{
-		"en"			"T have asked to unpause the game. Please type /unpause to unpause the match"
+		"en"			"have asked to unpause the game. Please type /unpause to unpause the match"
+	}
+	"Unpaused Match"
+	{
+		"en"			"have unpaused the match"
 	}
 	"Unpause Non-player"
 	{
-		"en"			"You must be on T or CT to use !unpause"
+		"en"			"You must be on T or CT to use /unpause"
 	}
 	"Pause Not Confirmed"
 	{
 		"en"			"Pause offer was not confirmed by the other team"
 	}
+	"Unpause Timer"
+	{
+		"en"			"seconds until game is auto unpaused"
+	}
 	"Unpause Auto"
 	{
 		"en"			"Match was auto Unpaused because time limit reached"
 	}
-	"Pause Via Rcon"
+	"Paused Via Rcon"
 	{
 		"en"			"Server is not paused or was paused via rcon"
 	}
