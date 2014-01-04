@@ -157,8 +157,8 @@ new Handle:g_h_auto_unpause_delay = INVALID_HANDLE;
 //new Handle:g_h_pause_freezetime = INVALID_HANDLE;
 new Handle:g_h_pause_comfirm = INVALID_HANDLE;
 new Handle:g_h_pause_limit = INVALID_HANDLE;
-new Handle:g_h_t_pause_count = INVALID_HANDLE;
-new Handle:g_h_ct_pause_count = INVALID_HANDLE;
+new g_t_pause_count = 0;
+new g_ct_pause_count = 0;
 new Handle:g_h_stored_timer = INVALID_HANDLE;
 
 
@@ -397,8 +397,8 @@ public OnPluginStart()
 //	g_h_pause_freezetime = CreateConVar("wm_pause_freezetime", "1", "Wait for freeze time to pause: 0 = off, 1 = on", FCVAR_NOTIFY);
 	g_h_auto_unpause_delay = CreateConVar("wm_auto_unpause_delay", "180", "Sets the seconds to wait before auto unpause", FCVAR_NOTIFY, true, 0.0);
 	g_h_pause_limit = CreateConVar("wm_pause_limit", "1", "Sets max pause count per team per half", FCVAR_NOTIFY);
-	g_h_t_pause_count = CreateConVar("wm_t_pause_count", "0", "WarMod automatically updates this value to the Terrorist's total pause count", FCVAR_NOTIFY);
-	g_h_ct_pause_count = CreateConVar("wm_ct_pause_count", "0", "WarMod automatically updates this value to the Counter-Terrorist's total pause count", FCVAR_NOTIFY);
+//	g_h_t_pause_count = CreateConVar("wm_t_pause_count", "0", "WarMod automatically updates this value to the Terrorist's total pause count", FCVAR_NOTIFY);
+//	g_h_ct_pause_count = CreateConVar("wm_ct_pause_count", "0", "WarMod automatically updates this value to the Counter-Terrorist's total pause count", FCVAR_NOTIFY);
 }
 
 public OnLibraryAdded(const String:name[])
@@ -714,6 +714,9 @@ ResetMatch(bool:silent)
 	ResetTeams();
 	g_overtime = false;
 	g_overtime_count = 0;
+	g_t_pause_count = 0;
+	g_ct_pause_count = 0;
+	ServerCommand("mp_unpause_match 1");
 	UpdateStatus();
 	
 	// stop tv recording after 10 seconds
@@ -773,6 +776,9 @@ ResetHalf(bool:silent)
 	ReadyChangeAll(0, false, true);
 	ResetHalfScores();
 	UpdateStatus();
+	g_t_pause_count = 0;
+	g_ct_pause_count = 0;
+	ServerCommand("mp_unpause_match 1");
 	
 	if (GetConVarBool(g_h_auto_ready))
 	{
@@ -972,7 +978,7 @@ public Action:ActiveToggle(client, args)
 //Pause and Unpause Commands + timers
 public Action:Pause(client, args)
 {
-    if (GetConVarBool(sv_pausable))
+    if (GetConVarBool(sv_pausable) && g_live)
     {
         if (GetConVarBool(g_h_pause_comfirm))
         {
@@ -985,7 +991,7 @@ public Action:Pause(client, args)
 				}
 				
 				g_pause_offered_ct = false;
-				g_h_ct_pause_count++;
+				g_ct_pause_count++;
 				
 				//if (GetConVarBool(g_h_pause_freezetime))
 				//{
@@ -1013,7 +1019,7 @@ public Action:Pause(client, args)
 					g_h_stored_timer = INVALID_HANDLE;
 				}
 				g_pause_offered_t = false;
-				g_h_t_pause_count++;
+				g_t_pause_count++;
 				
 				//if (GetConVarBool(g_h_pause_freezetime))
 				//{
@@ -1033,11 +1039,11 @@ public Action:Pause(client, args)
 				return;
 				//}
 			}
-			else if (GetClientTeam(client) == 2 && GetConVarInt(g_h_t_pause_count) == GetConVarInt(g_h_pause_limit))
+			else if (GetClientTeam(client) == 2 && g_t_pause_count == GetConVarInt(g_h_pause_limit))
 			{
 				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 			}
-			else if (GetClientTeam(client) == 3 && GetConVarInt(g_h_ct_pause_count) == GetConVarInt(g_h_pause_limit))
+			else if (GetClientTeam(client) == 3 && g_ct_pause_count == GetConVarInt(g_h_pause_limit))
 			{
 				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 			}
@@ -1045,22 +1051,22 @@ public Action:Pause(client, args)
 			{
 				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Non-player", LANG_SERVER);
 			}
-			else if (GetClientTeam(client) == 3 && GetConVarInt(g_h_ct_pause_count) != GetConVarInt(g_h_pause_limit) && g_pause_offered_ct == false)
+			else if (GetClientTeam(client) == 3 && g_ct_pause_count != GetConVarInt(g_h_pause_limit) && g_pause_offered_ct == false)
 			{
 				g_pause_offered_ct = true;
 				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_ct_name, "Pause Offer", LANG_SERVER);
 				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
 			}
-			else if (GetClientTeam(client) == 2 && GetConVarInt(g_h_t_pause_count) != GetConVarInt(g_h_pause_limit) && g_pause_offered_t == false)
+			else if (GetClientTeam(client) == 2 && g_t_pause_count != GetConVarInt(g_h_pause_limit) && g_pause_offered_t == false)
 			{
 				g_pause_offered_t = true;
 				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_t_name, "Pause Offer", LANG_SERVER);
 				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
 			}
 		}
-		else if (GetClientTeam(client) == 3 && GetConVarInt(g_h_ct_pause_count) != GetConVarInt(g_h_pause_limit) && !GetConVarBool(g_h_pause_comfirm))
+		else if (GetClientTeam(client) == 3 && g_ct_pause_count != GetConVarInt(g_h_pause_limit) && !GetConVarBool(g_h_pause_comfirm))
 		{
-			g_h_ct_pause_count++;
+			g_ct_pause_count++;
 			//if (GetConVarBool(g_h_pause_freezetime))
 			//{
 			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Freeze Time", LANG_SERVER);
@@ -1079,9 +1085,9 @@ public Action:Pause(client, args)
 			return;
 			//}
 		}
-		else if (GetClientTeam(client) == 2 &&  GetConVarInt(g_h_t_pause_count) != GetConVarInt(g_h_pause_limit) && GetConVarBool(g_h_pause_comfirm) == false)
+		else if (GetClientTeam(client) == 2 &&  g_t_pause_count != GetConVarInt(g_h_pause_limit) && GetConVarBool(g_h_pause_comfirm) == false)
 		{
-			g_h_t_pause_count++;
+			g_t_pause_count++;
 			//if (GetConVarBool(g_h_pause_freezetime))
 			//{
 			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Freeze Time", LANG_SERVER);
@@ -1100,11 +1106,11 @@ public Action:Pause(client, args)
 			return;
 			//}
 		}
-		else if (GetClientTeam(client) == 2 && GetConVarInt(g_h_t_pause_count) == GetConVarInt(g_h_pause_limit))
+		else if (GetClientTeam(client) == 2 && g_t_pause_count == GetConVarInt(g_h_pause_limit))
 		{
 			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 		}
-		else if (GetClientTeam(client) == 3 && GetConVarInt(g_h_ct_pause_count) == GetConVarInt(g_h_pause_limit))
+		else if (GetClientTeam(client) == 3 && g_ct_pause_count == GetConVarInt(g_h_pause_limit))
 		{
 			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 		}
@@ -1112,6 +1118,10 @@ public Action:Pause(client, args)
 		{
 		PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Non-player", LANG_SERVER);
 		}
+	}
+	else if (!g_live)
+	{
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Match Not In Progress", LANG_SERVER);
 	}
 	else
 	{
@@ -1749,7 +1759,10 @@ stock PrintToConsoleAll(const String:message[])
 {
 	for (new i = 1; i <= MaxClients; i++)
 	{
-		PrintToConsole(i, message);
+		if (IsValidClient(i))
+		{
+			PrintToConsole(i, message);
+		}
 	}
 }  
 
@@ -2834,6 +2847,8 @@ CheckScores()
 				SetAllCancelled(false);
 				ReadyChangeAll(0, false, true);
 				SwitchScores();
+				g_t_pause_count = 0;
+				g_ct_pause_count = 0;
 				
 				if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
 				{
@@ -3574,6 +3589,8 @@ stock LiveOn3Override()
 	ServerCommand("mp_restartgame 3");
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Live in 3", CHAT_PREFIX);
 	CreateTimer(2.5, LiveOn3Text);
+	g_t_pause_count = 0;
+	g_ct_pause_count = 0;
 	
 	if (GetConVarBool(g_h_stats_enabled))
 	{
