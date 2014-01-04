@@ -994,10 +994,10 @@ public Action:Pause(client, args)
 				/*}
 				else
 				{
-					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Game is Paused. Please type !unpause to unpause the game", LANG_SERVER);
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause Notice", LANG_SERVER);
 					if (GetConVarBool(g_h_auto_unpause))
 					{
-						PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
+						PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %i %T", CHAT_PREFIX, GetConVarInt(g_h_auto_unpause_delay), "Unpause Timer", LANG_SERVER);
 						g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 					}*/
 				g_paused = true;
@@ -1022,10 +1022,10 @@ public Action:Pause(client, args)
 				/*}
 				else
 				{
-					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Game is Paused. Please type !unpause to unpause the game", LANG_SERVER);
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause Notice", LANG_SERVER);
 					if (GetConVarBool(g_h_auto_unpause))
 					{
-						PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
+						PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %i %T", CHAT_PREFIX, GetConVarInt(g_h_auto_unpause_delay), "Unpause Timer", LANG_SERVER);
 						g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 					}*/
 				g_paused = true;
@@ -1033,11 +1033,11 @@ public Action:Pause(client, args)
 				return;
 				//}
 			}
-			else if (GetClientTeam(client) == 2 && g_h_t_pause_count == g_h_pause_limit)
+			else if (GetClientTeam(client) == 2 && GetConVarInt(g_h_t_pause_count) == GetConVarInt(g_h_pause_limit))
 			{
 				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 			}
-			else if (GetClientTeam(client) == 3 && g_h_ct_pause_count == g_h_pause_limit)
+			else if (GetClientTeam(client) == 3 && GetConVarInt(g_h_ct_pause_count) == GetConVarInt(g_h_pause_limit))
 			{
 				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 			}
@@ -1045,20 +1045,20 @@ public Action:Pause(client, args)
 			{
 				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Non-player", LANG_SERVER);
 			}
-			else if (GetClientTeam(client) == 3 && GetConVarBool(g_h_ct_pause_count) != GetConVarBool(g_h_pause_limit) && g_pause_offered_ct == false)
+			else if (GetClientTeam(client) == 3 && GetConVarInt(g_h_ct_pause_count) != GetConVarInt(g_h_pause_limit) && g_pause_offered_ct == false)
 			{
 				g_pause_offered_ct = true;
-				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause CT Offer", LANG_SERVER);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_ct_name, "Pause Offer", LANG_SERVER);
 				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
 			}
-			else if (GetClientTeam(client) == 2 && GetConVarBool(g_h_t_pause_count) != GetConVarBool(g_h_pause_limit) && g_pause_offered_t == false)
+			else if (GetClientTeam(client) == 2 && GetConVarInt(g_h_t_pause_count) != GetConVarInt(g_h_pause_limit) && g_pause_offered_t == false)
 			{
 				g_pause_offered_t = true;
-				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause T Offer", LANG_SERVER);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_t_name, "Pause Offer", LANG_SERVER);
 				g_h_stored_timer = CreateTimer(30.0, PauseTimeout);
 			}
 		}
-		else if (GetClientTeam(client) == 3 && g_h_ct_pause_count != g_h_pause_limit && !GetConVarBool(g_h_pause_comfirm))
+		else if (GetClientTeam(client) == 3 && GetConVarInt(g_h_ct_pause_count) != GetConVarInt(g_h_pause_limit) && !GetConVarBool(g_h_pause_comfirm))
 		{
 			g_h_ct_pause_count++;
 			//if (GetConVarBool(g_h_pause_freezetime))
@@ -1068,10 +1068,10 @@ public Action:Pause(client, args)
 			/*}
 			else
 			{
-				PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause Notice", LANG_SERVER);
 				if(GetConVarBool(g_h_auto_unpause))
 				{
-					PrintToChatAll("\x03 <WarMod_BFG> \x04s Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %i %T", CHAT_PREFIX, GetConVarInt(g_h_auto_unpause_delay), "Unpause Timer", LANG_SERVER);
 					g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 				}*/
 			g_paused = true;
@@ -1079,7 +1079,7 @@ public Action:Pause(client, args)
 			return;
 			//}
 		}
-		else if (GetClientTeam(client) == 2 &&  GetConVarBool(g_h_t_pause_count) != GetConVarBool(g_h_pause_limit) && GetConVarBool(g_h_pause_comfirm) == false)
+		else if (GetClientTeam(client) == 2 &&  GetConVarInt(g_h_t_pause_count) != GetConVarInt(g_h_pause_limit) && GetConVarBool(g_h_pause_comfirm) == false)
 		{
 			g_h_t_pause_count++;
 			//if (GetConVarBool(g_h_pause_freezetime))
@@ -1089,10 +1089,10 @@ public Action:Pause(client, args)
 			/*}
 			else
 			{
-				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Game is Paused. Please type !unpause to unpause the game", LANG_SERVER);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause Notice", LANG_SERVER);
 				if(GetConVarBool(g_h_auto_unpause))
 				{
-					PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", GetConVarFloat(g_h_auto_unpause_delay));
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %i %T", CHAT_PREFIX, GetConVarInt(g_h_auto_unpause_delay), "Unpause Timer", LANG_SERVER);
 					g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 				}*/
 			g_paused = true;
@@ -1100,11 +1100,11 @@ public Action:Pause(client, args)
 			return;
 			//}
 		}
-		else if (GetClientTeam(client) == 2 && GetConVarBool(g_h_t_pause_count) == GetConVarBool(g_h_pause_limit))
+		else if (GetClientTeam(client) == 2 && GetConVarInt(g_h_t_pause_count) == GetConVarInt(g_h_pause_limit))
 		{
 			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 		}
-		else if (GetClientTeam(client) == 3 && GetConVarBool(g_h_ct_pause_count) == GetConVarBool(g_h_pause_limit))
+		else if (GetClientTeam(client) == 3 && GetConVarInt(g_h_ct_pause_count) == GetConVarInt(g_h_pause_limit))
 		{
 			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Pause Limit", LANG_SERVER);
 		}
@@ -1119,7 +1119,7 @@ public Action:Pause(client, args)
 	}
 }
 
-public Action:UnPause(client, args)
+public Action:Unpause(client, args)
 {
 	if (g_paused)
 	{
@@ -1129,13 +1129,13 @@ public Action:UnPause(client, args)
 			{
 				g_pause_offered_ct = true;
 				PrintToConsoleAll("<WarMod_BFG> CT have asked to unpause the game. Please type /unpause to unpause the match.");
-				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause CT Offer", LANG_SERVER);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_ct_name, "Unpause Offer", LANG_SERVER);
 			}
 			else if (GetClientTeam(client) == 2 && g_pause_offered_t == false && g_pause_offered_ct == false)
 			{
 				g_pause_offered_t = true;
 				PrintToConsoleAll("<WarMod_BFG> T have asked to unpause the game. Please type /unpause to unpause the match.");
-				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause T Offer", LANG_SERVER);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_t_name, "Unpause Offer", LANG_SERVER);
 			}
 			else if (GetClientTeam(client) == 2 && g_pause_offered_ct == true)
 			{
@@ -1159,13 +1159,13 @@ public Action:UnPause(client, args)
 		{
 			if (GetClientTeam(client) == 2)
 			{
-				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "T have unpaused the match", LANG_SERVER);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_t_name, "Unpaused Match", LANG_SERVER);
 				g_paused = false;
 				ServerCommand("mp_unpause_match 1");
 			}
 			else if (GetClientTeam(client) == 3)
 			{
-				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "CT have unpaused the match", LANG_SERVER);
+				PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %s %T", CHAT_PREFIX, g_ct_name, "Unpaused Match", LANG_SERVER);
 				g_paused = false;
 				ServerCommand("mp_unpause_match 1");
 			}
@@ -1891,10 +1891,10 @@ public Event_Round_Start(Handle:event, const String:name[], bool:dontBroadcast)
 	if (g_pause_freezetime == true)
 	{
 		g_pause_freezetime = false;
-		PrintToChatAll("\x03 <WarMod_BFG> \x04 Game is Paused. Please type !unpause to unpause the game.");
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Unpause Notice", LANG_SERVER);
 		if(GetConVarBool(g_h_auto_unpause))
 		{
-			PrintToChatAll("\x03 <WarMod_BFG> \x04 Game will auto unpause after %s seconds", g_h_auto_unpause_delay);
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %i %T", CHAT_PREFIX, GetConVarInt(g_h_auto_unpause_delay), "Unpause Timer", LANG_SERVER);
 			g_h_stored_timer = CreateTimer(GetConVarFloat(g_h_auto_unpause_delay), UnPauseTimer);
 		}
 		g_paused = true;
@@ -5015,13 +5015,13 @@ public Action:SayChat(client, args)
 		{
 			ShowScore(client);
 		}
-		else if (StrEqual(command, "pause", false) || StrEqual(command, "pauses", false))
+		else if (StrEqual(command, "pause", false) || StrEqual(command, "pauses", false) || StrEqual(command, "p", false))
 		{
 			Pause(client, args);
 		}
-		else if (StrEqual(command, "unpause", false) || StrEqual(command, "unpauses", false))
+		else if (StrEqual(command, "unpause", false) || StrEqual(command, "unpauses", false) || StrEqual(command, "up", false))
 		{
-			UnPause(client, args);
+			Unpause(client, args);
 		}
 		else if (StrEqual(command, "info", false) || StrEqual(command, "i", false))
 		{
