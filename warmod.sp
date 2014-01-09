@@ -309,7 +309,7 @@ public OnPluginStart()
 	g_h_auto_kick_team = CreateConVar("wm_auto_kick_team", "0", "Enable or disable the automatic kicking of the losing team", FCVAR_NOTIFY);
 	g_h_auto_kick_delay = CreateConVar("wm_auto_kick_delay", "10", "Sets the seconds to wait before kicking the losing team", FCVAR_NOTIFY, true, 0.0);
 	g_h_score_mode = CreateConVar("wm_score_mode", "1", "Sets score mode: 1 = Best Of, 2 = First To (based on wm_max_rounds)", FCVAR_NOTIFY);
-	g_h_overtime = CreateConVar("wm_overtime", "0", "NOTE: UNSUPPORTED - Sets overtime mode: 0 = off, 1 = Maxrounds (based on wm_overtime_max_rounds), 2 = Sudden Death", FCVAR_NOTIFY);
+	g_h_overtime = CreateConVar("wm_overtime", "0", "Sets overtime mode: 0 = off, 1 = Maxrounds (based on wm_overtime_max_rounds), NOTE: UNSUPPORTED - 2 = Sudden Death", FCVAR_NOTIFY);
 	g_h_overtime_mr = CreateConVar("wm_overtime_max_rounds", "3", "Sets overtime maxrounds", FCVAR_NOTIFY, true, 0.0);
 	g_h_overtime_money = CreateConVar("wm_overtime_start_money", "10000", "Sets overtime startmoney", FCVAR_NOTIFY, true, 0.0);
 	g_h_auto_record = CreateConVar("wm_auto_record", "1", "Enable or disable auto SourceTV demo record on Live on 3", FCVAR_NOTIFY);
@@ -348,6 +348,12 @@ public OnPluginStart()
 	HookConVarChange(g_h_auto_ready, OnAutoReadyChange);
 	HookConVarChange(g_h_max_rounds, OnMaxRoundChange);
 	HookConVarChange(g_h_overtime_mr, OnMaxRoundChange);
+	HookConVarChange(g_h_overtime, OnOverTimeChange);
+	HookConVarChange(FindConVar("mp_overtime_enable"), OnOverTimeChangeMP);
+	HookConVarChange(g_h_overtime_mr, OnOverTimeMaxRoundChange);
+	HookConVarChange(FindConVar("mp_overtime_maxrounds"), OnOverTimeMaxRoundChangeMP);
+	HookConVarChange(g_h_overtime_money, OnOverTimeMoneyChange);
+	HookConVarChange(FindConVar("mp_overtime_startmoney"), OnOverTimeMoneyChangeMP);
 	HookConVarChange(g_h_lw_enabled, OnLiveWireChange);
 	HookConVarChange(g_h_t, OnTChange);
 	HookConVarChange(g_h_ct, OnCTChange);
@@ -397,8 +403,6 @@ public OnPluginStart()
 //	g_h_pause_freezetime = CreateConVar("wm_pause_freezetime", "1", "Wait for freeze time to pause: 0 = off, 1 = on", FCVAR_NOTIFY);
 	g_h_auto_unpause_delay = CreateConVar("wm_auto_unpause_delay", "180", "Sets the seconds to wait before auto unpause", FCVAR_NOTIFY, true, 0.0);
 	g_h_pause_limit = CreateConVar("wm_pause_limit", "1", "Sets max pause count per team per half", FCVAR_NOTIFY);
-//	g_h_t_pause_count = CreateConVar("wm_t_pause_count", "0", "WarMod automatically updates this value to the Terrorist's total pause count", FCVAR_NOTIFY);
-//	g_h_ct_pause_count = CreateConVar("wm_ct_pause_count", "0", "WarMod automatically updates this value to the Counter-Terrorist's total pause count", FCVAR_NOTIFY);
 }
 
 public OnLibraryAdded(const String:name[])
@@ -1780,6 +1784,70 @@ public Action:LastMatch(client, args)
 	return Plugin_Handled;
 }
 
+/* work in progress
+public Action:SetScoreT(client, args)
+{
+	if (!IsActive(client, false))
+	{
+		// warmod is disabled
+		return Plugin_Handled;
+	}
+	
+	if (!IsAdminCmd(client, false))
+	{
+		// not allowed, rcon only
+		return Plugin_Handled;
+	}
+	
+	new String:arg[128];
+	new score;
+	
+	if (GetCmdArgs() > 0)
+	{
+		GetCmdArg(1, arg, sizeof(arg));
+		score = StringToInt(arg);
+		CS_SetTeamScore(TERRORIST_TEAM, score);
+		SetTeamScore(TERRORIST_TEAM, score);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 T score set %i", CHAT_PREFIX, score);
+	}
+	else
+	{
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Not Valid", CHAT_PREFIX);
+	}
+}
+
+public Action:SetScoreCT(client, args)
+{
+	if (!IsActive(client, false))
+	{
+		// warmod is disabled
+		return Plugin_Handled;
+	}
+	
+	if (!IsAdminCmd(client, false))
+	{
+		// not allowed, rcon only
+		return Plugin_Handled;
+	}
+	
+	new String:arg[128];
+	new score;
+	
+	if (GetCmdArgs() > 0)
+	{
+		GetCmdArg(1, arg, sizeof(arg));
+		score = StringToInt(arg);
+		CS_SetTeamScore(COUNTER_TERRORIST_TEAM, score);
+		SetTeamScore(COUNTER_TERRORIST_TEAM, score);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 CT score set %i", CHAT_PREFIX, score);
+	}
+	else
+	{
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Not Valid", CHAT_PREFIX);
+	}
+}
+*/
+
 ShowScore(client)
 {
 	if (!IsActive(client, false))
@@ -2883,7 +2951,7 @@ CheckScores()
 					}
 					DisplayScore(0, 0, false);
 					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Over Time", GetConVarInt(g_h_overtime_mr));
-					g_live = false;
+//					g_live = false;
 					g_t_money = false;
 					g_overtime = true;
 					g_overtime_mode = 1;
@@ -2906,7 +2974,7 @@ CheckScores()
 					}
 					DisplayScore(0, 0, false);
 					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Over Time Sudden Death");
-					g_live = false;
+//					g_live = false;
 					g_t_money = false;
 					g_overtime = true;
 					g_overtime_mode = 2;
@@ -3079,7 +3147,7 @@ CheckScores()
 					CreateTimer(GetConVarFloat(g_h_auto_swap_delay), Swap, TIMER_FLAG_NO_MAPCHANGE);
 				}*/
 				
-				g_live = false;
+//				g_live = false;
 				g_t_money = false;
 				g_first_half = false;
 				SetAllCancelled(false);
@@ -3098,9 +3166,9 @@ CheckScores()
 					CheckReady();
 				}*/
 				
-				new String:half_time_config[128];
-				GetConVarString(g_h_half_time_config, half_time_config, sizeof(half_time_config));
-				ServerCommand("exec %s", half_time_config);
+//				new String:half_time_config[128];
+//				GetConVarString(g_h_half_time_config, half_time_config, sizeof(half_time_config));
+//				ServerCommand("exec %s", half_time_config);
 			}
 			else if (GetTOTScore() == GetConVarInt(g_h_overtime_mr) && GetCTOTScore() == GetConVarInt(g_h_overtime_mr)) // complete draw
 			{
@@ -3112,8 +3180,8 @@ CheckScores()
 					}
 					DisplayScore(0, 1, false);
 					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Over Time", GetConVarInt(g_h_overtime_mr));
-					g_live = false;
-					g_t_money = false;
+//					g_live = false;
+//					g_t_money = false;
 					g_overtime_count++;
 					g_first_half = true;
 					SetAllCancelled(false);
@@ -4305,6 +4373,66 @@ public OnMaxRoundChange(Handle:cvar, const String:oldVal[], const String:newVal[
 	}
 }
 
+public OnOverTimeChange(Handle:cvar, const String:oldVal[], const String:newVal[])
+{
+	if (GetConVarInt(FindConVar("mp_overtime_enable")) != GetConVarInt(g_h_overtime))
+	{
+		new overTime;
+		overTime = GetConVarInt(g_h_overtime);
+		ServerCommand("mp_overtime_enable %i", overTime);
+	}
+}
+
+public OnOverTimeChangeMP(Handle:cvar, const String:oldVal[], const String:newVal[])
+{
+	if (GetConVarInt(FindConVar("mp_overtime_enable")) != GetConVarInt(g_h_overtime))
+	{
+		new overTime;
+		overTime = GetConVarInt(FindConVar("mp_overtime_enable"));
+		ServerCommand("wm_overtime %i", overTime);
+	}
+}
+
+public OnOverTimeMaxRoundChange(Handle:cvar, const String:oldVal[], const String:newVal[])
+{
+	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2))
+	{
+		new overTimeMR;
+		overTimeMR = (GetConVarInt(g_h_overtime_mr)*2);
+		ServerCommand("mp_overtime_maxrounds %i", overTimeMR);
+	}
+}
+
+public OnOverTimeMaxRoundChangeMP(Handle:cvar, const String:oldVal[], const String:newVal[])
+{
+	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2))
+	{
+		new overTimeMR;
+		overTimeMR = (GetConVarInt(FindConVar("mp_overtime_maxrounds"))/2);
+		ServerCommand("wm_overtime_max_rounds %i", overTimeMR);
+	}
+}
+
+public OnOverTimeMoneyChange(Handle:cvar, const String:oldVal[], const String:newVal[])
+{
+	if (GetConVarInt(FindConVar("mp_overtime_startmoney")) != GetConVarInt(g_h_overtime_money))
+	{
+		new overTimeMoney;
+		overTimeMoney = GetConVarInt(g_h_overtime_money);
+		ServerCommand("mp_overtime_startmoney %i", overTimeMoney);
+	}
+}
+
+public OnOverTimeMoneyChangeMP(Handle:cvar, const String:oldVal[], const String:newVal[])
+{
+	if (GetConVarInt(FindConVar("mp_overtime_startmoney")) != GetConVarInt(g_h_overtime_money))
+	{
+		new overTimeMoney;
+		overTimeMoney = GetConVarInt(FindConVar("mp_overtime_startmoney"));
+		ServerCommand("wm_overtime_start_money %i", overTimeMoney);
+	}
+}
+
 public OnLiveWireChange(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
 	if (StrEqual(newVal, "1"))
@@ -5040,6 +5168,14 @@ public Action:SayChat(client, args)
 		{
 			Unpause(client, args);
 		}
+/*		else if (StrEqual(command, "setscoreterrorist", false) || StrEqual(command, "set_score_t", false) || StrEqual(command, "setscoret", false) || StrEqual(command, "set_score_terrorist", false) || StrEqual(command, "setscoreterrorists", false) || StrEqual(command, "set_score_terrorists", false) || StrEqual(command, "sst", false))
+		{
+			SetScoreT(client, args);
+		}
+		else if (StrEqual(command, "setscorecounterterrorist", false) || StrEqual(command, "set_score_ct", false) || StrEqual(command, "setscorect", false) || StrEqual(command, "set_score_counter_terrorist", false) || StrEqual(command, "setscorecounterterrorists", false) || StrEqual(command, "set_score_counterterrorists", false) || StrEqual(command, "ssct", false) || StrEqual(command, "set_score_counter_terrorists", false) || StrEqual(command, "set_score_counter_terrorist", false))
+		{
+			SetScoreCT(client, args);
+		}*/
 		else if (StrEqual(command, "info", false) || StrEqual(command, "i", false))
 		{
 			if (GetConVarBool(g_h_show_info))
