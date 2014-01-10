@@ -4379,13 +4379,22 @@ public OnOverTimeChange(Handle:cvar, const String:oldVal[], const String:newVal[
 	{
 		new overTime;
 		overTime = GetConVarInt(g_h_overtime);
-		ServerCommand("mp_overtime_enable %i", overTime);
+		if (overTime == 2)
+		{
+			ServerCommand("mp_overtime_enable 1");
+			ServerCommand("mp_overtime_maxrounds 1");
+			ServerCommand("wm_overtime_max_rounds 1");
+		}
+		else
+		{
+			ServerCommand("mp_overtime_enable %i", overTime);
+		}
 	}
 }
 
 public OnOverTimeChangeMP(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
-	if (GetConVarInt(FindConVar("mp_overtime_enable")) != GetConVarInt(g_h_overtime))
+	if (GetConVarInt(FindConVar("mp_overtime_enable")) != GetConVarInt(g_h_overtime) && (GetConVarInt(g_h_overtime) != 2)
 	{
 		new overTime;
 		overTime = GetConVarInt(FindConVar("mp_overtime_enable"));
@@ -4395,7 +4404,7 @@ public OnOverTimeChangeMP(Handle:cvar, const String:oldVal[], const String:newVa
 
 public OnOverTimeMaxRoundChange(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
-	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2))
+	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2) && (GetConVarInt(g_h_overtime) != 2)
 	{
 		new overTimeMR;
 		overTimeMR = (GetConVarInt(g_h_overtime_mr)*2);
@@ -4405,7 +4414,7 @@ public OnOverTimeMaxRoundChange(Handle:cvar, const String:oldVal[], const String
 
 public OnOverTimeMaxRoundChangeMP(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
-	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2))
+	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2) && (GetConVarInt(g_h_overtime) != 2)
 	{
 		new overTimeMR;
 		overTimeMR = (GetConVarInt(FindConVar("mp_overtime_maxrounds"))/2);
