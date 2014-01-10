@@ -231,6 +231,8 @@ public OnPluginStart()
 	
 	RegAdminCmd("t", ChangeT, ADMFLAG_CUSTOM1, "Team starting terrorists - Designed for score purposes");
 	RegAdminCmd("ct", ChangeCT, ADMFLAG_CUSTOM1, "Team starting counter-terrorists - Designed for score purposes");
+	RegAdminCmd("sst", SetScoreT, ADMFLAG_CUSTOM1, "Setting terrorists score");
+	RegAdminCmd("ssct", SetScoreCT, ADMFLAG_CUSTOM1, "Setting counter-terrorists scores");
 	
 	RegAdminCmd("swap", SwapAll, ADMFLAG_CUSTOM1, "Swap all players to the opposite team");
 	
@@ -1787,86 +1789,86 @@ public Action:LastMatch(client, args)
 // work in progress
 public Action:SetScoreT(client, args)
 {
-	if (!IsActive(client, false))
+	if (IsAdminCmd(client, false))
 	{
-		// warmod is disabled
-		return Plugin_Handled;
+		decl String:argstring[16];
+		GetCmdArgString(argstring, sizeof(argstring));
+		new intToUse;
+		
+		if(strlen(argstring) < 1)
+		{
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 Choose a time limit between 0 and 30", CHAT_PREFIX);
+		}
+		else
+		{
+			if (isNumeric(argstring))
+			{
+				intToUse = StringToInt(argstring);
+			}
+			else
+			{
+				intToUse = -1;
+			}
+
+			if (g_live)
+			{
+				if (intToUse > 30 || intToUse < 0)
+				{
+					PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 Choose a score between 0 and 30", CHAT_PREFIX);
+				}
+				else
+				{
+					CS_SetTeamScore(TERRORIST_TEAM, intToUse);
+					SetTeamScore(TERRORIST_TEAM, intToUse);
+					g_scores[SCORE_T][SCORE_FIRST_HALF] = intToUse;
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Terrorists score changed to \x04%d", CHAT_PREFIX, intToUse);
+				}
+			}
+		}
 	}
-	
-	if (!IsAdminCmd(client, false))
-	{
-		// not allowed, rcon only
-		return Plugin_Handled;
-	}
-	
-	decl String:argstring[16];
-	GetCmdArgString(argstring, sizeof(argstring));
-	new score;
-	
-	if (isNumeric(argstring))
-	{
-		score = StringToInt(argstring);
-	}
-	else
-	{
-		score = -1;
-	}	
-	
-	if (score > 30 || score < 0)
-	{
-		CPrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 - Choose a score between 0 and 30", CHAT_PREFIX);
-	}
-	else
-	{
-		CS_SetTeamScore(TERRORIST_TEAM, score);
-		SetTeamScore(TERRORIST_TEAM, score);
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 T score set %d", CHAT_PREFIX, score);
-		//ServerCommand("mp_timelimit %d", intToUse);
-		//CPrintToChatAll("{darkorange}ATF2L{default} - Score changed to {darkorange}%d", intToUse);
-	}	
-	if (GetCmdArgs() > 0)
-	{
-		GetCmdArg(1, arg, sizeof(arg));
-		score = StringToInt(arg);
-		CS_SetTeamScore(TERRORIST_TEAM, score);
-		SetTeamScore(TERRORIST_TEAM, score);
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 T score set %d", CHAT_PREFIX, score);
-	}
-	else
-	{
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Not Valid", CHAT_PREFIX);
-	}
+	return Plugin_Handled;
 }
 
 public Action:SetScoreCT(client, args)
 {
-	if (!IsActive(client, false))
+	if (IsAdminCmd(client, false))
 	{
-		// warmod is disabled
-		return Plugin_Handled;
+		decl String:argstring[16];
+		GetCmdArgString(argstring, sizeof(argstring));
+		new intToUse;
+		
+		if(strlen(argstring) < 1)
+		{
+			PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 Choose a score between 0 and 30", CHAT_PREFIX);
+		}
+		else
+		{
+			if (isNumeric(argstring))
+			{
+				intToUse = StringToInt(argstring);
+			}
+			else
+			{
+				intToUse = -1;
+			}
+
+			if (g_live)
+			{
+				if (intToUse > 30 || intToUse < 0)
+				{
+					PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 Choose a score between 0 and 30", CHAT_PREFIX);
+				}
+				else
+				{
+					CS_SetTeamScore(COUNTER_TERRORIST_TEAM, intToUse);
+					SetTeamScore(COUNTER_TERRORIST_TEAM, intToUse);
+					g_scores[SCORE_CT][SCORE_FIRST_HALF] = intToUse;
+					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Counter Terrorists score changed to \x04%d", CHAT_PREFIX, intToUse);
+				}
+			}
+		}
 	}
-	
-	if (!IsAdminCmd(client, false))
-	{
-		// not allowed, rcon only
-		return Plugin_Handled;
-	}
-	
-	new String:arg[128];
-	new score;
-	
-	if (GetCmdArgs() > 0)
-	{
-		GetCmdArg(1, arg, sizeof(arg));
-		score = StringToInt(arg);
-		CS_SetTeamScore(COUNTER_TERRORIST_TEAM, score);
-		SetTeamScore(COUNTER_TERRORIST_TEAM, score);
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 CT score set %d", CHAT_PREFIX, score);
-	}
-	else
-	{
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Not Valid", CHAT_PREFIX);
-	}
+	return Plugin_Handled;
 }
 
 
@@ -3599,7 +3601,31 @@ LiveOn3(bool:e_war)
 		new String:ct_name[64];
 		t_name = g_t_name;
 		ct_name = g_ct_name;
+		/*
+		if (!StrEqual(ct_name, DEFAULT_CT_NAME))
+		{
+			new nameLengthCT = strlen(ct_name);
+			for (new i = 0; i < nameLengthCT; i++)
+			{
+				if (!IsCharAlpha(ct_name[i]) && !IsCharNumeric(ct_name[i]))
+				{
+					ReplaceString(ct_name, nameLengthCT, "ct_name[i]", "-");
+				}
+			}
+		}
 		
+		if (!StrEqual(t_name, DEFAULT_T_NAME))
+		{
+			new nameLengthT = strlen(t_name);
+			for (new i = 0; i < nameLengthT; i++)
+			{
+				if (!IsCharAlpha(t_name[i]) && !IsCharNumeric(t_name[i]))
+				{
+					ReplaceString(t_name, nameLengthT, "t_name[i]", "-");
+				}
+			}
+		}
+		*/
 		StripFilename(t_name, sizeof(t_name));
 		StripFilename(ct_name, sizeof(ct_name));
 		StringToLower(t_name, sizeof(t_name));
@@ -3694,6 +3720,10 @@ public Action:LiveOn3Text(Handle:timer)
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 The match is now \x02Live!", CHAT_PREFIX);
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
+	CS_SetTeamScore(COUNTER_TERRORIST_TEAM, g_scores[SCORE_CT][SCORE_FIRST_HALF]);
+	CS_SetTeamScore(TERRORIST_TEAM, g_scores[SCORE_T][SCORE_FIRST_HALF]);
+	SetTeamScore(COUNTER_TERRORIST_TEAM, g_scores[SCORE_CT][SCORE_FIRST_HALF]);
+	SetTeamScore(TERRORIST_TEAM, g_scores[SCORE_T][SCORE_FIRST_HALF]);
 }
 
 public Action:AdvertGameTech(Handle:timer, any:client)
@@ -4416,31 +4446,40 @@ public OnOverTimeChange(Handle:cvar, const String:oldVal[], const String:newVal[
 
 public OnOverTimeChangeMP(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
-	if (GetConVarInt(FindConVar("mp_overtime_enable")) != GetConVarInt(g_h_overtime) && (GetConVarInt(g_h_overtime) != 2)
+	if (GetConVarInt(FindConVar("mp_overtime_enable")) != GetConVarInt(g_h_overtime))
 	{
-		new overTime;
-		overTime = GetConVarInt(FindConVar("mp_overtime_enable"));
-		ServerCommand("wm_overtime %i", overTime);
+		if(GetConVarInt(g_h_overtime) < 2)
+		{
+			new overTime;
+			overTime = GetConVarInt(FindConVar("mp_overtime_enable"));
+			ServerCommand("wm_overtime %i", overTime);
+		}
 	}
 }
 
 public OnOverTimeMaxRoundChange(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
-	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2) && (GetConVarInt(g_h_overtime) != 2)
+	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2))
 	{
-		new overTimeMR;
-		overTimeMR = (GetConVarInt(g_h_overtime_mr)*2);
-		ServerCommand("mp_overtime_maxrounds %i", overTimeMR);
+		if(GetConVarInt(g_h_overtime) < 2)
+		{
+			new overTimeMR;
+			overTimeMR = (GetConVarInt(g_h_overtime_mr)*2);
+			ServerCommand("mp_overtime_maxrounds %i", overTimeMR);
+		}
 	}
 }
 
 public OnOverTimeMaxRoundChangeMP(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
-	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2) && (GetConVarInt(g_h_overtime) != 2)
+	if (GetConVarInt(FindConVar("mp_overtime_maxrounds")) != (GetConVarInt(g_h_overtime_mr)*2))
 	{
-		new overTimeMR;
-		overTimeMR = (GetConVarInt(FindConVar("mp_overtime_maxrounds"))/2);
-		ServerCommand("wm_overtime_max_rounds %i", overTimeMR);
+		if(GetConVarInt(g_h_overtime) < 2)
+		{	
+			new overTimeMR;
+			overTimeMR = (GetConVarInt(FindConVar("mp_overtime_maxrounds"))/2);
+			ServerCommand("wm_overtime_max_rounds %i", overTimeMR);
+		}
 	}
 }
 
@@ -4735,7 +4774,7 @@ public SetAllCancelled(bool:cancelled)
 	}
 	else
 	{
-		Format(finalTag, sizeof(finalTag), DEFAULT_T_NAME);
+		finalTag = DEFAULT_T_NAME;
 	}
 	/*for (new k = 0; k < arraySize; k++)
 	{
@@ -4892,7 +4931,7 @@ public SetAllCancelled(bool:cancelled)
 	}
 	else
 	{
-		Format(finalTag, sizeof(finalTag), DEFAULT_CT_NAME);
+		finalTag = DEFAULT_CT_NAME;
 	}
 	/*for (new k = 0; k < arraySize; k++)
 	{
@@ -5198,14 +5237,6 @@ public Action:SayChat(client, args)
 		else if (StrEqual(command, "unpause", false) || StrEqual(command, "unpauses", false) || StrEqual(command, "up", false))
 		{
 			Unpause(client, args);
-		}
-		else if (StrEqual(command, "setscoreterrorist", false) || StrEqual(command, "set_score_t", false) || StrEqual(command, "setscoret", false) || StrEqual(command, "set_score_terrorist", false) || StrEqual(command, "setscoreterrorists", false) || StrEqual(command, "set_score_terrorists", false) || StrEqual(command, "sst", false))
-		{
-			SetScoreT(client, args);
-		}
-		else if (StrEqual(command, "setscorecounterterrorist", false) || StrEqual(command, "set_score_ct", false) || StrEqual(command, "setscorect", false) || StrEqual(command, "set_score_counter_terrorist", false) || StrEqual(command, "setscorecounterterrorists", false) || StrEqual(command, "set_score_counterterrorists", false) || StrEqual(command, "ssct", false) || StrEqual(command, "set_score_counter_terrorists", false) || StrEqual(command, "set_score_counter_terrorist", false))
-		{
-			SetScoreCT(client, args);
 		}
 		else if (StrEqual(command, "info", false) || StrEqual(command, "i", false))
 		{
@@ -6100,3 +6131,29 @@ KickTeam(team)
 		}
 	}
 }
+
+bool:isNumeric(String:argstring[])
+{
+	new argeLength = strlen(argstring);
+	for (new i = 0; i < argeLength; i++)
+	{
+		if (!IsCharNumeric(argstring[i]))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+/*bool:IsAlphaNumeric(const String:TeamName[])
+{
+	new nameLength = strlen(TeamName);
+	for (new i = 0; i < nameLength; i++)
+	{
+		if (!IsCharAlpha(TeamName[i]) && !IsCharNumeric(TeamName[i]))
+		{
+			return false;
+		}
+	}
+	return true;
+}*/
