@@ -1784,7 +1784,7 @@ public Action:LastMatch(client, args)
 	return Plugin_Handled;
 }
 
-/* work in progress
+// work in progress
 public Action:SetScoreT(client, args)
 {
 	if (!IsActive(client, false))
@@ -1799,16 +1799,38 @@ public Action:SetScoreT(client, args)
 		return Plugin_Handled;
 	}
 	
-	new String:arg[128];
+	decl String:argstring[16];
+	GetCmdArgString(argstring, sizeof(argstring));
 	new score;
 	
+	if (isNumeric(argstring))
+	{
+		score = StringToInt(argstring);
+	}
+	else
+	{
+		score = -1;
+	}	
+	
+	if (score > 30 || score < 0)
+	{
+		CPrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 - Choose a score between 0 and 30", CHAT_PREFIX);
+	}
+	else
+	{
+		CS_SetTeamScore(TERRORIST_TEAM, score);
+		SetTeamScore(TERRORIST_TEAM, score);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 T score set %d", CHAT_PREFIX, score);
+		//ServerCommand("mp_timelimit %d", intToUse);
+		//CPrintToChatAll("{darkorange}ATF2L{default} - Score changed to {darkorange}%d", intToUse);
+	}	
 	if (GetCmdArgs() > 0)
 	{
 		GetCmdArg(1, arg, sizeof(arg));
 		score = StringToInt(arg);
 		CS_SetTeamScore(TERRORIST_TEAM, score);
 		SetTeamScore(TERRORIST_TEAM, score);
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 T score set %i", CHAT_PREFIX, score);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 T score set %d", CHAT_PREFIX, score);
 	}
 	else
 	{
@@ -1839,14 +1861,14 @@ public Action:SetScoreCT(client, args)
 		score = StringToInt(arg);
 		CS_SetTeamScore(COUNTER_TERRORIST_TEAM, score);
 		SetTeamScore(COUNTER_TERRORIST_TEAM, score);
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 CT score set %i", CHAT_PREFIX, score);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 CT score set %d", CHAT_PREFIX, score);
 	}
 	else
 	{
 		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Not Valid", CHAT_PREFIX);
 	}
 }
-*/
+
 
 ShowScore(client)
 {
@@ -5177,14 +5199,14 @@ public Action:SayChat(client, args)
 		{
 			Unpause(client, args);
 		}
-/*		else if (StrEqual(command, "setscoreterrorist", false) || StrEqual(command, "set_score_t", false) || StrEqual(command, "setscoret", false) || StrEqual(command, "set_score_terrorist", false) || StrEqual(command, "setscoreterrorists", false) || StrEqual(command, "set_score_terrorists", false) || StrEqual(command, "sst", false))
+		else if (StrEqual(command, "setscoreterrorist", false) || StrEqual(command, "set_score_t", false) || StrEqual(command, "setscoret", false) || StrEqual(command, "set_score_terrorist", false) || StrEqual(command, "setscoreterrorists", false) || StrEqual(command, "set_score_terrorists", false) || StrEqual(command, "sst", false))
 		{
 			SetScoreT(client, args);
 		}
 		else if (StrEqual(command, "setscorecounterterrorist", false) || StrEqual(command, "set_score_ct", false) || StrEqual(command, "setscorect", false) || StrEqual(command, "set_score_counter_terrorist", false) || StrEqual(command, "setscorecounterterrorists", false) || StrEqual(command, "set_score_counterterrorists", false) || StrEqual(command, "ssct", false) || StrEqual(command, "set_score_counter_terrorists", false) || StrEqual(command, "set_score_counter_terrorist", false))
 		{
 			SetScoreCT(client, args);
-		}*/
+		}
 		else if (StrEqual(command, "info", false) || StrEqual(command, "i", false))
 		{
 			if (GetConVarBool(g_h_show_info))
