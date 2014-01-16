@@ -12,6 +12,7 @@
 #include <adminmenu>
 #include <updater>
 #include <teasyftp>
+#undef REQUIRE_EXTENSIONS
 #include <bzip2>
 
 new g_player_list[MAXPLAYERS + 1];
@@ -1259,7 +1260,7 @@ public Action:UploadResults(Handle:timer)
 {
 	new match_length = RoundFloat(GetEngineTime() - g_match_start);
 	MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
-	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %T", CHAT_PREFIX, "Results uploaded", LANG_SERVER);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Results uploaded", CHAT_PREFIX);
 }
 
 public Action:ResetMatchTimer(Handle:timer)
@@ -3107,7 +3108,7 @@ CheckScores()
 						//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 						//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
-					CreateTimer(3.0, ResetMatchTimer);
+					CreateTimer(4.0, ResetMatchTimer);
 					//ResetMatch(true);
 				}
 			}
@@ -3155,7 +3156,7 @@ CheckScores()
 					//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 					//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
-				CreateTimer(3.0, ResetMatchTimer);
+				CreateTimer(4.0, ResetMatchTimer);
 				//ResetMatch(true);
 			}
 			else if (!g_playing_out && GetTScore() == GetConVarInt(g_h_max_rounds) + 1 || GetCTScore() == GetConVarInt(g_h_max_rounds) + 1) // full time
@@ -3206,7 +3207,7 @@ CheckScores()
 						//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 						//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 					}
-					CreateTimer(3.0, ResetMatchTimer);
+					CreateTimer(4.0, ResetMatchTimer);
 					//ResetMatch(true);
 				}
 				else
@@ -3355,7 +3356,7 @@ CheckScores()
 					}
 					DisplayScore(0, 2, false);
 					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Full Time");
-					CreateTimer(3.0, ResetMatchTimer);
+					CreateTimer(4.0, ResetMatchTimer);
 					//ResetMatch(true);
 					return;
 				}
@@ -3403,7 +3404,7 @@ CheckScores()
 					//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 					//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 				}
-				CreateTimer(3.0, ResetMatchTimer);
+				CreateTimer(4.0, ResetMatchTimer);
 				//ResetMatch(true);
 				return;
 			}
@@ -3515,7 +3516,7 @@ CheckScores()
 				//new match_length = RoundFloat(GetEngineTime() - g_match_start);
 				//MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 			}
-			CreateTimer(3.0, ResetMatchTimer);
+			CreateTimer(4.0, ResetMatchTimer);
 			//ResetMatch(true);
 		}
 		else
@@ -3702,11 +3703,6 @@ LiveOn3(bool:e_war)
 	if (e_war && !StrEqual(match_config, ""))
 	{
 		ServerCommand("exec %s", match_config);
-	}
-	
-	if (g_overtime)
-	{
-		ServerCommand("mp_startmoney %d", GetConVarInt(g_h_overtime_money));
 	}
 	
 	if (!g_match)
@@ -6012,17 +6008,29 @@ MySQL_UploadResults(match_length, String:map[], max_rounds, overtime_max_rounds,
 		return;
 	}
 	
-	new String:error[256];
+	//new String:error[256];
 	new String:query_str[1024];
 	new String:table_name[128];
+	new played_out_int = 0;
+	
+	if (played_out)
+	{
+		played_out_int = 1;
+	}
+	else
+	{
+		played_out_int = 0;
+	}
 	
 	GetConVarString(g_h_table_name, table_name, sizeof(table_name));
 	SQL_EscapeString(dbc, table_name, table_name, sizeof(table_name));
 	
 	MySQL_CreateTable(dbc, table_name);
 	
-	Format(query_str, sizeof(query_str), "INSERT INTO `%s` (`match_id`, `match_start`, `match_end`, `map`, `max_rounds`, `overtime_max_rounds`, `overtime_count`, `played_out`, `t_name`, `t_overall_score`, `t_first_half_score`, `t_second_half_score`, `t_overtime_score`, `ct_name`, `ct_overall_score`, `ct_first_half_score`, `ct_second_half_score`, `ct_overtime_score`) VALUES (NULL, DATE_SUB(UTC_TIMESTAMP(), INTERVAL ? SECOND), UTC_TIMESTAMP(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", table_name);
-	new Handle:db_query = SQL_PrepareQuery(dbc, query_str, error, sizeof(error));
+	Format(query_str, sizeof(query_str), "INSERT INTO %s (match_id, match_start, match_end, map, max_rounds, overtime_max_rounds, overtime_count, played_out, t_name, t_overall_score, t_first_half_score, t_second_half_score, t_overtime_score, ct_name, ct_overall_score, ct_first_half_score, ct_second_half_score, ct_overtime_score) VALUES (NULL, DATE_SUB(UTC_TIMESTAMP(), INTERVAL ? SECOND), UTC_TIMESTAMP(), %s, %i, %i, %i, %i, %s, %i, %i, %i, %i, %s, %i, %i, %i, %i)", table_name, map, max_rounds, overtime_max_rounds, overtime_count, played_out_int, t_name, t_overall_score, t_first_half_score, t_second_half_score, t_overtime_score, ct_name, ct_overall_score, ct_first_half_score, ct_second_half_score, ct_overtime_score);
+	PrintToServer("Query: %s", query_str);
+	SQL_TQuery(dbc, AddToDatabase, query_str, DBPrio_Low);
+	/*new Handle:db_query = SQL_PrepareQuery(dbc, query_str, error, sizeof(error));
 	
 	if (db_query == INVALID_HANDLE)
 	{
@@ -6057,9 +6065,25 @@ MySQL_UploadResults(match_length, String:map[], max_rounds, overtime_max_rounds,
 	
 	SQL_Execute(db_query);
 	
-	CloseHandle(db_query);
+	CloseHandle(db_query);*/
 	
 	CloseHandle(dbc);
+}
+
+public AddToDatabase(Handle:owner, Handle:hQuery, const String:error[], any:client)
+{
+	if (hQuery == INVALID_HANDLE)
+	{
+		LogToGame("[CommsTools] There was an error writing to the Database, %s",error);
+		PrintToServer("[CommsTools] There was an error writing to the Database");
+		
+		return;
+	}
+	else
+	{
+		CloseHandle(hQuery);
+	}
+	
 }
 
 public MenuHandler(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id, param, String:buffer[], maxlength)
