@@ -11,6 +11,8 @@
 #undef REQUIRE_PLUGIN
 #include <adminmenu>
 #include <updater>
+#include <teasyftp>
+#include <bzip2>
 
 new g_player_list[MAXPLAYERS + 1];
 new bool:g_premium_list[MAXPLAYERS + 1] = false;
@@ -128,6 +130,22 @@ new bool:g_t_knife = true;
 new bool:g_t_had_knife = false;
 new bool:g_second_half_first = false;
 
+/* FTP Auto upload code [By Thrawn from tAutoDemoUpload] */
+new Handle:g_hCvarEnabled = INVALID_HANDLE;
+new bool:g_bEnabled = false;
+new Handle:g_hCvarBzip = INVALID_HANDLE;
+new g_iBzip2 = 9;
+new Handle:g_hCvarFtpTarget = INVALID_HANDLE;
+new String:g_sFtpTarget[255];
+new Handle:g_hCvarDelete = INVALID_HANDLE;
+new bool:g_bDelete = false;
+new String:g_sDemoPath[PLATFORM_MAX_PATH];
+new String:g_sLogPath[PLATFORM_MAX_PATH];
+new bool:g_bRecording = false;
+new Handle:g_hOnMatchCompleted = INVALID_HANDLE;
+new bool:g_UploadOnMatchCompleted = true;
+new bool:g_MatchComplete = false;
+
 /* livewire */
 new Handle:g_h_lw_socket = INVALID_HANDLE;
 new bool:g_lw_connecting = false;
@@ -212,6 +230,7 @@ public OnPluginStart()
 	RegConsoleCmd("spectate", ChooseTeam);
 	RegConsoleCmd("wm_readylist", ReadyList);
 	RegConsoleCmd("wmrl", ReadyList);
+	//AddCommandListener(CommandListener_Record, "tv_record");
 	
 	RegConsoleCmd("wm_cash", AskTeamMoney);
 	
@@ -327,6 +346,11 @@ public OnPluginStart()
 	g_h_t_score = CreateConVar("wm_t_score", "0", "WarMod automatically updates this value to the Terrorist's total score", FCVAR_NOTIFY);
 	g_h_ct_score = CreateConVar("wm_ct_score", "0", "WarMod automatically updates this value to the Counter-Terrorist's total score", FCVAR_NOTIFY);
 	g_h_notify_version = CreateConVar("wm_version_notify", WM_VERSION, WM_DESCRIPTION, FCVAR_NOTIFY|FCVAR_REPLICATED);
+	g_hCvarEnabled = CreateConVar("wm_autodemoupload_enable", "1", "Automatically upload demos when finished recording.", FCVAR_NOTIFY|FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCvarBzip = CreateConVar("wm_autodemoupload_bzip2", "9", "Compression level. If set > 0 demos will be compressed before uploading. (Requires bzip2 extension.)", FCVAR_PLUGIN, true, 0.0, true, 9.0);
+	g_hCvarDelete = CreateConVar("wm_autodemoupload_delete", "0", "Delete the demo (and the bz2) if upload was successful.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_hCvarFtpTarget = CreateConVar("wm_autodemoupload_ftptarget", "demos", "The ftp target to use for uploads.", FCVAR_PLUGIN);
+	g_hOnMatchCompleted  = CreateConVar("wm_autodemoupload_completed", "1", "Only upload demos when match is completed.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_h_mp_startmoney = FindConVar("mp_startmoney");
 	g_i_account = FindSendPropOffs("CCSPlayer", "m_iAccount");
@@ -359,6 +383,11 @@ public OnPluginStart()
 	HookConVarChange(g_h_lw_enabled, OnLiveWireChange);
 	HookConVarChange(g_h_t, OnTChange);
 	HookConVarChange(g_h_ct, OnCTChange);
+	HookConVarChange(g_hCvarFtpTarget, Cvar_Changed);
+	HookConVarChange(g_hCvarDelete, Cvar_Changed);
+	HookConVarChange(g_hCvarBzip, Cvar_Changed);
+	HookConVarChange(g_hCvarEnabled, Cvar_Changed);
+	HookConVarChange(g_hOnMatchCompleted, Cvar_Changed);
 	
 	HookEvent("round_start", Event_Round_Start);
 	HookEvent("round_end", Event_Round_End);
@@ -418,6 +447,12 @@ public OnLibraryAdded(const String:name[])
 public OnConfigsExecuted()
 {
 	GetConVarString(g_h_chat_prefix, CHAT_PREFIX, sizeof(CHAT_PREFIX));
+	
+	g_bEnabled = GetConVarBool(g_hCvarEnabled);
+	g_iBzip2 = GetConVarBool(g_hCvarBzip);
+	g_bDelete = GetConVarBool(g_hCvarDelete);
+	g_UploadOnMatchCompleted = GetConVarBool(g_hOnMatchCompleted);
+	GetConVarString(g_hCvarFtpTarget, g_sFtpTarget, sizeof(g_sFtpTarget));
 }
 
 public Action:LiveWire_ReConnect(client, args)
@@ -558,6 +593,7 @@ public OnMapStart()
 	
 	// reset any matches
 	ResetMatch(true);
+	g_bRecording = false;
 }
 
 public OnLibraryRemoved(const String:name[])
@@ -693,6 +729,8 @@ ResetMatch(bool:silent)
 		new String:end_config[128];
 		GetConVarString(g_h_end_config, end_config, sizeof(end_config));
 		ServerCommand("exec %s", end_config);
+		//stop demo from uploading
+		g_MatchComplete = false;
 	}
 	
 	if (g_log_file != INVALID_HANDLE)
@@ -727,6 +765,7 @@ ResetMatch(bool:silent)
 	
 	// stop tv recording after 10 seconds
 	CreateTimer(10.0, StopRecord);
+	CreateTimer(11.0, LogFileUpload);
 	
 	if (GetConVarBool(g_h_auto_ready))
 	{
@@ -2946,6 +2985,16 @@ CheckScores()
 				{
 					SwitchTeamNames();
 				}
+				else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+				{
+					g_t_name = DEFAULT_T_NAME;
+					SwitchTeamNames();
+				}
+				else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+				{
+					g_ct_name = DEFAULT_CT_NAME;
+					SwitchTeamNames();
+				}
 				
 				/*if (GetConVarBool(g_h_auto_ready) || GetConVarBool(g_h_half_auto_ready))
 				{
@@ -3039,6 +3088,16 @@ CheckScores()
 					{
 						SwitchTeamNames();
 					}
+					else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+					{
+						g_t_name = DEFAULT_T_NAME;
+						SwitchTeamNames();
+					}
+					else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+					{
+						g_ct_name = DEFAULT_CT_NAME;
+						SwitchTeamNames();
+					}
 					SwitchScores();
 					SetLastScore();
 					
@@ -3075,6 +3134,16 @@ CheckScores()
 				
 				if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
 				{
+					SwitchTeamNames();
+				}
+				else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+				{
+					g_t_name = DEFAULT_T_NAME;
+					SwitchTeamNames();
+				}
+				else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+				{
+					g_ct_name = DEFAULT_CT_NAME;
 					SwitchTeamNames();
 				}
 				SwitchScores();
@@ -3116,6 +3185,16 @@ CheckScores()
 					
 					if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
 					{
+						SwitchTeamNames();
+					}
+					else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+					{
+						g_t_name = DEFAULT_T_NAME;
+						SwitchTeamNames();
+					}
+					else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+					{
+						g_ct_name = DEFAULT_CT_NAME;
 						SwitchTeamNames();
 					}
 					SwitchScores();
@@ -3182,6 +3261,16 @@ CheckScores()
 				{
 					SwitchTeamNames();
 				}
+				else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+				{
+					g_t_name = DEFAULT_T_NAME;
+					SwitchTeamNames();
+				}
+				else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+				{
+					g_ct_name = DEFAULT_CT_NAME;
+					SwitchTeamNames();
+				}
 				
 				/*if (GetConVarBool(g_h_auto_ready) || GetConVarBool(g_h_half_auto_ready))
 				{
@@ -3240,6 +3329,16 @@ CheckScores()
 					{
 						SwitchTeamNames();
 					}
+					else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+					{
+						g_t_name = DEFAULT_T_NAME;
+						SwitchTeamNames();
+					}
+					else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+					{
+						g_ct_name = DEFAULT_CT_NAME;
+						SwitchTeamNames();
+					}
 					SwitchScores();
 					SetLastScore();
 					
@@ -3283,6 +3382,16 @@ CheckScores()
 				
 				if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
 				{
+					SwitchTeamNames();
+				}
+				else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+				{
+					g_t_name = DEFAULT_T_NAME;
+					SwitchTeamNames();
+				}
+				else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+				{
+					g_ct_name = DEFAULT_CT_NAME;
 					SwitchTeamNames();
 				}
 				SwitchScores();
@@ -3341,6 +3450,16 @@ CheckScores()
 			{
 				SwitchTeamNames();
 			}
+			else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+			{
+				g_t_name = DEFAULT_T_NAME;
+				SwitchTeamNames();
+			}
+			else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+			{
+				g_ct_name = DEFAULT_CT_NAME;
+				SwitchTeamNames();
+			}
 			
 			/*if (GetConVarBool(g_h_auto_ready) || GetConVarBool(g_h_half_auto_ready))
 			{
@@ -3375,6 +3494,16 @@ CheckScores()
 			
 			if (!StrEqual(g_t_name, DEFAULT_T_NAME, false) && !StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
 			{
+				SwitchTeamNames();
+			}
+			else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+			{
+				g_t_name = DEFAULT_T_NAME;
+				SwitchTeamNames();
+			}
+			else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+			{
+				g_ct_name = DEFAULT_CT_NAME;
 				SwitchTeamNames();
 			}
 			SwitchScores();
@@ -3653,11 +3782,15 @@ LiveOn3(bool:e_war)
 			{
 				ServerCommand("tv_record \"%s/%s%s.dem\"", save_dir, file_prefix, g_log_filename);
 				g_log_warmod_dir = true;
+				Format(g_sDemoPath, sizeof(g_sDemoPath), "%s/%s%s.dem", save_dir, file_prefix, g_log_filename);
+				g_bRecording = true;
 			}
 			else
 			{
 				ServerCommand("tv_record \"%s%s.dem\"", file_prefix, g_log_filename);
 				g_log_warmod_dir = false;
+				Format(g_sDemoPath, sizeof(g_sDemoPath), "%s%s.dem", file_prefix, g_log_filename);
+				g_bRecording = true;
 			}
 		}
 		
@@ -3667,12 +3800,14 @@ LiveOn3(bool:e_war)
 			if (DirExists(save_dir))
 			{
 				Format(filepath, sizeof(filepath), "%s/%s%s.log", save_dir, file_prefix, g_log_filename);
+				Format(g_sLogPath, sizeof(g_sLogPath), "%s/%s%s.log", save_dir, file_prefix, g_log_filename);
 				g_log_file = OpenFile(filepath, "w");
 				g_log_warmod_dir = true;
 			}
 			else if (DirExists("logs"))
 			{
 				Format(filepath, sizeof(filepath), "logs/%s%s.log", file_prefix, g_log_filename);
+				Format(g_sLogPath, sizeof(g_sLogPath), "logs/%s%s.log", file_prefix, g_log_filename);
 				g_log_file = OpenFile(filepath, "w");
 				g_log_warmod_dir = false;
 			}
@@ -3684,6 +3819,7 @@ LiveOn3(bool:e_war)
 	}
 	g_match = true;
 	g_live = true;
+	g_MatchComplete = true;	
 	SetConVarIntHidden(g_h_t_score, GetTTotalScore());
 	SetConVarIntHidden(g_h_ct_score, GetCTTotalScore());
 	LiveOn3Override();
@@ -4621,6 +4757,16 @@ public Handle_VoteStayLeave(Handle:menu, MenuAction:action, param1, param2)
 			{
 				SwitchTeamNames();
 			}
+			else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+			{
+				g_t_name = DEFAULT_T_NAME;
+				SwitchTeamNames();
+			}
+			else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+			{
+				g_ct_name = DEFAULT_CT_NAME;
+				SwitchTeamNames();
+			}
 			ServerCommand("mp_swapteams");
 			// show ready system
 			ReadyChangeAll(0, false, true);
@@ -5353,6 +5499,16 @@ public Action:SwapAll(client, args)
 	{
 		SwitchTeamNames();
 	}
+	else if (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false))
+	{
+		g_t_name = DEFAULT_T_NAME;
+		SwitchTeamNames();
+	}
+	else if (!StrEqual(g_t_name, DEFAULT_T_NAME, false))
+	{
+		g_ct_name = DEFAULT_CT_NAME;
+		SwitchTeamNames();
+	}
 	
 	LogAction(client, -1, "\"team_swap\" (player \"%L\")", client);
 	
@@ -5391,7 +5547,173 @@ public Action:StopRecord(Handle:timer)
 	{
 		// only stop if another match hasn't started
 		ServerCommand("tv_stoprecord");
+		// && LibraryExists("teasyftp")
+		if (g_bEnabled && g_bRecording)
+		{
+			if (g_UploadOnMatchCompleted)
+			{
+				if (g_MatchComplete)
+				{
+					new Handle:hDataPack = CreateDataPack();
+					CreateDataTimer(5.0, Timer_UploadDemo, hDataPack);
+					WritePackString(hDataPack, g_sDemoPath);
+					Format(g_sDemoPath, sizeof(g_sDemoPath), "");
+				}
+			}
+			else
+			{
+				new Handle:hDataPack = CreateDataPack();
+				CreateDataTimer(5.0, Timer_UploadDemo, hDataPack);
+				WritePackString(hDataPack, g_sDemoPath);
+				Format(g_sDemoPath, sizeof(g_sDemoPath), "");
+			}
+		}
+		/*else if (!LibraryExists("teasyftp"))
+		{
+			LogMessage("Plug-in tEasyFTP.smx required to auto upload demos");
+		}*/
+		CreateTimer(2.0, RecordingFalse);
+		//g_bRecording = false;
 	}
+}
+
+public Action:RecordingFalse(Handle:timer)
+{
+	g_bRecording = false;
+}
+
+public Action:LogFileUpload(Handle:timer)
+{
+	if (!g_match)
+	{
+		// && LibraryExists("teasyftp")
+		if (g_bEnabled && g_bRecording)
+		{
+			if (g_UploadOnMatchCompleted)
+			{
+				if (g_MatchComplete)
+				{
+					new Handle:hDataPackLog = CreateDataPack();
+					CreateDataTimer(5.0, Timer_UploadLog, hDataPackLog);
+					WritePackString(hDataPackLog, g_sLogPath);
+					Format(g_sLogPath, sizeof(g_sLogPath), "");
+				}
+			}
+			else
+			{
+				new Handle:hDataPackLog = CreateDataPack();
+				CreateDataTimer(5.0, Timer_UploadLog, hDataPackLog);
+				WritePackString(hDataPackLog, g_sLogPath);
+				Format(g_sLogPath, sizeof(g_sLogPath), "");
+			}
+		}
+	}
+}
+
+//Coded by Thrawn2 from tAutoDemoUpload plugin [Built in for better execution]
+/*public Action:CommandListener_Record(client, const String:command[], argc)
+{
+	if(!g_bEnabled)
+	{
+		return;
+	}
+	
+	GetCmdArg(1, g_sDemoPath, sizeof(g_sDemoPath));
+
+	if(!StrEqual(g_sDemoPath, ""))
+	{
+		g_bRecording = true;
+	}
+
+	// Append missing .dem
+	if(strlen(g_sDemoPath) < 4 || strncmp(g_sDemoPath[strlen(g_sDemoPath)-4], ".dem", 4, false) != 0)
+	{
+		Format(g_sDemoPath, sizeof(g_sDemoPath), "%s.dem", g_sDemoPath);
+	}
+}*/
+
+public Action:Timer_UploadDemo(Handle:timer, Handle:hDataPack)
+{
+	ResetPack(hDataPack);
+
+	decl String:sDemoPath[PLATFORM_MAX_PATH];
+	ReadPackString(hDataPack, sDemoPath, sizeof(sDemoPath));
+
+	if(g_iBzip2 > 0 && g_iBzip2 < 10 && LibraryExists("bzip2"))
+	{
+		decl String:sBzipPath[PLATFORM_MAX_PATH];
+		Format(sBzipPath, sizeof(sBzipPath), "%s.bz2", sDemoPath);
+		BZ2_CompressFile(sDemoPath, sBzipPath, g_iBzip2, CompressionComplete);
+	}
+	else
+	{
+		EasyFTP_UploadFile(g_sFtpTarget, sDemoPath, "/", UploadComplete);
+	}
+}
+
+public Action:Timer_UploadLog(Handle:timer, Handle:hDataPackLog)
+{
+	ResetPack(hDataPackLog);
+
+	decl String:sLogPath[PLATFORM_MAX_PATH];
+	ReadPackString(hDataPackLog, sLogPath, sizeof(sLogPath));
+
+	EasyFTP_UploadFile(g_sFtpTarget, sLogPath, "/", UploadComplete);
+
+}
+
+public CompressionComplete(BZ_Error:iError, String:inFile[], String:outFile[], any:data)
+{
+	if(iError == BZ_OK)
+	{
+		LogMessage("%s compressed to %s", inFile, outFile);
+		EasyFTP_UploadFile(g_sFtpTarget, outFile, "/", UploadComplete);
+	}
+	else
+	{
+		LogBZ2Error(iError);
+	}
+}
+
+public UploadComplete(const String:sTarget[], const String:sLocalFile[], const String:sRemoteFile[], iErrorCode, any:data) {
+	if(iErrorCode == 0 && g_bDelete)
+	{
+		DeleteFile(sLocalFile);
+		if(StrEqual(sLocalFile[strlen(sLocalFile)-4], ".bz2"))
+		{
+			new String:sLocalNoCompressFile[PLATFORM_MAX_PATH];
+			strcopy(sLocalNoCompressFile, strlen(sLocalFile)-3, sLocalFile);
+			DeleteFile(sLocalNoCompressFile);
+		}
+	}
+
+	if(iErrorCode == 0)
+	{
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Demo uploaded successfully", CHAT_PREFIX);
+	}
+	else
+	{
+		for(new client = 1; client <= MaxClients; client++)
+		{
+			if(IsClientInGame(client) && GetAdminFlag(GetUserAdmin(client), Admin_Reservation))
+			{
+				PrintToChat(client, "\x01 \x09[\x04%s\x09]\x01 Failed uploading demo file. Check the server log files.", CHAT_PREFIX);
+			}
+		}
+	}
+}
+
+public Cvar_Changed(Handle:convar, const String:oldValue[], const String:newValue[])
+{
+	OnConfigsExecuted();
+}
+
+public GetConVarValueInt(const String:sConVar[])
+{
+	new Handle:hConVar = FindConVar(sConVar);
+	new iResult = GetConVarInt(hConVar);
+	CloseHandle(hConVar);
+	return iResult;
 }
 
 public Action:HalfTime(Handle:timer)
