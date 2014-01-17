@@ -77,7 +77,7 @@ new Handle:g_h_end_config = INVALID_HANDLE;
 new Handle:g_h_warmup_config = INVALID_HANDLE;
 new Handle:g_h_prac_config = INVALID_HANDLE;
 new Handle:g_h_half_time_config = INVALID_HANDLE;
-new Handle:g_h_half_time_brake = INVALID_HANDLE;
+new Handle:g_h_half_time_break = INVALID_HANDLE;
 new Handle:g_h_round_money = INVALID_HANDLE;
 new Handle:g_h_ingame_scores = INVALID_HANDLE;
 new Handle:g_h_max_rounds = INVALID_HANDLE;
@@ -316,7 +316,7 @@ public OnPluginStart()
 	g_h_warmup_config = CreateConVar("wm_warmup_config", "warmod/ruleset_warmup.cfg", "Sets the config to load up for warmup");
 	g_h_prac_config = CreateConVar("wm_prac_config", "warmod/prac.cfg", "Sets the config to load up for practice");
 	g_h_half_time_config = CreateConVar("wm_half_time_config", "warmod/on_match_half_time.cfg", "Sets the config to load at half time of a match (including overtime)");
-	g_h_half_time_brake = CreateConVar("wm_half_time_brake", "0", "Pause game at halftime for a brake, No break = 0, brake = 1");
+	g_h_half_time_break = CreateConVar("wm_half_time_break", "0", "Pause game at halftime for a brake, No brake = 0, brake = 1");
 	g_h_round_money = CreateConVar("wm_round_money", "1", "Enable or disable a client's team mates money to be displayed at the start of a round (to him only)", FCVAR_NOTIFY);
 	g_h_ingame_scores = CreateConVar("wm_ingame_scores", "1", "Enable or disable ingame scores to be showed at the end of each round", FCVAR_NOTIFY);
 	g_h_max_rounds = CreateConVar("wm_max_rounds", "15", "Sets maxrounds before auto team switch", FCVAR_NOTIFY);
@@ -3006,7 +3006,7 @@ CheckScores()
 				new String:half_time_config[128];
 				GetConVarString(g_h_half_time_config, half_time_config, sizeof(half_time_config));
 				ServerCommand("exec %s", half_time_config);
-				if (GetConVarInt(g_h_half_time_brake))
+				if (GetConVarInt(g_h_half_time_break))
 				{
 					g_half_swap = false;
 					g_live = false;
