@@ -130,6 +130,8 @@ new bool:g_t_score = false;
 new bool:g_t_knife = true;
 new bool:g_t_had_knife = false;
 new bool:g_second_half_first = false;
+new g_p_ct_name = false;
+new g_p_t_name = false;
 
 /* FTP Auto upload code [By Thrawn from tAutoDemoUpload] */
 new Handle:g_hCvarEnabled = INVALID_HANDLE;
@@ -234,6 +236,7 @@ public OnPluginStart()
 	//AddCommandListener(CommandListener_Record, "tv_record");
 	
 	RegConsoleCmd("wm_cash", AskTeamMoney);
+	RegConsoleCmd("name", Name);
 	
 	RegAdminCmd("last_score", LastMatch, ADMFLAG_CUSTOM1, "Displays the score of the last match to the console");
 	RegAdminCmd("last", LastMatch, ADMFLAG_CUSTOM1, "Displays the score of the last match to the console");
@@ -316,7 +319,7 @@ public OnPluginStart()
 	g_h_warmup_config = CreateConVar("wm_warmup_config", "warmod/ruleset_warmup.cfg", "Sets the config to load up for warmup");
 	g_h_prac_config = CreateConVar("wm_prac_config", "warmod/prac.cfg", "Sets the config to load up for practice");
 	g_h_half_time_config = CreateConVar("wm_half_time_config", "warmod/on_match_half_time.cfg", "Sets the config to load at half time of a match (including overtime)");
-	g_h_half_time_break = CreateConVar("wm_half_time_break", "0", "Pause game at halftime for a brake, No brake = 0, brake = 1");
+	g_h_half_time_break = CreateConVar("wm_half_time_break", "0", "Pause game at halftime for a break, No break = 0, break = 1");
 	g_h_round_money = CreateConVar("wm_round_money", "1", "Enable or disable a client's team mates money to be displayed at the start of a round (to him only)", FCVAR_NOTIFY);
 	g_h_ingame_scores = CreateConVar("wm_ingame_scores", "1", "Enable or disable ingame scores to be showed at the end of each round", FCVAR_NOTIFY);
 	g_h_max_rounds = CreateConVar("wm_max_rounds", "15", "Sets maxrounds before auto team switch", FCVAR_NOTIFY);
@@ -1261,6 +1264,48 @@ public Action:UploadResults(Handle:timer)
 	new match_length = RoundFloat(GetEngineTime() - g_match_start);
 	MySQL_UploadResults(match_length, g_map, GetConVarInt(g_h_max_rounds), GetConVarInt(g_h_overtime_mr), g_overtime_count, g_play_out, g_t_name, GetTTotalScore(), g_scores[SCORE_T][SCORE_FIRST_HALF], g_scores[SCORE_T][SCORE_SECOND_HALF], GetTOTTotalScore(), g_ct_name, GetCTTotalScore(), g_scores[SCORE_CT][SCORE_FIRST_HALF], g_scores[SCORE_CT][SCORE_SECOND_HALF], GetCTOTTotalScore());
 	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Results uploaded", CHAT_PREFIX);
+}
+
+public Action:Name(client, args)
+{
+	if (!IsValidClient(client))
+	{
+		return;
+	}
+	else if (!g_p_ct_name && GetClientTeam(client) == 3)
+	{
+		return;
+	}
+	else if (!g_p_t_name && GetClientTeam(client) == 2)
+	{
+		return;
+	}
+	else if (GetClientTeam(client) < 2)
+	{
+		return;
+	}
+	
+	new String:sName[64];
+	GetCmdArgString(sName, sizeof(sName));
+	StripQuotes(sName);
+	
+	if (g_p_t_name && GetClientTeam(client) == 2)
+	{
+		g_t_name = sName;
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Terrorists are called \x09%s", CHAT_PREFIX, g_ct_name);
+		ServerCommand("mp_teamname_2 %s", g_t_name);
+		g_p_t_name = false;
+	}
+	
+	if (g_p_ct_name && GetClientTeam(client) == 3)
+	{
+		g_ct_name = sName;
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Counter Terrorists are called \x09%s", CHAT_PREFIX, g_ct_name);
+		ServerCommand("mp_teamname_1 %s", g_ct_name);
+		g_p_ct_name = false;
+	}
+	
+	CheckReady();
 }
 
 public Action:ResetMatchTimer(Handle:timer)
@@ -3656,8 +3701,43 @@ ReadyServ(client, bool:ready, bool:silent, bool:show, bool:priv)
 
 CheckReady()
 {
+	if (GetTeamClientCount(COUNTER_TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2) && GetTeamClientCount(TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2))
+	{
+		if (StrEqual(g_t_name, DEFAULT_T_NAME))
+		{
+			getTerroristTeamName();
+		}
+	
+		if (StrEqual(g_ct_name, DEFAULT_CT_NAME))
+		{
+			getCounterTerroristTeamName();
+		}
+	}
+	
 	if ((GetConVarBool(g_h_req_names) && (StrEqual(g_t_name, DEFAULT_T_NAME, false) || StrEqual(g_ct_name, DEFAULT_CT_NAME, false))) && (!GetConVarBool(g_h_auto_knife) || g_t_had_knife))
 	{
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Names Required");
+
+		if (StrEqual(g_t_name, DEFAULT_T_NAME, false) && (!StrEqual(g_ct_name, DEFAULT_CT_NAME, false)))
+		{
+			g_p_t_name = true;
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Terrorists please set team name", CHAT_PREFIX);
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 To set team name please type /name 'name'", CHAT_PREFIX);
+		}
+		else if (StrEqual(g_ct_name, DEFAULT_CT_NAME, false) && (!StrEqual(g_t_name, DEFAULT_T_NAME, false)))
+		{
+			g_p_ct_name = true;
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Counter Terrorists please set team name", CHAT_PREFIX);
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 To set team name please type /name 'name'", CHAT_PREFIX);
+		}
+		else if (GetTeamClientCount(COUNTER_TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2) && GetTeamClientCount(TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2))
+		{
+			g_p_ct_name = true;
+			g_p_t_name = true;
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Teams please set team name", CHAT_PREFIX);
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 To set team name please type /name 'name'", CHAT_PREFIX);		
+		}
+		
 		return;
 	}
 	
@@ -6027,7 +6107,7 @@ MySQL_UploadResults(match_length, String:map[], max_rounds, overtime_max_rounds,
 	
 	MySQL_CreateTable(dbc, table_name);
 	
-	Format(query_str, sizeof(query_str), "INSERT INTO %s (match_id, match_start, match_end, map, max_rounds, overtime_max_rounds, overtime_count, played_out, t_name, t_overall_score, t_first_half_score, t_second_half_score, t_overtime_score, ct_name, ct_overall_score, ct_first_half_score, ct_second_half_score, ct_overtime_score) VALUES (NULL, DATE_SUB(UTC_TIMESTAMP(), INTERVAL ? SECOND), UTC_TIMESTAMP(), %s, %i, %i, %i, %i, %s, %i, %i, %i, %i, %s, %i, %i, %i, %i)", table_name, map, max_rounds, overtime_max_rounds, overtime_count, played_out_int, t_name, t_overall_score, t_first_half_score, t_second_half_score, t_overtime_score, ct_name, ct_overall_score, ct_first_half_score, ct_second_half_score, ct_overtime_score);
+	Format(query_str, sizeof(query_str), "INSERT INTO %s (match_id, match_start, match_end, map, max_rounds, overtime_max_rounds, overtime_count, played_out, t_name, t_overall_score, t_first_half_score, t_second_half_score, t_overtime_score, ct_name, ct_overall_score, ct_first_half_score, ct_second_half_score, ct_overtime_score) VALUES (NULL, DATE_SUB(UTC_TIMESTAMP(), INTERVAL %i SECOND), UTC_TIMESTAMP(), %s, %i, %i, %i, %i, %s, %i, %i, %i, %i, %s, %i, %i, %i, %i)", table_name, match_length, map, max_rounds, overtime_max_rounds, overtime_count, played_out_int, t_name, t_overall_score, t_first_half_score, t_second_half_score, t_overtime_score, ct_name, ct_overall_score, ct_first_half_score, ct_second_half_score, ct_overtime_score);
 	PrintToServer("Query: %s", query_str);
 	SQL_TQuery(dbc, AddToDatabase, query_str, DBPrio_Low);
 	/*new Handle:db_query = SQL_PrepareQuery(dbc, query_str, error, sizeof(error));
