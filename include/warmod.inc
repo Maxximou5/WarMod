@@ -48,7 +48,7 @@
 #define CLUTCH_WON         3
 #define CLUTCH_NUM         4
 
-#define WM_VERSION         "0.2.1a"
+#define WM_VERSION         "0.2.1b"
 #define WM_DESCRIPTION     "An automative service created by Twelve-60 and updated by Versatile BFG for CS:GO competition matches."
 
 new String:g_team_name_cache[16][64];
@@ -425,6 +425,7 @@ stock StripFilename(String:filename[], size)
 	ReplaceString(filename, size, "<", "");
 	ReplaceString(filename, size, ">", "");
 	ReplaceString(filename, size, "|", "");
+	ReplaceString(filename, size, "'", "");
 	ReplaceString(filename, size, ";", "");
 	ReplaceString(filename, size, "-", "+");
 	ReplaceString(filename, size, " ", "_");
