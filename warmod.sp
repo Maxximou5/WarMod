@@ -767,9 +767,9 @@ ResetMatch(bool:silent)
 	ServerCommand("mp_unpause_match 1");
 	UpdateStatus();
 	
-	// stop tv recording after 10 seconds
-	CreateTimer(10.0, StopRecord);
-	CreateTimer(11.0, LogFileUpload);
+	// stop tv recording after 5 seconds
+	CreateTimer(5.0, StopRecord);
+	CreateTimer(5.0, LogFileUpload);
 	
 	if (GetConVarBool(g_h_auto_ready))
 	{
@@ -3722,20 +3722,20 @@ CheckReady()
 		{
 			g_p_t_name = true;
 			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Terrorists please set team name", CHAT_PREFIX);
-			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 To set team name please type /name 'name'", CHAT_PREFIX);
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 To set team name please type /name TeamName", CHAT_PREFIX);
 		}
 		else if (StrEqual(g_ct_name, DEFAULT_CT_NAME, false) && (!StrEqual(g_t_name, DEFAULT_T_NAME, false)))
 		{
 			g_p_ct_name = true;
 			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Counter Terrorists please set team name", CHAT_PREFIX);
-			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 To set team name please type /name 'name'", CHAT_PREFIX);
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 To set team name please type /name TeamName", CHAT_PREFIX);
 		}
 		else if (GetTeamClientCount(COUNTER_TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2) && GetTeamClientCount(TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2))
 		{
 			g_p_ct_name = true;
 			g_p_t_name = true;
 			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Teams please set team name", CHAT_PREFIX);
-			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 To set team name please type /name 'name'", CHAT_PREFIX);		
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 To set team name please type /name TeamName", CHAT_PREFIX);		
 		}
 		
 		return;
@@ -5631,7 +5631,7 @@ public Action:StopRecord(Handle:timer)
 				if (g_MatchComplete)
 				{
 					new Handle:hDataPack = CreateDataPack();
-					CreateDataTimer(5.0, Timer_UploadDemo, hDataPack);
+					CreateDataTimer(1.0, Timer_UploadDemo, hDataPack);
 					WritePackString(hDataPack, g_sDemoPath);
 					Format(g_sDemoPath, sizeof(g_sDemoPath), "");
 				}
@@ -5639,7 +5639,7 @@ public Action:StopRecord(Handle:timer)
 			else
 			{
 				new Handle:hDataPack = CreateDataPack();
-				CreateDataTimer(5.0, Timer_UploadDemo, hDataPack);
+				CreateDataTimer(1.0, Timer_UploadDemo, hDataPack);
 				WritePackString(hDataPack, g_sDemoPath);
 				Format(g_sDemoPath, sizeof(g_sDemoPath), "");
 			}
@@ -5670,7 +5670,7 @@ public Action:LogFileUpload(Handle:timer)
 				if (g_MatchComplete)
 				{
 					new Handle:hDataPackLog = CreateDataPack();
-					CreateDataTimer(5.0, Timer_UploadLog, hDataPackLog);
+					CreateDataTimer(1.0, Timer_UploadLog, hDataPackLog);
 					WritePackString(hDataPackLog, g_sLogPath);
 					Format(g_sLogPath, sizeof(g_sLogPath), "");
 				}
@@ -5678,7 +5678,7 @@ public Action:LogFileUpload(Handle:timer)
 			else
 			{
 				new Handle:hDataPackLog = CreateDataPack();
-				CreateDataTimer(5.0, Timer_UploadLog, hDataPackLog);
+				CreateDataTimer(1.0, Timer_UploadLog, hDataPackLog);
 				WritePackString(hDataPackLog, g_sLogPath);
 				Format(g_sLogPath, sizeof(g_sLogPath), "");
 			}
@@ -5765,7 +5765,14 @@ public UploadComplete(const String:sTarget[], const String:sLocalFile[], const S
 
 	if(iErrorCode == 0)
 	{
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Demo uploaded successfully", CHAT_PREFIX);
+		if(StrEqual(sLocalFile[strlen(sLocalFile)-4], ".log"))
+		{
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Log file uploaded successfully", CHAT_PREFIX);
+		}
+		else
+		{
+			PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Demo uploaded successfully", CHAT_PREFIX);
+		}
 	}
 	else
 	{
