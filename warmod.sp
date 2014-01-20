@@ -2439,6 +2439,8 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 	new bool:headshot = GetEventBool(event, "headshot");
 	new String: weapon[64];
 	GetEventString(event, "weapon", weapon, sizeof(weapon));
+	new victim_team = GetClientTeam(victim);
+	new attacker_team = GetClientTeam(attacker);
 	
 	// stats
 	if (GetConVarBool(g_h_stats_enabled))
@@ -2472,8 +2474,6 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 			new weapon_index = GetWeaponIndex(weapon);
 			if (attacker > 0)
 			{
-				new victim_team = GetClientTeam(victim);
-				new attacker_team = GetClientTeam(attacker);
 				if (weapon_index > -1)
 				{
 					weapon_stats[attacker][weapon_index][LOG_HIT_KILLS]++;
@@ -2509,9 +2509,9 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 					}
 				}
 			}
-			new assister_team = GetClientTeam(assister);
-			if (assister_team > 1)
+			if (assister > 1)
 			{
+				new assister_team = GetClientTeam(assister);
 				if (assister_team == victim_team)
 				{
 					weapon_stats[assister][weapon_index][LOG_HIT_ASSIST_TK]++;
@@ -6008,7 +6008,7 @@ LogPlayerStats(client)
 				round_stats[x] += weapon_stats[client][i][x];
 			}
 		}
-		LogEvent("{\"event\": \"round_stats\", \"player\": %s, \"shots\": %d, \"hits\": %d, \"kills\": %d, \"headshots\": %d, \"tks\": %d, \"damage\": %d, \"assists"\: %d, \"assists_tk"\: %d, \"deaths\": %d, \"head\": %d, \"chest\": %d, \"stomach\": %d, \"leftArm\": %d, \"rightArm\": %d, \"leftLeg\": %d, \"rightLeg\": %d, \"generic\": %d}", log_string, round_stats[LOG_HIT_SHOTS], round_stats[LOG_HIT_HITS], round_stats[LOG_HIT_KILLS], round_stats[LOG_HIT_HEADSHOTS], round_stats[LOG_HIT_TEAMKILLS], round_stats[LOG_HIT_DAMAGE], round_stats[LOG_HIT_ASSIST], round_stats[LOG_HIT_ASSIST_TK], round_stats[LOG_HIT_DEATHS], round_stats[LOG_HIT_HEAD], round_stats[LOG_HIT_CHEST], round_stats[LOG_HIT_STOMACH], round_stats[LOG_HIT_LEFTARM], round_stats[LOG_HIT_RIGHTARM], round_stats[LOG_HIT_LEFTLEG], round_stats[LOG_HIT_RIGHTLEG], round_stats[LOG_HIT_GENERIC]);
+		LogEvent("{\"event\": \"round_stats\", \"player\": %s, \"shots\": %d, \"hits\": %d, \"kills\": %d, \"headshots\": %d, \"tks\": %d, \"damage\": %d, \"assists\": %d, \"assists_tk\": %d, \"deaths\": %d, \"head\": %d, \"chest\": %d, \"stomach\": %d, \"leftArm\": %d, \"rightArm\": %d, \"leftLeg\": %d, \"rightLeg\": %d, \"generic\": %d}", log_string, round_stats[LOG_HIT_SHOTS], round_stats[LOG_HIT_HITS], round_stats[LOG_HIT_KILLS], round_stats[LOG_HIT_HEADSHOTS], round_stats[LOG_HIT_TEAMKILLS], round_stats[LOG_HIT_DAMAGE], round_stats[LOG_HIT_ASSIST], round_stats[LOG_HIT_ASSIST_TK], round_stats[LOG_HIT_DEATHS], round_stats[LOG_HIT_HEAD], round_stats[LOG_HIT_CHEST], round_stats[LOG_HIT_STOMACH], round_stats[LOG_HIT_LEFTARM], round_stats[LOG_HIT_RIGHTARM], round_stats[LOG_HIT_LEFTLEG], round_stats[LOG_HIT_RIGHTLEG], round_stats[LOG_HIT_GENERIC]);
 		ResetPlayerStats(client);
 	}
 }
