@@ -2440,7 +2440,6 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 	new String: weapon[64];
 	GetEventString(event, "weapon", weapon, sizeof(weapon));
 	new victim_team = GetClientTeam(victim);
-	new attacker_team = GetClientTeam(attacker);
 	
 	// stats
 	if (GetConVarBool(g_h_stats_enabled))
@@ -2474,6 +2473,7 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 			new weapon_index = GetWeaponIndex(weapon);
 			if (attacker > 0)
 			{
+				new attacker_team = GetClientTeam(attacker);
 				if (weapon_index > -1)
 				{
 					weapon_stats[attacker][weapon_index][LOG_HIT_KILLS]++;
