@@ -40,7 +40,9 @@
 #define LOG_HIT_RIGHTARM   12
 #define LOG_HIT_LEFTLEG    13
 #define LOG_HIT_RIGHTLEG   14
-#define LOG_HIT_NUM        15
+#define LOG_HIT_ASSIST_TK  15
+#define LOG_HIT_ASSIST     16
+#define LOG_HIT_NUM        17
 
 #define CLUTCH_LAST        0
 #define CLUTCH_VERSUS      1
@@ -48,7 +50,7 @@
 #define CLUTCH_WON         3
 #define CLUTCH_NUM         4
 
-#define WM_VERSION         "0.2.1b"
+#define WM_VERSION         "0.2.1c"
 #define WM_DESCRIPTION     "An automative service created by Twelve-60 and updated by Versatile BFG for CS:GO competition matches."
 
 new String:g_team_name_cache[16][64];
