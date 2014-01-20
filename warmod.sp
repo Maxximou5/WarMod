@@ -2510,13 +2510,16 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 				}
 			}
 			new assister_team = GetVlientTeam(assister);
-			if (assister_team == victim_team)
+			if (assister > 1)
 			{
-				weapon_stats[assister][weapon_index][LOG_HIT_ASSIST_TK]++;
-			}
-			else
-			{
-				weapon_stats[assister][weapon_index][LOG_HIT_ASSIST]++;
+				if (assister_team == victim_team)
+				{
+					weapon_stats[assister][weapon_index][LOG_HIT_ASSIST_TK]++;
+				}
+				else
+				{
+					weapon_stats[assister][weapon_index][LOG_HIT_ASSIST]++;
+				}
 			}
 			new victim_weapon_index = GetWeaponIndex(last_weapon[victim]);
 			if (victim_weapon_index > -1)
