@@ -2509,8 +2509,8 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 					}
 				}
 			}
-			new assister_team = GetVlientTeam(assister);
-			if (assister > 1)
+			new assister_team = GetClientTeam(assister);
+			if (assister_team > 1)
 			{
 				if (assister_team == victim_team)
 				{
