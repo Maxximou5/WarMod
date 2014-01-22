@@ -102,6 +102,10 @@
 	{
 		"en"			"Forced all players unready"
 	}
+	"Forced Spectate"
+	{
+		"en"			"Forced all players to spectate"
+	}
 	"Match Not In Progress"
 	{
 		"en"			"Match is not in progress!"
@@ -325,6 +329,10 @@
 	"Admin_Menu ForceAllUnready"
 	{
 		"en"			"Force All Unready"
+	}
+	"Admin_Menu ForceAllSpectate"
+	{
+		"en"			"Force All Spectate"
 	}
 	"Admin_Menu Activate WarMod"
 	{
