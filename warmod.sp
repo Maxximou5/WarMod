@@ -281,6 +281,8 @@ public OnPluginStart()
 	RegAdminCmd("far", ForceAllReady, ADMFLAG_CUSTOM1, "Forces all players to become ready");
 	RegAdminCmd("forceallunready", ForceAllUnready, ADMFLAG_CUSTOM1, "Forces all players to become unready");
 	RegAdminCmd("faur", ForceAllUnready, ADMFLAG_CUSTOM1, "Forces all players to become unready");
+	RegAdminCmd("forceallspectate", ForceAllSpectate, ADMFLAG_CUSTOM1, "Forces all players to become a spectator");
+	RegAdminCmd("fas", ForceAllSpectate, ADMFLAG_CUSTOM1, "Forces all players to become a spectator");
 	
 	RegAdminCmd("lo3", ForceStart, ADMFLAG_CUSTOM1, "Starts the match regardless of player and ready count");
 	RegAdminCmd("forcestart", ForceStart, ADMFLAG_CUSTOM1, "Starts the match regardless of player and ready count");
@@ -631,6 +633,7 @@ public OnAdminMenuReady(Handle:topmenu)
 	AddToTopMenu(g_h_menu, "cancelmatch", TopMenuObject_Item, MenuHandler, new_menu, "cancelmatch", ADMFLAG_CUSTOM1);
 	AddToTopMenu(g_h_menu, "forceallready", TopMenuObject_Item, MenuHandler, new_menu, "forceallready", ADMFLAG_CUSTOM1);
 	AddToTopMenu(g_h_menu, "forceallunready", TopMenuObject_Item, MenuHandler, new_menu, "forceallunready", ADMFLAG_CUSTOM1);
+	AddToTopMenu(g_h_menu, "forceallspectate", TopMenuObject_Item, MenuHandler, new_menu, "forceallspectate", ADMFLAG_CUSTOM1);
 	AddToTopMenu(g_h_menu, "toggleactive", TopMenuObject_Item, MenuHandler, new_menu, "toggleactive", ADMFLAG_CUSTOM1);
 }
 
@@ -1670,6 +1673,50 @@ public Action:ForceAllUnready(client, args)
 	return Plugin_Handled;
 }
 
+public Action:ForceAllSpectate(client, args)
+{
+	if (!IsActive(client, false))
+	{
+		// warmod is disabled
+		return Plugin_Handled;
+	}
+
+	if (!IsAdminCmd(client, false))
+	{
+		// not allowed, rcon only
+		return Plugin_Handled;
+	}
+	
+	// reset half and restart
+	ForceSpectate();
+	ResetHalf(true);
+	ShowInfo(0, false, false, 1);
+	SetAllCancelled(false);
+	ReadySystem(false);
+	
+	LogAction(client, -1, "\"force__all_spec\" (player \"%L\")", client);
+	
+	return Plugin_Handled;
+}
+
+ForceSpectate()
+{
+	for (new i = 1; i <= MaxClients; i++)
+	{
+		if (IsClientInGame(i) && !IsFakeClient(i))
+		{
+			if(GetClientTeam(i) != 1)
+			{
+				ChangeClientTeam(i, 1);
+			}
+			else
+			{
+				PrintToChat(i, "You are already a spectator.");
+			}
+		}
+	}
+}
+
 public Action:ForceStart(client, args)
 {
 	if (!IsActive(client, false))
@@ -1862,7 +1909,7 @@ public Action:LastMatch(client, args)
 	// display details of last match to the console
 	if (g_last_scores[SCORE_T] != -1)
 	{
-		PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01  Last Match: %s [%d] %s [%d] MR%d", CHAT_PREFIX, g_last_names[SCORE_T], g_last_scores[SCORE_T], g_last_names[SCORE_CT], g_last_scores[SCORE_CT], g_last_maxrounds);
+		PrintToConsole(client, "\x01 \x09[\x04%s\x09]\x01  Last Match: \x02%s [%d] \x0C%s [%d] \x01MR%d", CHAT_PREFIX, g_last_names[SCORE_T], g_last_scores[SCORE_T], g_last_names[SCORE_CT], g_last_scores[SCORE_CT], g_last_maxrounds);
 	}
 	else
 	{
@@ -1906,7 +1953,7 @@ public Action:SetScoreT(client, args)
 					CS_SetTeamScore(TERRORIST_TEAM, intToUse);
 					SetTeamScore(TERRORIST_TEAM, intToUse);
 					g_scores[SCORE_T][SCORE_FIRST_HALF] = intToUse;
-					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Terrorists score changed to \x04%d", CHAT_PREFIX, intToUse);
+					PrintToChatAll("\x01 \x09[\x04%s\x09] \x02Terrorists \x01score changed to \x04%d", CHAT_PREFIX, intToUse);
 				}
 			}
 		}
@@ -1948,14 +1995,13 @@ public Action:SetScoreCT(client, args)
 					CS_SetTeamScore(COUNTER_TERRORIST_TEAM, intToUse);
 					SetTeamScore(COUNTER_TERRORIST_TEAM, intToUse);
 					g_scores[SCORE_CT][SCORE_FIRST_HALF] = intToUse;
-					PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Counter Terrorists score changed to \x04%d", CHAT_PREFIX, intToUse);
+					PrintToChatAll("\x01 \x09[\x04%s\x09] \x0CCounter Terrorists \x01score changed to \x04%d", CHAT_PREFIX, intToUse);
 				}
 			}
 		}
 	}
 	return Plugin_Handled;
 }
-
 
 ShowScore(client)
 {
@@ -2038,7 +2084,7 @@ public GetScoreMsg(client, String:result[], maxlen, t_score, ct_score)
 	SetGlobalTransTarget(client);
 	if (t_score > ct_score)
 	{
-		Format(result, maxlen, "\x01%t \x04%d\x03-\x04%d", "T Winning", g_t_name, t_score, ct_score);
+		Format(result, maxlen, "\x02%t \x04%d\x03-\x04%d", "T Winning", g_t_name, t_score, ct_score);
 	}
 	else if (t_score == ct_score)
 	{
@@ -2046,7 +2092,7 @@ public GetScoreMsg(client, String:result[], maxlen, t_score, ct_score)
 	}
 	else
 	{
-		Format(result, maxlen, "\x01%t \x04%d\x03-\x04%d", "CT Winning", g_ct_name, ct_score, t_score);
+		Format(result, maxlen, "\x0C%t \x04%d\x03-\x04%d", "CT Winning", g_ct_name, ct_score, t_score);
 	}
 }
 
@@ -2440,7 +2486,6 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 	new String: weapon[64];
 	GetEventString(event, "weapon", weapon, sizeof(weapon));
 	new victim_team = GetClientTeam(victim);
-	LogEvent("assister: %i", assister);
 	
 	// stats
 	if (GetConVarBool(g_h_stats_enabled))
@@ -3923,14 +3968,14 @@ stock LiveOn3Override()
 		ServerCommand("mp_halftime_pausetimer 0");
 		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 LIVE!", CHAT_PREFIX);
 		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Good Luck, Have Fun", CHAT_PREFIX);
-		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x03WarMod [BFG]", CHAT_PREFIX);
+		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Powered by \x0EWarMod [BFG]", CHAT_PREFIX);
 		g_half_swap = true;
 		return true;
 	}
 	
 	ServerCommand("mp_warmup_end");
 	ServerCommand("mp_restartgame 3");
-	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Live in 3", CHAT_PREFIX);
+	PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 Live on 3", CHAT_PREFIX);
 	CreateTimer(2.5, LiveOn3Text);
 	g_t_pause_count = 0;
 	g_ct_pause_count = 0;
@@ -6287,6 +6332,17 @@ public MenuHandler(Handle:topmenu, TopMenuAction:action, TopMenuObject:object_id
 		else if (action == TopMenuAction_SelectOption)
 		{
 			ForceAllUnready(param, 0);
+		}
+	}
+	else if (StrEqual(menu_name, "forceallspectate"))
+	{
+		if (action == TopMenuAction_DisplayOption)
+		{
+			Format(buffer, maxlength, "%t", "Admin_Menu ForceAllSpectate");
+		}
+		else if (action == TopMenuAction_SelectOption)
+		{
+			ForceAllSpectate(param, 0);
 		}
 	}
 	else if (StrEqual(menu_name, "toggleactive"))
