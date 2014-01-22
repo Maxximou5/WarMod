@@ -2440,6 +2440,7 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 	new String: weapon[64];
 	GetEventString(event, "weapon", weapon, sizeof(weapon));
 	new victim_team = GetClientTeam(victim);
+	LogEvent("assister: %i", assister);
 	
 	// stats
 	if (GetConVarBool(g_h_stats_enabled))
@@ -2509,22 +2510,24 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 					}
 				}
 			}
-			if (assister > 1)
-			{
-				new assister_team = GetClientTeam(assister);
-				if (assister_team == victim_team)
-				{
-					weapon_stats[assister][weapon_index][LOG_HIT_ASSIST_TK]++;
-				}
-				else
-				{
-					weapon_stats[assister][weapon_index][LOG_HIT_ASSIST]++;
-				}
-			}
+
 			new victim_weapon_index = GetWeaponIndex(last_weapon[victim]);
 			if (victim_weapon_index > -1)
 			{
 				weapon_stats[victim][victim_weapon_index][LOG_HIT_DEATHS]++;
+			}
+		}
+		if (assister > 0)
+		{
+			new assister_weapon_index = GetWeaponIndex(last_weapon[assister]);
+			new assister_team = GetClientTeam(assister);
+			if (assister_team == victim_team)
+			{
+				weapon_stats[assister][assister_weapon_index][LOG_HIT_ASSIST_TK]++;
+			}
+			if (assister_team == GetClientTeam(attacker))
+			{
+				weapon_stats[assister][assister_weapon_index][LOG_HIT_ASSIST]++;
 			}
 		}
 	}
