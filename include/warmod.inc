@@ -1,57 +1,59 @@
-#define UPDATE_URL    "http://bfg-esports.com/myplugin/updatefile.txt"
+#define UPDATE_URL				"http://bfg-esports.com/myplugin/updatefile.txt"
 
-#define SPECTATOR_TEAM          1
-#define TERRORIST_TEAM          2
-#define COUNTER_TERRORIST_TEAM  3
+#define SPECTATOR_TEAM			1
+#define TERRORIST_TEAM			2
+#define COUNTER_TERRORIST_TEAM		3
 
-#define DEFAULT_SPECTATOR_NAME  "Spectators"
-#define DEFAULT_T_NAME          "Terrorists"
-#define DEFAULT_CT_NAME         "Counter-Terrorists"
+#define DEFAULT_SPECTATOR_NAME		"Spectators"
+#define DEFAULT_T_NAME			"Terrorists"
+#define DEFAULT_CT_NAME			"Counter-Terrorists"
 
-#define PLAYER_DISC       -1
-#define PLAYER_READY       1
-#define PLAYER_UNREADY     2
+#define PLAYER_DISC			-1
+#define PLAYER_READY			1
+#define PLAYER_UNREADY			2
 
-#define SCORE_T            0
-#define SCORE_CT           1
+#define SCORE_T				0
+#define SCORE_CT			1
 
-#define SCORE_FIRST_HALF   0
-#define SCORE_SECOND_HALF  1
+#define SCORE_FIRST_HALF		0
+#define SCORE_SECOND_HALF		1
 
-#define DMG_MSG_SIZE       8192
+#define DMG_MSG_SIZE			8192
 
-#define MAX_PARAM_SIZE     512
+#define MAX_PARAM_SIZE			512
 
-#define NUM_WEAPONS        36
-#define LOG_HIT_OFFSET     7
+#define NUM_WEAPONS			36
+#define LOG_HIT_OFFSET			7
 
-#define	LOG_HIT_SHOTS		0
-#define	LOG_HIT_HITS		1
-#define	LOG_HIT_KILLS		2
-#define	LOG_HIT_HEADSHOTS	3
-#define	LOG_HIT_TEAMKILLS	4
-#define	LOG_HIT_DAMAGE		5
-#define	LOG_HIT_DEATHS		6
-#define LOG_HIT_GENERIC		7
-#define LOG_HIT_HEAD		8
-#define LOG_HIT_CHEST		9
-#define LOG_HIT_STOMACH		10
-#define LOG_HIT_LEFTARM		11
-#define LOG_HIT_RIGHTARM	12
-#define LOG_HIT_LEFTLEG		13
-#define LOG_HIT_RIGHTLEG	14
-#define LOG_HIT_ASSIST		15
-#define LOG_HIT_ASSIST_TK	16
-#define LOG_HIT_NUM			17
+#define	LOG_HIT_SHOTS			0
+#define	LOG_HIT_HITS			1
+#define	LOG_HIT_KILLS			2
+#define	LOG_HIT_HEADSHOTS		3
+#define	LOG_HIT_TEAMKILLS		4
+#define	LOG_HIT_DAMAGE			5
+#define	LOG_HIT_DEATHS			6
+#define LOG_HIT_GENERIC			7
+#define LOG_HIT_HEAD			8
+#define LOG_HIT_CHEST			9
+#define LOG_HIT_STOMACH			10
+#define LOG_HIT_LEFTARM			11
+#define LOG_HIT_RIGHTARM		12
+#define LOG_HIT_LEFTLEG			13
+#define LOG_HIT_RIGHTLEG		14
+#define LOG_HIT_NUM			15
 
-#define CLUTCH_LAST        0
-#define CLUTCH_VERSUS      1
-#define CLUTCH_FRAGS       2
-#define CLUTCH_WON         3
-#define CLUTCH_NUM         4
+#define ASSIST_COUNT			0
+#define ASSIST_COUNT_TK			1
+#define ASSIST_NUM			2
 
-#define WM_VERSION         "0.2.1c"
-#define WM_DESCRIPTION     "An automative service created by Twelve-60 and updated by Versatile BFG for CS:GO competition matches."
+#define CLUTCH_LAST			0
+#define CLUTCH_VERSUS			1
+#define CLUTCH_FRAGS			2
+#define CLUTCH_WON			3
+#define CLUTCH_NUM			4
+
+#define WM_VERSION			"0.2.1"
+#define WM_DESCRIPTION			"An automative service created by Twelve-60 and updated by Versatile BFG for CS:GO competition matches."
 
 new String:g_team_name_cache[16][64];
 
