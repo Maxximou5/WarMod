@@ -11,7 +11,7 @@
 #undef REQUIRE_PLUGIN
 #include <adminmenu>
 #include <updater>
-#include <teasyftp>
+#include <tEasyFTP>
 #undef REQUIRE_EXTENSIONS
 #include <bzip2>
 
@@ -43,6 +43,7 @@ new Handle:g_log_file = INVALID_HANDLE;
 new String:weapon_list[][] = {"glock", "hkp2000", "p250", "fiveseven", "deagle", "elite", "tek9", "nova", "xm1014", "mag7", "sawedoff", "m249", "negev", "mp9", "mac10", "mp7", "ump45", "p90", "bizon", "famas", "m4a1", "galilar", "ak47", "ssg08", "aug", "sg556", "awp", "scar20", "g3sg1", "taser", "knife", "hegrenade", "flashbang", "smokegrenade", "molotov", "decoy"};
 new weapon_stats[MAXPLAYERS + 1][NUM_WEAPONS][LOG_HIT_NUM];
 new clutch_stats[MAXPLAYERS + 1][CLUTCH_NUM];
+new assist_stats[MAXPLAYERS + 1][ASSIST_NUM];
 new String:last_weapon[MAXPLAYERS + 1][64];
 new bool:g_planted = false;
 new Handle:g_stats_trace_timer = INVALID_HANDLE;
@@ -138,8 +139,10 @@ new Handle:g_hCvarEnabled = INVALID_HANDLE;
 new bool:g_bEnabled = false;
 new Handle:g_hCvarBzip = INVALID_HANDLE;
 new g_iBzip2 = 9;
-new Handle:g_hCvarFtpTarget = INVALID_HANDLE;
-new String:g_sFtpTarget[255];
+new Handle:g_hCvarFtpTargetDemo = INVALID_HANDLE;
+new Handle:g_hCvarFtpTargetLog = INVALID_HANDLE;
+new String:g_sFtpTargetDemo[255];
+new String:g_sFtpTargetLog[255];
 new Handle:g_hCvarDelete = INVALID_HANDLE;
 new bool:g_bDelete = false;
 new String:g_sDemoPath[PLATFORM_MAX_PATH];
@@ -196,6 +199,7 @@ public Plugin:myinfo = {
 
 public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 {
+	MarkNativeAsOptional("EasyFTP_UploadFile");
 	RegPluginLibrary("warmod");
 	return APLRes_Success;
 }
@@ -355,7 +359,8 @@ public OnPluginStart()
 	g_hCvarEnabled = CreateConVar("wm_autodemoupload_enable", "1", "Automatically upload demos when finished recording.", FCVAR_NOTIFY|FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	g_hCvarBzip = CreateConVar("wm_autodemoupload_bzip2", "9", "Compression level. If set > 0 demos will be compressed before uploading. (Requires bzip2 extension.)", FCVAR_PLUGIN, true, 0.0, true, 9.0);
 	g_hCvarDelete = CreateConVar("wm_autodemoupload_delete", "0", "Delete the demo (and the bz2) if upload was successful.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	g_hCvarFtpTarget = CreateConVar("wm_autodemoupload_ftptarget", "demos", "The ftp target to use for uploads.", FCVAR_PLUGIN);
+	g_hCvarFtpTargetDemo = CreateConVar("wm_autodemoupload_ftptargetdemo", "demos", "The ftp target to use for uploads.", FCVAR_PLUGIN);
+	g_hCvarFtpTargetLog = CreateConVar("wm_autodemoupload_ftptargetlog", "logs", "The ftp target to use for uploads.", FCVAR_PLUGIN);
 	g_hOnMatchCompleted  = CreateConVar("wm_autodemoupload_completed", "1", "Only upload demos when match is completed.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
 	g_h_mp_startmoney = FindConVar("mp_startmoney");
@@ -389,7 +394,8 @@ public OnPluginStart()
 	HookConVarChange(g_h_lw_enabled, OnLiveWireChange);
 	HookConVarChange(g_h_t, OnTChange);
 	HookConVarChange(g_h_ct, OnCTChange);
-	HookConVarChange(g_hCvarFtpTarget, Cvar_Changed);
+	HookConVarChange(g_hCvarFtpTargetDemo, Cvar_Changed);
+	HookConVarChange(g_hCvarFtpTargetLog, Cvar_Changed);
 	HookConVarChange(g_hCvarDelete, Cvar_Changed);
 	HookConVarChange(g_hCvarBzip, Cvar_Changed);
 	HookConVarChange(g_hCvarEnabled, Cvar_Changed);
@@ -458,7 +464,8 @@ public OnConfigsExecuted()
 	g_iBzip2 = GetConVarBool(g_hCvarBzip);
 	g_bDelete = GetConVarBool(g_hCvarDelete);
 	g_UploadOnMatchCompleted = GetConVarBool(g_hOnMatchCompleted);
-	GetConVarString(g_hCvarFtpTarget, g_sFtpTarget, sizeof(g_sFtpTarget));
+	GetConVarString(g_hCvarFtpTargetDemo, g_sFtpTargetDemo, sizeof(g_sFtpTargetDemo));
+	GetConVarString(g_hCvarFtpTargetLog, g_sFtpTargetLog, sizeof(g_sFtpTargetLog));
 }
 
 public Action:LiveWire_ReConnect(client, args)
@@ -2564,15 +2571,14 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 		}
 		if (assister > 0)
 		{
-			new assister_weapon_index = GetWeaponIndex(last_weapon[assister]);
 			new assister_team = GetClientTeam(assister);
 			if (assister_team == victim_team)
 			{
-				weapon_stats[assister][assister_weapon_index][LOG_HIT_ASSIST_TK]++;
+				assist_stats[assister][ASSIST_COUNT_TK]++;
 			}
 			if (assister_team == GetClientTeam(attacker))
 			{
-				weapon_stats[assister][assister_weapon_index][LOG_HIT_ASSIST]++;
+				assist_stats[assister][ASSIST_COUNT]++;
 			}
 		}
 	}
@@ -5683,8 +5689,7 @@ public Action:StopRecord(Handle:timer)
 	{
 		// only stop if another match hasn't started
 		ServerCommand("tv_stoprecord");
-		// && LibraryExists("teasyftp")
-		if (g_bEnabled && g_bRecording)
+		if (g_bEnabled && g_bRecording && LibraryExists("teftp"))
 		{
 			if (g_UploadOnMatchCompleted)
 			{
@@ -5704,12 +5709,11 @@ public Action:StopRecord(Handle:timer)
 				Format(g_sDemoPath, sizeof(g_sDemoPath), "");
 			}
 		}
-		/*else if (!LibraryExists("teasyftp"))
+		else if (!LibraryExists("teftp"))
 		{
-			LogMessage("Plug-in tEasyFTP.smx required to auto upload demos");
-		}*/
+			LogError("Plug-in tEasyFTP.smx required to auto upload demos");
+		}
 		CreateTimer(2.0, RecordingFalse);
-		//g_bRecording = false;
 	}
 }
 
@@ -5722,8 +5726,7 @@ public Action:LogFileUpload(Handle:timer)
 {
 	if (!g_match)
 	{
-		// && LibraryExists("teasyftp")
-		if (g_bEnabled && g_bRecording)
+		if (g_bEnabled && g_bRecording && LibraryExists("teftp"))
 		{
 			if (g_UploadOnMatchCompleted)
 			{
@@ -5770,44 +5773,52 @@ public Action:LogFileUpload(Handle:timer)
 
 public Action:Timer_UploadDemo(Handle:timer, Handle:hDataPack)
 {
-	ResetPack(hDataPack);
-
-	decl String:sDemoPath[PLATFORM_MAX_PATH];
-	ReadPackString(hDataPack, sDemoPath, sizeof(sDemoPath));
-
-	if(g_iBzip2 > 0 && g_iBzip2 < 10 && LibraryExists("bzip2"))
+	if (LibraryExists("teftp"))
 	{
-		decl String:sBzipPath[PLATFORM_MAX_PATH];
-		Format(sBzipPath, sizeof(sBzipPath), "%s.bz2", sDemoPath);
-		BZ2_CompressFile(sDemoPath, sBzipPath, g_iBzip2, CompressionComplete);
-	}
-	else
-	{
-		EasyFTP_UploadFile(g_sFtpTarget, sDemoPath, "/", UploadComplete);
+		ResetPack(hDataPack);
+
+		decl String:sDemoPath[PLATFORM_MAX_PATH];
+		ReadPackString(hDataPack, sDemoPath, sizeof(sDemoPath));
+
+		if(g_iBzip2 > 0 && g_iBzip2 < 10 && LibraryExists("bzip2"))
+		{
+			decl String:sBzipPath[PLATFORM_MAX_PATH];
+			Format(sBzipPath, sizeof(sBzipPath), "%s.bz2", sDemoPath);
+			BZ2_CompressFile(sDemoPath, sBzipPath, g_iBzip2, CompressionComplete);
+		}
+		else
+		{
+			EasyFTP_UploadFile(g_sFtpTargetDemo, sDemoPath, "/", UploadComplete);
+		}
 	}
 }
 
 public Action:Timer_UploadLog(Handle:timer, Handle:hDataPackLog)
 {
-	ResetPack(hDataPackLog);
-
-	decl String:sLogPath[PLATFORM_MAX_PATH];
-	ReadPackString(hDataPackLog, sLogPath, sizeof(sLogPath));
-
-	EasyFTP_UploadFile(g_sFtpTarget, sLogPath, "/", UploadComplete);
-
+	if (LibraryExists("teftp"))
+	{
+		ResetPack(hDataPackLog);
+	
+		decl String:sLogPath[PLATFORM_MAX_PATH];
+		ReadPackString(hDataPackLog, sLogPath, sizeof(sLogPath));
+	
+		EasyFTP_UploadFile(g_sFtpTargetLog, sLogPath, "/", UploadComplete);
+	}
 }
 
 public CompressionComplete(BZ_Error:iError, String:inFile[], String:outFile[], any:data)
 {
-	if(iError == BZ_OK)
+	if (LibraryExists("teftp"))
 	{
-		LogMessage("%s compressed to %s", inFile, outFile);
-		EasyFTP_UploadFile(g_sFtpTarget, outFile, "/", UploadComplete);
-	}
-	else
-	{
-		LogBZ2Error(iError);
+		if(iError == BZ_OK)
+		{
+			LogMessage("%s compressed to %s", inFile, outFile);
+			EasyFTP_UploadFile(g_sFtpTargetDemo, outFile, "/", UploadComplete);
+		}
+		else
+		{
+			LogBZ2Error(iError);
+		}
 	}
 }
 
@@ -6022,6 +6033,10 @@ ResetPlayerStats(client)
 			weapon_stats[client][i][x] = 0;
 		}
 	}
+	for (new z = 0; z < ASSIST_NUM; z++)
+	{
+		assist_stats[client][z] = 0;
+	}
 }
 
 ResetClutchStats()
@@ -6056,7 +6071,7 @@ LogPlayerStats(client)
 				round_stats[x] += weapon_stats[client][i][x];
 			}
 		}
-		LogEvent("{\"event\": \"round_stats\", \"player\": %s, \"shots\": %d, \"hits\": %d, \"kills\": %d, \"headshots\": %d, \"tks\": %d, \"damage\": %d, \"assists\": %d, \"assists_tk\": %d, \"deaths\": %d, \"head\": %d, \"chest\": %d, \"stomach\": %d, \"leftArm\": %d, \"rightArm\": %d, \"leftLeg\": %d, \"rightLeg\": %d, \"generic\": %d}", log_string, round_stats[LOG_HIT_SHOTS], round_stats[LOG_HIT_HITS], round_stats[LOG_HIT_KILLS], round_stats[LOG_HIT_HEADSHOTS], round_stats[LOG_HIT_TEAMKILLS], round_stats[LOG_HIT_DAMAGE], round_stats[LOG_HIT_ASSIST], round_stats[LOG_HIT_ASSIST_TK], round_stats[LOG_HIT_DEATHS], round_stats[LOG_HIT_HEAD], round_stats[LOG_HIT_CHEST], round_stats[LOG_HIT_STOMACH], round_stats[LOG_HIT_LEFTARM], round_stats[LOG_HIT_RIGHTARM], round_stats[LOG_HIT_LEFTLEG], round_stats[LOG_HIT_RIGHTLEG], round_stats[LOG_HIT_GENERIC]);
+		LogEvent("{\"event\": \"round_stats\", \"player\": %s, \"shots\": %d, \"hits\": %d, \"kills\": %d, \"headshots\": %d, \"tks\": %d, \"damage\": %d, \"assists\": %d, \"assists_tk\": %d, \"deaths\": %d, \"head\": %d, \"chest\": %d, \"stomach\": %d, \"leftArm\": %d, \"rightArm\": %d, \"leftLeg\": %d, \"rightLeg\": %d, \"generic\": %d}", log_string, round_stats[LOG_HIT_SHOTS], round_stats[LOG_HIT_HITS], round_stats[LOG_HIT_KILLS], round_stats[LOG_HIT_HEADSHOTS], round_stats[LOG_HIT_TEAMKILLS], round_stats[LOG_HIT_DAMAGE], assist_stats[client][ASSIST_COUNT], assist_stats[client][ASSIST_COUNT_TK], round_stats[LOG_HIT_DEATHS], round_stats[LOG_HIT_HEAD], round_stats[LOG_HIT_CHEST], round_stats[LOG_HIT_STOMACH], round_stats[LOG_HIT_LEFTARM], round_stats[LOG_HIT_RIGHTARM], round_stats[LOG_HIT_LEFTLEG], round_stats[LOG_HIT_RIGHTLEG], round_stats[LOG_HIT_GENERIC]);
 		ResetPlayerStats(client);
 	}
 }
