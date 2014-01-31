@@ -22,7 +22,7 @@
 
 #define MAX_PARAM_SIZE			512
 
-#define NUM_WEAPONS			36
+#define NUM_WEAPONS			38
 #define LOG_HIT_OFFSET			7
 
 #define	LOG_HIT_SHOTS			0
