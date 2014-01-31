@@ -40,7 +40,7 @@ new Float:g_match_start;
 new bool:g_log_warmod_dir = false;
 new String:g_log_filename[128];
 new Handle:g_log_file = INVALID_HANDLE;
-new String:weapon_list[][] = {"glock", "hkp2000", "p250", "fiveseven", "deagle", "elite", "tek9", "nova", "xm1014", "mag7", "sawedoff", "m249", "negev", "mp9", "mac10", "mp7", "ump45", "p90", "bizon", "famas", "m4a1", "galilar", "ak47", "ssg08", "aug", "sg556", "awp", "scar20", "g3sg1", "taser", "knife", "hegrenade", "flashbang", "smokegrenade", "molotov", "decoy"};
+new String:weapon_list[][] = {"ak47", "m4a1_silencer", "m4a1", "galilar", "famas", "awp", "p250", "glock", "hkp2000", "usp_silencer", "ump45", "p90", "bizon", "mp7", "nova", "knife", "elite", "fiveseven", "deagle", "tec9", "ssg08", "scar20", "aug", "sg556", "g3sg1", "mac10", "mp9", "mag7", "negev", "m249", "sawedoff", "incgrenade", "flashbang", "smokegrenade", "hegrenade", "molotov", "decoy", "taser"};
 new weapon_stats[MAXPLAYERS + 1][NUM_WEAPONS][LOG_HIT_NUM];
 new clutch_stats[MAXPLAYERS + 1][CLUTCH_NUM];
 new assist_stats[MAXPLAYERS + 1][ASSIST_NUM];
