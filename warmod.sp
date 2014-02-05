@@ -40,13 +40,18 @@ new Float:g_match_start;
 new bool:g_log_warmod_dir = false;
 new String:g_log_filename[128];
 new Handle:g_log_file = INVALID_HANDLE;
-new String:weapon_list[][] = {"ak47", "m4a1_silencer", "m4a1", "galilar", "famas", "awp", "p250", "glock", "hkp2000", "usp_silencer", "ump45", "p90", "bizon", "mp7", "nova", "knife", "elite", "fiveseven", "deagle", "tec9", "ssg08", "scar20", "aug", "sg556", "g3sg1", "mac10", "mp9", "mag7", "negev", "m249", "sawedoff", "incgrenade", "flashbang", "smokegrenade", "hegrenade", "molotov", "decoy", "taser"};
+new String:weapon_list[][] = {"ak47", "m4a1_silencer", "m4a1_silencer_off", "m4a1", "galilar", "famas", "awp", "p250", "glock", "hkp2000", "usp_silencer", "usp_silencer_off", "ump45", "p90", "bizon", "mp7", "nova", "knife", "elite", "fiveseven", "deagle", "tec9", "ssg08", "scar20", "aug", "sg556", "g3sg1", "mac10", "mp9", "mag7", "negev", "m249", "sawedoff", "incgrenade", "flashbang", "smokegrenade", "hegrenade", "molotov", "decoy", "taser"};
 new weapon_stats[MAXPLAYERS + 1][NUM_WEAPONS][LOG_HIT_NUM];
 new clutch_stats[MAXPLAYERS + 1][CLUTCH_NUM];
 new assist_stats[MAXPLAYERS + 1][ASSIST_NUM];
 new String:last_weapon[MAXPLAYERS + 1][64];
 new bool:g_planted = false;
 new Handle:g_stats_trace_timer = INVALID_HANDLE;
+new Handle:g_h_competition = INVALID_HANDLE;
+new Handle:g_h_event = INVALID_HANDLE;
+new String:g_competition[255];
+new String:g_event[255];
+new String:g_server[255];
 
 /* forwards */
 new Handle:g_f_on_lo3 = INVALID_HANDLE;
@@ -362,8 +367,11 @@ public OnPluginStart()
 	g_hCvarFtpTargetDemo = CreateConVar("wm_autodemoupload_ftptargetdemo", "demos", "The ftp target to use for uploads.", FCVAR_PLUGIN);
 	g_hCvarFtpTargetLog = CreateConVar("wm_autodemoupload_ftptargetlog", "logs", "The ftp target to use for uploads.", FCVAR_PLUGIN);
 	g_hOnMatchCompleted  = CreateConVar("wm_autodemoupload_completed", "1", "Only upload demos when match is completed.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	g_h_competition = CreateConVar("wm_competition", "WarMod BFG", "Name of host for a competition. eg. ESEA, Cybergamer, CEVO, ESL", FCVAR_PLUGIN);
+	g_h_event = CreateConVar("wm_event", "scrim", "Name of event. eg. Season #, ODC #, Ladder", FCVAR_PLUGIN);
 	
 	g_h_mp_startmoney = FindConVar("mp_startmoney");
+	g_server = FindConVar("hostname");
 	g_i_account = FindSendPropOffs("CCSPlayer", "m_iAccount");
 	
 	g_h_play_out = FindConVar("mp_match_can_clinch");
@@ -394,12 +402,17 @@ public OnPluginStart()
 	HookConVarChange(g_h_lw_enabled, OnLiveWireChange);
 	HookConVarChange(g_h_t, OnTChange);
 	HookConVarChange(g_h_ct, OnCTChange);
+	
 	HookConVarChange(g_hCvarFtpTargetDemo, Cvar_Changed);
 	HookConVarChange(g_hCvarFtpTargetLog, Cvar_Changed);
 	HookConVarChange(g_hCvarDelete, Cvar_Changed);
 	HookConVarChange(g_hCvarBzip, Cvar_Changed);
 	HookConVarChange(g_hCvarEnabled, Cvar_Changed);
 	HookConVarChange(g_hOnMatchCompleted, Cvar_Changed);
+	
+	HookConVarChange(g_h_competition, Cvar_Changed);
+	HookConVarChange(g_h_event, Cvar_Changed);
+	HookConVarChange(hostname, Cvar_Changed);
 	
 	HookEvent("round_start", Event_Round_Start);
 	HookEvent("round_end", Event_Round_End);
@@ -434,10 +447,10 @@ public OnPluginStart()
 	HookEvent("item_pickup", Event_Item_Pickup);
 	
 	CreateTimer(15.0, HelpText, 0, TIMER_REPEAT);
-	CreateTimer(15.0, CheckNames, 0, TIMER_REPEAT);
+	//CreateTimer(15.0, CheckNames, 0, TIMER_REPEAT);
 	
-	CreateTimer(600.0, LiveWire_Check, 0, TIMER_REPEAT);
-	CreateTimer(1800.0, LiveWire_Ping, _, TIMER_REPEAT);
+	//CreateTimer(600.0, LiveWire_Check, 0, TIMER_REPEAT);
+	//CreateTimer(1800.0, LiveWire_Ping, _, TIMER_REPEAT);
 	
 	// Pause and Unpause stuff
 	sv_pausable = FindConVar ("sv_pausable");
@@ -459,6 +472,9 @@ public OnLibraryAdded(const String:name[])
 public OnConfigsExecuted()
 {
 	GetConVarString(g_h_chat_prefix, CHAT_PREFIX, sizeof(CHAT_PREFIX));
+	GetConVarString(g_h_event, g_event, sizeof(g_event));
+	GetConVarString(g_h_competition, g_competition, sizeof(g_competition));
+	GetConVarString(hostname, g_server, sizeof(g_server));
 	
 	g_bEnabled = GetConVarBool(g_hCvarEnabled);
 	g_iBzip2 = GetConVarBool(g_hCvarBzip);
@@ -2449,8 +2465,8 @@ public Event_Player_Hurt(Handle:event, const String:name[], bool:dontBroadcast)
 		new damage = GetEventInt(event, "dmg_health");
 		new damage_armor = GetEventInt(event, "dmg_armor");
 		new hitgroup = GetEventInt(event, "hitgroup");
-		new String:weapon[64];
-		GetEventString(event, "weapon", weapon, 64);
+		new String: weapon[64];
+		GetEventString(event, "weapon", weapon, sizeof(weapon));
 		
 		if (attacker > 0)
 		{
@@ -2492,6 +2508,14 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 	new bool:headshot = GetEventBool(event, "headshot");
 	new String: weapon[64];
 	GetEventString(event, "weapon", weapon, sizeof(weapon));
+	if (StrEqual(weapon, "m4a1_silencer") || StrEqual(weapon, "m4a1_silencer_off"))
+	{
+		weapon = "m4a1";
+	}
+	else if (StrEqual(weapon, "usp_silencer") || StrEqual(weapon, "usp_silencer_off"))
+	{
+		weapon = "hkp2000";
+	}
 	new victim_team = GetClientTeam(victim);
 	
 	// stats
@@ -2881,7 +2905,7 @@ public Event_Weapon_Fire(Handle:event, const String:name[], bool:dontBroadcast)
 		if (client > 0)
 		{
 			new String: weapon[64];
-			GetEventString(event, "weapon", weapon, 64);
+			GetEventString(event, "weapon", weapon, sizeof(weapon));
 			new weapon_index = GetWeaponIndex(weapon);
 			if (weapon_index > -1)
 			{
@@ -3766,21 +3790,12 @@ ReadyServ(client, bool:ready, bool:silent, bool:show, bool:priv)
 }
 
 CheckReady()
-{
-	if (GetTeamClientCount(COUNTER_TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2) && GetTeamClientCount(TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2))
+{	
+	if (g_live)
 	{
-		if (StrEqual(g_t_name, DEFAULT_T_NAME))
-		{
-			getTerroristTeamName();
-		}
-	
-		if (StrEqual(g_ct_name, DEFAULT_CT_NAME))
-		{
-			getCounterTerroristTeamName();
-		}
+		return;
 	}
-	
-	if ((GetConVarBool(g_h_req_names) && (StrEqual(g_t_name, DEFAULT_T_NAME, false) || StrEqual(g_ct_name, DEFAULT_CT_NAME, false))) && (!GetConVarBool(g_h_auto_knife) || g_t_had_knife))
+	if ((GetConVarBool(g_h_req_names) && GetTeamClientCount(COUNTER_TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2) && GetTeamClientCount(TERRORIST_TEAM) >= (GetConVarInt(g_h_min_ready)/2) && (StrEqual(g_t_name, DEFAULT_T_NAME, false) || StrEqual(g_ct_name, DEFAULT_CT_NAME, false))) && (!GetConVarBool(g_h_auto_knife) || g_t_had_knife))
 	{
 		PrintToChatAll("\x01 \x09[\x04%s\x09]\x01 %t", CHAT_PREFIX, "Names Required");
 
@@ -3988,7 +4003,7 @@ stock LiveOn3Override()
 	
 	if (GetConVarBool(g_h_stats_enabled))
 	{
-		LogEvent("{\"event\": \"live_on_3\", \"map\": \"%s\", \"teams\": [{\"name\": \"%s\", \"team\": %d}, {\"name\": \"%s\", \"team\": %d}], \"status\": %d, \"version\": \"%s\"}", g_map, g_t_name_escaped, TERRORIST_TEAM, g_ct_name_escaped, COUNTER_TERRORIST_TEAM, UpdateStatus(), WM_VERSION);
+		LogEvent("{\"event\": \"live_on_3\", \"map\": \"%s\", \"teams\": [{\"name\": \"%s\", \"team\": %d}, {\"name\": \"%s\", \"team\": %d}], \"status\": %d, \"server\": \"%s\" \"competition\": \"%s\" \"event_name\": \"%s\" \"version\": \"%s\"}", g_map, g_t_name_escaped, TERRORIST_TEAM, g_ct_name_escaped, COUNTER_TERRORIST_TEAM, UpdateStatus(), g_server, g_competition, g_event, WM_VERSION);
 	}
 	return true;
 }
@@ -5349,7 +5364,6 @@ public Action:ChangeCT(client, args)
 	
 	return Plugin_Handled;
 }
-
 
 /*********************************************************
  *  Display message from player, simulates say and say_team
