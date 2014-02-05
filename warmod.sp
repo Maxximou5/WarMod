@@ -371,7 +371,6 @@ public OnPluginStart()
 	g_h_event = CreateConVar("wm_event", "scrim", "Name of event. eg. Season #, ODC #, Ladder", FCVAR_PLUGIN);
 	
 	g_h_mp_startmoney = FindConVar("mp_startmoney");
-	g_server = FindConVar("hostname");
 	g_i_account = FindSendPropOffs("CCSPlayer", "m_iAccount");
 	
 	g_h_play_out = FindConVar("mp_match_can_clinch");
