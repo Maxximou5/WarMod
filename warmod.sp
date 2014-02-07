@@ -4002,7 +4002,7 @@ stock LiveOn3Override()
 	
 	if (GetConVarBool(g_h_stats_enabled))
 	{
-		LogEvent("{\"event\": \"live_on_3\", \"map\": \"%s\", \"teams\": [{\"name\": \"%s\", \"team\": %d}, {\"name\": \"%s\", \"team\": %d}], \"status\": %d, \"server\": \"%s\" \"competition\": \"%s\" \"event_name\": \"%s\" \"version\": \"%s\"}", g_map, g_t_name_escaped, TERRORIST_TEAM, g_ct_name_escaped, COUNTER_TERRORIST_TEAM, UpdateStatus(), g_server, g_competition, g_event, WM_VERSION);
+		LogEvent("{\"event\": \"live_on_3\", \"map\": \"%s\", \"teams\": [{\"name\": \"%s\", \"team\": %d}, {\"name\": \"%s\", \"team\": %d}], \"status\": %d, \"server\": \"%s\", \"competition\": \"%s\", \"event_name\": \"%s\", \"version\": \"%s\"}", g_map, g_t_name_escaped, TERRORIST_TEAM, g_ct_name_escaped, COUNTER_TERRORIST_TEAM, UpdateStatus(), g_server, g_competition, g_event, WM_VERSION);
 	}
 	return true;
 }
