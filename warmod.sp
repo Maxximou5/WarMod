@@ -117,6 +117,7 @@ new Handle:g_h_ct_score = INVALID_HANDLE;
 new Handle:g_h_play_out = INVALID_HANDLE;
 
 new Handle:g_h_mp_startmoney = INVALID_HANDLE;
+new Handle:g_h_hostname = INVALID_HANDLE;
 
 /* ready system */
 new Handle:g_m_ready_up = INVALID_HANDLE;
@@ -372,6 +373,7 @@ public OnPluginStart()
 	
 	g_h_mp_startmoney = FindConVar("mp_startmoney");
 	g_i_account = FindSendPropOffs("CCSPlayer", "m_iAccount");
+	g_h_hostname = FindConVar("hostname");
 	
 	g_h_play_out = FindConVar("mp_match_can_clinch");
 	
@@ -411,7 +413,7 @@ public OnPluginStart()
 	
 	HookConVarChange(g_h_competition, Cvar_Changed);
 	HookConVarChange(g_h_event, Cvar_Changed);
-	HookConVarChange(hostname, Cvar_Changed);
+	HookConVarChange(g_h_hostname, Cvar_Changed);
 	
 	HookEvent("round_start", Event_Round_Start);
 	HookEvent("round_end", Event_Round_End);
@@ -473,7 +475,7 @@ public OnConfigsExecuted()
 	GetConVarString(g_h_chat_prefix, CHAT_PREFIX, sizeof(CHAT_PREFIX));
 	GetConVarString(g_h_event, g_event, sizeof(g_event));
 	GetConVarString(g_h_competition, g_competition, sizeof(g_competition));
-	GetConVarString(hostname, g_server, sizeof(g_server));
+	GetConVarString(g_h_hostname, g_server, sizeof(g_server));
 	
 	g_bEnabled = GetConVarBool(g_hCvarEnabled);
 	g_iBzip2 = GetConVarBool(g_hCvarBzip);
@@ -2507,6 +2509,7 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 	new bool:headshot = GetEventBool(event, "headshot");
 	new String: weapon[64];
 	GetEventString(event, "weapon", weapon, sizeof(weapon));
+	
 	if (StrEqual(weapon, "m4a1_silencer") || StrEqual(weapon, "m4a1_silencer_off"))
 	{
 		weapon = "m4a1";
@@ -2514,6 +2517,10 @@ public Event_Player_Death(Handle:event, const String:name[], bool:dontBroadcast)
 	else if (StrEqual(weapon, "usp_silencer") || StrEqual(weapon, "usp_silencer_off"))
 	{
 		weapon = "hkp2000";
+	}
+	else if (StrEqual(weapon, "cz75a"))
+	{
+		weapon = "p250";
 	}
 	new victim_team = GetClientTeam(victim);
 	
