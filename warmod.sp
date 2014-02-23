@@ -400,6 +400,7 @@ public OnPluginStart()
 	HookConVarChange(FindConVar("mp_overtime_maxrounds"), OnOverTimeMaxRoundChangeMP);
 	HookConVarChange(g_h_overtime_money, OnOverTimeMoneyChange);
 	HookConVarChange(FindConVar("mp_overtime_startmoney"), OnOverTimeMoneyChangeMP);
+	HookConVarChange(FindConVar("mp_match_can_clinch"), OnPlayOutChangeMP);
 	HookConVarChange(g_h_lw_enabled, OnLiveWireChange);
 	HookConVarChange(g_h_t, OnTChange);
 	HookConVarChange(g_h_ct, OnCTChange);
@@ -4799,6 +4800,19 @@ public OnOverTimeMoneyChangeMP(Handle:cvar, const String:oldVal[], const String:
 		new overTimeMoney;
 		overTimeMoney = GetConVarInt(FindConVar("mp_overtime_startmoney"));
 		ServerCommand("wm_overtime_start_money %i", overTimeMoney);
+	}
+}
+
+public OnPlayOutChangeMP(Handle:cvar, const String:oldVal[], const String:newVal[])
+{
+	g_h_playout = GetConVarInt(FindConVar("mp_match_can_clinch"));
+	if (g_h_play_out)
+	{
+		g_play_out = false;
+	}
+	else
+	{
+		g_play_out = true;
 	}
 }
 
