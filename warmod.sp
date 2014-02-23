@@ -4805,7 +4805,7 @@ public OnOverTimeMoneyChangeMP(Handle:cvar, const String:oldVal[], const String:
 
 public OnPlayOutChangeMP(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
-	g_h_playout = GetConVarInt(FindConVar("mp_match_can_clinch"));
+	g_h_play_out = FindConVar("mp_match_can_clinch");
 	if (g_h_play_out)
 	{
 		g_play_out = false;
